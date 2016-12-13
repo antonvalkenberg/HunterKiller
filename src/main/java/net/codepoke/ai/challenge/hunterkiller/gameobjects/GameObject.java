@@ -1,6 +1,5 @@
 package main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects;
 
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,34 +16,64 @@ import main.java.net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 @Setter
 @Getter
 @EqualsAndHashCode
-@AllArgsConstructor
 @NoArgsConstructor
 public abstract class GameObject {
 
+	//region Constants
+	
 	/**
 	 * The default position if the object has not been placed yet.
 	 */
 	public static final int NOT_PLACED = -1;
 
 	/**
-	 * The position index on the board.
-	 */
-	int position = NOT_PLACED;
-
-	/**
 	 * The default amount of health points an object has.
 	 */
 	public static final int DEFAULT_HP = 1;
 	
+	//endregion
+
+	//region Properties
+
+	/**
+	 * The position index on the Map.
+	 */
+	public int position = NOT_PLACED;
+
 	/**
 	 * The maximum amount of health points for this object.
 	 */
-	int hpMax = DEFAULT_HP;
+	public int hpMax = DEFAULT_HP;
 	
 	/**
 	 * The amount of health points this object currently has.
 	 */
-	int hpCurrent = hpMax;
+	public int hpCurrent = hpMax;
+	
+	//endregion
+	
+	//region Constructor
+
+	/**
+	 * Constructs a new instance of a GameObject with default HP.
+	 * @param mapPosition The GameObject's position on the Map.
+	 */
+	public GameObject(int mapPosition) {
+		this(mapPosition, DEFAULT_HP);
+	}
+
+	/**
+	 * Constructs a new instance of a GameObject.
+	 * @param mapPosition The GameObject's position on the Map.
+	 * @param maxHP The maximum amount of health points this GameObject will have.
+	 */
+	public GameObject(int mapPosition, int maxHP) {
+		position = mapPosition;
+		hpMax = maxHP;
+		hpCurrent = maxHP;
+	}
+	
+	//endregion
 	
 	/**
 	 * Creates a copy of this GameObject
