@@ -65,12 +65,24 @@ public abstract class GameObject {
 	/**
 	 * Constructs a new instance of a GameObject.
 	 * @param mapPosition The GameObject's position on the Map.
-	 * @param maxHP The maximum amount of health points this GameObject will have.
+	 * @param maxHP The maximum amount of health points this GameObject can have.
 	 */
 	public GameObject(int mapPosition, int maxHP) {
 		position = mapPosition;
 		hpMax = maxHP;
 		hpCurrent = maxHP;
+	}
+
+	/**
+	 * Constructs a new instance of a GameObject.
+	 * @param mapPosition The GameObject's position on the Map.
+	 * @param maxHP The maximum amount of health points this GameObject can have.
+	 * @param currentHP The current amount of health points this GameObject has.
+	 */
+	public GameObject(int mapPosition, int maxHP, int currentHP) {
+		position = mapPosition;
+		hpMax = maxHP;
+		hpCurrent = currentHP;
 	}
 	
 	//endregion

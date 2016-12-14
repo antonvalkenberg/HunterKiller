@@ -39,6 +39,8 @@ public class Space extends MapFeature {
 		super(mapPosition, DEFAULT_SPACE_DESTRUCTIBLE, DEFAULT_SPACE_BLOCKS_LOS, DEFAULT_SPACE_WALKABLE);
 	}
 	
+	//endregion
+	
 	@Override
 	public GameObject copy() {
 		return new Space(this.getPosition());

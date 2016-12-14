@@ -42,6 +42,8 @@ public class Floor extends MapFeature {
 	public Floor(int mapPosition) {
 		super(mapPosition, DEFAULT_FLOOR_DESTRUCTIBLE, DEFAULT_FLOOR_BLOCKS_LOS, DEFAULT_FLOOR_WALKABLE);
 	}
+
+	//endregion
 	
 	@Override
 	public GameObject copy() {

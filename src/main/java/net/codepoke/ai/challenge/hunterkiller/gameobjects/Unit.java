@@ -143,7 +143,25 @@ public abstract class Unit extends GameObject {
 	 * @param score The score the Unit is worth.
 	 */
 	public Unit(int mapPosition, int maxHP, Direction facing, int fovRange, int fovAngle, int attckRange, int attckDmg, int cooldown, int cost, int score) {
-		super(mapPosition, maxHP);
+		this(mapPosition, maxHP, maxHP, facing, fovRange, fovAngle, attckRange, attckDmg, cooldown, cost, score);
+	}
+
+	/**
+	 * Constructs a new instance of a Unit.
+	 * @param mapPosition The Unit's position on the Map.
+	 * @param maxHP The Unit's maximum number of health points.
+	 * @param currentHP The Unit's current number of health points.
+	 * @param facing The Direction the Unit is facing.
+	 * @param fovRange The Unit's Field of View range.
+	 * @param fovAngle The Unit's Field of View angle.
+	 * @param attckRange The Unit's attack range.
+	 * @param attckDmg The Unit's attack damage.
+	 * @param cooldown The cooldown of the Unit's special attack.
+	 * @param cost The cost to spawn the Unit.
+	 * @param score The score the Unit is worth.
+	 */
+	public Unit(int mapPosition, int maxHP, int currentHP, Direction facing, int fovRange, int fovAngle, int attckRange, int attckDmg, int cooldown, int cost, int score) {
+		super(mapPosition, maxHP, currentHP);
 		orientation = facing;
 		fieldOfViewRange = fovRange;
 		fieldOfViewAngle = fovAngle;
