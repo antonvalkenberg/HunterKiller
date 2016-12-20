@@ -6,20 +6,12 @@ package main.java.net.codepoke.ai.challenge.hunterkiller.enums;
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
-public enum TileTypes {
-	SPACE("."),
-	FLOOR("_"),
-	WALL("["),
-	DOOR_CLOSED("D"),
-	DOOR_OPEN("O"),
-	BASE("B"),
-	SOLDIER("S"),
-	MEDIC("M"),
-	INFECTED("I");
-
-	private TileTypes(String txt) {
-		this.txt = txt;
-	}
-
-	public final String txt;
+public enum TileType {
+  SPACE("."), FLOOR("_"), WALL("["), DOOR_CLOSED("D"), DOOR_OPEN("O"), SOLDIER("S"), MEDIC("M"), INFECTED("I"), BASE("B");
+  
+  private TileType(String txt) {
+    this.txt = txt;
+  }
+  
+  public final String txt;
 }

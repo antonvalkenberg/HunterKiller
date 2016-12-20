@@ -5,13 +5,17 @@ package main.java.net.codepoke.ai.challenge.hunterkiller;
  *
  */
 public class HunterKiller {
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-	}
-
+  
+  //region Constants
+  
+  //endregion
+  
+  /**
+   * @param args
+   */
+  public static void main(String[] args) {
+    // TODO Auto-generated method stub
+    
+  }
+  
 }
