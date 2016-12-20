@@ -1,5 +1,6 @@
 package main.java.net.codepoke.ai.challenge.hunterkiller;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import main.java.net.codepoke.ai.challenge.hunterkiller.actions.NullMove;
 import net.codepoke.ai.GameRules.State;
@@ -13,6 +14,7 @@ import net.codepoke.ai.GameRules.State;
  *
  */
 @Getter
+@EqualsAndHashCode
 public class HunterKillerState implements State {
   
   //region Properties
@@ -93,8 +95,8 @@ public class HunterKillerState implements State {
    * @return
    */
   public boolean isDone() {
-    //TODO implement
-    return false;
+    //A game is completed once only 1 base remains
+    return map.getCurrentBaseCount() == 1;
   }
   
   /**
@@ -102,7 +104,14 @@ public class HunterKillerState implements State {
    * commence.
    */
   public void endPlayerTurn() {
-    //TODO implement
+    //Select the next player (next ID)
+    activePlayerID = ++activePlayerID % players.length;
+    //Check if we've reached a new round
+    if(activePlayerID == 0) {
+      currentRound++;
+    }
+    //Do a tick after each player's turn, to check for killed units/features
+    map.tick(this);
   }
   
   //endregion
@@ -116,7 +125,7 @@ public class HunterKillerState implements State {
     //    - active player ID
     //    - player IDs
     //    - all object IDs on the map
-    return 0;
+    return hashCode();
   }
   
   @Override

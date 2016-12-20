@@ -3,6 +3,7 @@ package main.java.net.codepoke.ai.challenge.hunterkiller;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
+import main.java.net.codepoke.ai.challenge.hunterkiller.actions.UnitAction;
 import main.java.net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
@@ -211,7 +212,12 @@ public class Map {
   }
   
   /**
-   * Whether or not the specified location is traversable.
+   * Whether or not the specified location is traversable. This method checks:
+   * <ul>
+   * <li>If the {@link MapLocation} is on the map</li>
+   * <li>If the {@link MapFeature} is walkable</li>
+   * <li>If there is no {@link Unit} present on the location</li>
+   * </ul>
    * 
    * @param location
    *          The location to check
@@ -229,6 +235,77 @@ public class Map {
     boolean walkable = !unitPresent && featureWalkable;
     //Traversable if all three are ok
     return validX && validY && walkable;
+  }
+  
+  /**
+   * Returns whether or not a {@link UnitAction} that describes a move is possible from a specific
+   * location.
+   * 
+   * @param fromLocation
+   *          The location to move from.
+   * @param move
+   *          The action the unit is attempting to make.
+   * @return
+   */
+  public boolean isMovePossible(MapLocation fromLocation, UnitAction move) {
+    //Switch on the type of move described in the UnitAction
+    switch(move.getActionType()) {
+      case MOVE_NORTH:
+        return isMovePossible(fromLocation, Direction.NORTH);
+      case MOVE_EAST:
+        return isMovePossible(fromLocation, Direction.EAST);
+      case MOVE_SOUTH:
+        return isMovePossible(fromLocation, Direction.SOUTH);
+      case MOVE_WEST:
+        return isMovePossible(fromLocation, Direction.WEST);
+      default:
+        //Rest of the UnitActionTypes are not moves, so they should return false
+        return false;
+    }
+  }
+  
+  /**
+   * Returns whether or not a move in a {@link Direction} is possible on this map.
+   * 
+   * @param fromLocation
+   *          The location the move is from.
+   * @param direction
+   *          The direction to move to.
+   * @return
+   */
+  public boolean isMovePossible(MapLocation fromLocation, Direction direction) {
+    //Determine the target location
+    MapLocation targetLocation = getAdjacentLocationInDirection(fromLocation, direction);
+    //Start by checking if the target location exists on the map
+    if(targetLocation == null)
+      return false;
+    //Check if the target location is traversable
+    return isTraversable(targetLocation);
+  }
+  
+  /**
+   * Removes the object from the map and places it on the target location.
+   * 
+   * @param targetLocation
+   *          The location to place the object on.
+   * @param object
+   *          The object to move.
+   * @return Whether or not the move was successful.
+   */
+  public boolean move(MapLocation targetLocation, GameObject object) {
+    boolean success = false;
+    //Check if the targetLocation is traversable
+    if(!isTraversable(targetLocation))
+      return false;
+    //Check if the object is a Unit
+    if(!(object instanceof Unit))
+      return false;
+    //Remove the object
+    success = remove(toPosition(object.getLocation()), object);
+    //Only continue with placement if removal was successful
+    if(success)
+      success = place(toPosition(targetLocation), object);
+    return success;
   }
   
   /**
@@ -325,6 +402,22 @@ public class Map {
   }
   
   /**
+   * Returns the number of {@link Base}s on the map. Used to determine if the game has ended. (Note:
+   * game ends when only 1 base remains)
+   * 
+   * @return
+   */
+  public int getCurrentBaseCount() {
+    //Bases are MapFeatures
+    int count = 0;
+    for(int i = 0; i < mapWidth * mapHeight; i++) {
+      if(mapContent[i][INTERNAL_MAP_FEATURE_INDEX] instanceof Base)
+        count++;
+    }
+    return count;
+  }
+  
+  /**
    * Returns the next available ID for a new player.
    * 
    * @return
@@ -393,6 +486,92 @@ public class Map {
   //endregion
   
   //region Protected methods
+  
+  /**
+   * Places a {@link GameObject} on the map.
+   * 
+   * @param position
+   *          The position on the map to place the object at.
+   * @param object
+   *          The object to place.
+   * @return Whether or not the placement was successful.
+   */
+  protected boolean place(int position, GameObject object) {
+    //Check which layer the object needs to be at
+    int layer = -1;
+    if(object instanceof MapFeature)
+      layer = INTERNAL_MAP_FEATURE_INDEX;
+    else if(object instanceof Unit)
+      layer = INTERNAL_MAP_UNIT_INDEX;
+    else {
+      System.err.println("WARNING: Unable to place object on map, unknown type");
+      return false;
+    }
+    //Check if there isn't already an object at the specified position
+    if(mapContent[position][layer] != null) {
+      System.err.println("WARNING: Unable to place object on map, space occupied");
+      return false;
+    }
+    //Place the object
+    object.setLocation(toLocation(position));
+    mapContent[position][layer] = object;
+    return true;
+  }
+  
+  /**
+   * Removes a {@link GameObject} from the map.
+   * 
+   * @param position
+   *          The position on the map to remove the object from.
+   * @param object
+   *          The object to remove.
+   * @return Whether or not the removal was successful.
+   */
+  protected boolean remove(int position, GameObject object) {
+    //Check which layer the object should be at
+    int layer = -1;
+    if(object instanceof MapFeature)
+      layer = INTERNAL_MAP_FEATURE_INDEX;
+    else if(object instanceof Unit)
+      layer = INTERNAL_MAP_UNIT_INDEX;
+    else {
+      System.err.println("WARNING: Unable to remove object from map, unknown type");
+      return false;
+    }
+    //Check if there is an object to remove
+    if(mapContent[position][layer] == null) {
+      System.err.println("WARNING: Unable to remove object from map, space is empty");
+      return false;
+    }
+    //Check if the object to remove is equal to the object currently at that position
+    if(!mapContent[position][layer].equals(object)) {
+      System.err.println("WARNING: Unable to remove object from map, no matching object found");
+      return false;
+    }
+    //Remove the object
+    mapContent[position][layer] = null;
+    return true;
+  }
+  
+  /**
+   * Ticks the map forward, this means that we should check the {@link GameObject}s on the map to
+   * see if any should be removed.
+   * 
+   * @param state
+   *          The current state of the game.
+   */
+  protected void tick(HunterKillerState state) {
+    for(int i = 0; i < mapWidth * mapHeight; i++) {
+      for(int j = 0; j < INTERNAL_MAP_LAYERS; j++) {
+        GameObject object = mapContent[i][j];
+        //Check if there is anything there
+        if(object != null && object.tick(state)) {
+          //Returning true indicates that the object should be removed
+          remove(i, object);
+        }
+      }
+    }
+  }
   
   /**
    * Set the content of this Map.

@@ -125,4 +125,16 @@ public abstract class GameObject {
   public boolean tick(HunterKillerState state) {
     return false;
   }
+  
+  /**
+   * Set this object's location
+   * 
+   * @param location
+   *          The new location for this object
+   */
+  public void setLocation(MapLocation location) {
+    //TODO add some precautions?
+    this.location = new MapLocation(location.getX(), location.getY());
+  }
+  
 }
