@@ -1,25 +1,73 @@
-/**
- * 
- */
 package main.java.net.codepoke.ai.challenge.hunterkiller;
 
-import net.codepoke.ai.GameRules.Action;
+import lombok.Getter;
+import main.java.net.codepoke.ai.challenge.hunterkiller.actions.NullMove;
 import net.codepoke.ai.GameRules.State;
 
 /**
+ * Class representing the state of the HunterKiller game. In this state one {@link Player} is the
+ * currently active player. Contains the {@link Map} on which the game is being played. There is
+ * also a round number that is being tracked.
+ * 
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
+@Getter
 public class HunterKillerState implements State {
+  
+  //region Properties
   
   /**
    * The round number this state is currently in.
    */
   private int currentRound;
   
-  public HunterKillerState(Map map, Player[] players, int currentRound) {
-    // TODO Auto-generated constructor stub
+  /**
+   * The ID of the player that is the active player in this state.
+   */
+  private int activePlayerID;
+  
+  /**
+   * The players in the game.
+   */
+  private Player[] players;
+  
+  /**
+   * The map that the game is being played on.
+   */
+  private Map map;
+  
+  //endregion
+  
+  //region Constructor
+  
+  /**
+   * Constructs a new state.
+   * 
+   * @param map
+   *          The {@link Map} that is being played on.
+   * @param players
+   *          The players in the game.
+   * @param currentRound
+   *          The current round of the game.
+   * @param currentPlayerID
+   *          The ID of the player that is currently active.
+   */
+  public HunterKillerState(Map map, Player[] players, int currentRound, int currentPlayerID) {
+    this.currentRound = currentRound;
+    this.activePlayerID = currentPlayerID;
+    //Get a deep copy of the map
+    this.map = map.copy();
+    //Make a deep copy of the players array
+    this.players = new Player[players.length];
+    for(int i = 0; i < players.length; i++) {
+      this.players[i] = players[i].copy();
+    }
   }
+  
+  //endregion
+  
+  //region Public methods
   
   /**
    * Returns the round number this state is currently in.
@@ -30,30 +78,60 @@ public class HunterKillerState implements State {
     return currentRound;
   }
   
+  /**
+   * Returns the number of players in the game.
+   * 
+   * @return
+   */
+  public int getNumberOfPlayers() {
+    return players.length;
+  }
+  
+  /**
+   * Determines whether or not this state represents a completed game.
+   * 
+   * @return
+   */
+  public boolean isDone() {
+    //TODO implement
+    return false;
+  }
+  
+  /**
+   * Ends the turn for the currently active player and alerts the map that a new player turn can
+   * commence.
+   */
+  public void endPlayerTurn() {
+    //TODO implement
+  }
+  
+  //endregion
+  
   //region Overridden methods
   
   @Override
   public long hashKey() {
-    // TODO Auto-generated method stub
+    // TODO Create a hash of:
+    //    - round #
+    //    - active player ID
+    //    - player IDs
+    //    - all object IDs on the map
     return 0;
   }
   
   @Override
   public State copy() {
-    // TODO Auto-generated method stub
-    return null;
+    return new HunterKillerState(map, players, currentRound, activePlayerID);
   }
   
   @Override
   public int getCurrentPlayer() {
-    // TODO Auto-generated method stub
-    return 0;
+    return activePlayerID;
   }
   
   @Override
-  public Action createNullMove() {
-    // TODO Auto-generated method stub
-    return null;
+  public HunterKillerAction createNullMove() {
+    return new NullMove(this);
   }
   
   //endregion

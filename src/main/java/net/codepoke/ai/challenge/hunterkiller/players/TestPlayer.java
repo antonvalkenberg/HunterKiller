@@ -36,4 +36,10 @@ public class TestPlayer extends Player {
     return null;
   }
   
+  @Override
+  public Player copy() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+  
 }

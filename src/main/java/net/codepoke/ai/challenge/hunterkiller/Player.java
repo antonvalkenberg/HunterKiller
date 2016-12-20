@@ -117,6 +117,13 @@ public abstract class Player {
    */
   public abstract List<Action> act(HunterKillerState state);
   
+  /**
+   * Returns a deep copy of this player.
+   * 
+   * @return
+   */
+  public abstract Player copy();
+  
   //endregion
   
 }

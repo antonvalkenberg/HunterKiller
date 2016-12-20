@@ -5,9 +5,13 @@ import java.util.List;
 import lombok.Getter;
 import main.java.net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
+import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
+import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Door;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Floor;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.MapFeature;
+import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Space;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Wall;
+import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
@@ -368,6 +372,24 @@ public class Map {
     return builder.toString();
   }
   
+  /**
+   * Creates a deep copy of this map.
+   * 
+   * @return
+   */
+  public Map copy() {
+    //Create a new map
+    Map newMap = new Map(this.mapWidth, this.mapHeight);
+    //Deep copy the map content
+    GameObject[][] content = copyMapContent();
+    //Set some things
+    newMap.setObjectIDCounter(this.internalObjectIDCounter);
+    newMap.setPlayerIDCounter(this.internalPlayerIDCounter);
+    newMap.setMapContent(content);
+    //Return the created map
+    return newMap;
+  }
+  
   //endregion
   
   //region Protected methods
@@ -380,6 +402,91 @@ public class Map {
    */
   protected void setMapContent(GameObject[][] content) {
     this.mapContent = content;
+  }
+  
+  /**
+   * Set the player ID counter to a specific number. Mainly used for copy method.
+   * 
+   * @param counter
+   *          The number the counter should be set to.
+   */
+  protected void setPlayerIDCounter(int counter) {
+    this.internalPlayerIDCounter = counter;
+  }
+  
+  /**
+   * Set the object ID counter to a specific number. Mainly used for copy method.
+   * 
+   * @param counter
+   *          The number the counter should be set to.
+   */
+  protected void setObjectIDCounter(int counter) {
+    this.internalObjectIDCounter = counter;
+  }
+  
+  /**
+   * Creates a deep copy of this map's content.
+   * 
+   * @return
+   */
+  protected GameObject[][] copyMapContent() {
+    int positions = this.mapWidth * this.mapHeight;
+    //Create a new content array
+    GameObject[][] newContent = new GameObject[positions][INTERNAL_MAP_LAYERS];
+    for(int i = 0; i < positions; i++) {
+      for(int j = 0; j < INTERNAL_MAP_LAYERS; j++) {
+        GameObject object = this.mapContent[i][j];
+        //Check if we are dealing with a MapFeature
+        if(object != null && object instanceof MapFeature) {
+          //Maintain the original ID here, because we also copy the counters in the map.
+          if(object instanceof Base) {
+            Base base = (Base)object;
+            newContent[i][j] = base.copy(base.getID());
+          }
+          else if(object instanceof Door) {
+            Door door = (Door)object;
+            newContent[i][j] = door.copy(door.getID());
+          }
+          else if(object instanceof Floor) {
+            Floor floor = (Floor)object;
+            newContent[i][j] = floor.copy(floor.getID());
+          }
+          else if(object instanceof Space) {
+            Space space = (Space)object;
+            newContent[i][j] = space.copy(space.getID());
+          }
+          else if(object instanceof Wall) {
+            Wall wall = (Wall)object;
+            newContent[i][j] = wall.copy(wall.getID());
+          }
+          else {
+            System.err.println("WARNING: Unknown MapFeature type found while copying content!");
+          }
+        }
+        else if(object != null && object instanceof Unit) {
+          //Or if we are dealing with a Unit
+          if(object instanceof Infected) {
+            //Maintain the original ID here, because we also copy the counters in the map.
+            Infected infected = (Infected)object;
+            newContent[i][j] = infected.copy(infected.getID());
+          }
+          else if(object instanceof Medic) {
+            Medic medic = (Medic)object;
+            newContent[i][j] = medic.copy(medic.getID());
+          }
+          else if(object instanceof Soldier) {
+            Soldier soldier = (Soldier)object;
+            newContent[i][j] = soldier.copy(soldier.getID());
+          }
+          else {
+            System.err.println("WARNING: Unknown Unit type found while copying content!");
+          }
+        }
+        //Otherwise just leave this null
+      }
+    }
+    //Return the created content
+    return newContent;
   }
   
   //endregion

@@ -28,6 +28,8 @@ import net.codepoke.ai.GameRules.Generator;
  */
 public class HunterKillerStateFactory implements Generator<HunterKillerState> {
   
+  //region Public methods
+  
   /**
    * Constructs a {@link Map} from a specific {@link PremadeMap}.
    * 
@@ -177,8 +179,11 @@ public class HunterKillerStateFactory implements Generator<HunterKillerState> {
     }
     
     //Create the initial state
-    return new HunterKillerState(map, players, 0);
+    //TODO create a turn order for players?
+    return new HunterKillerState(map, players, 0, 0);
   }
+  
+  //endregion
   
   //region Private methods
   
