@@ -1,9 +1,11 @@
 package main.java.net.codepoke.ai.challenge.hunterkiller.enums;
 
+import main.java.net.codepoke.ai.challenge.hunterkiller.HunterKillerOrder;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 
 /**
- * Enumeration of all types of {@link Action}s available to a {@link Unit}. These currently include:
+ * Enumeration of all types of {@link HunterKillerOrder}s available to a {@link Unit}. These
+ * currently include:
  * <ul>
  * <li>Movement
  * <ul>
@@ -30,7 +32,7 @@ import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
-public enum UnitActionType {
+public enum UnitOrderType {
   //If adding a type, don't forget to add it in the list above!
   MOVE_NORTH, MOVE_EAST, MOVE_SOUTH, MOVE_WEST, ROTATE_WEST, ROTATE_EAST, ATTACK, ATTACK_SPECIAL;
 }

@@ -1,0 +1,45 @@
+package main.java.net.codepoke.ai.challenge.hunterkiller.actions;
+
+import lombok.Getter;
+import main.java.net.codepoke.ai.challenge.hunterkiller.HunterKillerOrder;
+import main.java.net.codepoke.ai.challenge.hunterkiller.enums.BaseOrderType;
+import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
+import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
+
+/**
+ * Class representing a {@link HunterKillerOrder} performed by a {@link Base}. Currently, the base
+ * can only spawn {@link Unit}s.
+ * 
+ * @author Anton Valkenberg (anton.valkenberg@gmail.com)
+ *
+ */
+@Getter
+public class BaseOrder extends HunterKillerOrder {
+  
+  //region Properties
+  
+  /**
+   * The type of order.
+   */
+  private BaseOrderType orderType;
+  
+  //endregion
+  
+  //region Constructor
+  
+  /**
+   * Constructs a new instance.
+   * 
+   * @param base
+   *          The base this order is for.
+   * @param type
+   *          The type of order.
+   */
+  public BaseOrder(Base base, BaseOrderType type) {
+    super(base);
+    this.orderType = type;
+  }
+  
+  //endregion
+  
+}

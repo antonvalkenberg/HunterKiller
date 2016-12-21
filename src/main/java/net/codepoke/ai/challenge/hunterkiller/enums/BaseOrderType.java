@@ -1,8 +1,10 @@
 package main.java.net.codepoke.ai.challenge.hunterkiller.enums;
 
+import main.java.net.codepoke.ai.challenge.hunterkiller.HunterKillerOrder;
+
 /**
- * Enumeration of all types of {@link Action}s available to the {@link Base}. These currently
- * include:
+ * Enumeration of all types of {@link HunterKillerOrder}s available to the {@link Base}. These
+ * currently include:
  * <ul>
  * <li>Spawn a Soldier</li>
  * <li>Spawn a Medic</li>
@@ -12,7 +14,7 @@ package main.java.net.codepoke.ai.challenge.hunterkiller.enums;
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
-public enum BaseActionType {
+public enum BaseOrderType {
   //If adding a type, don't forget to add it in the list above!
   SPAWN_INFECTED, SPAWN_MEDIC, SPAWN_SOLDIER;
 }

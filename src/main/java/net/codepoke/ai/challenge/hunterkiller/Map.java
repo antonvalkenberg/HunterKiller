@@ -3,7 +3,7 @@ package main.java.net.codepoke.ai.challenge.hunterkiller;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
-import main.java.net.codepoke.ai.challenge.hunterkiller.actions.UnitAction;
+import main.java.net.codepoke.ai.challenge.hunterkiller.actions.UnitOrder;
 import main.java.net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
@@ -238,7 +238,7 @@ public class Map {
   }
   
   /**
-   * Returns whether or not a {@link UnitAction} that describes a move is possible from a specific
+   * Returns whether or not a {@link UnitOrder} that describes a move is possible from a specific
    * location.
    * 
    * @param fromLocation
@@ -247,9 +247,9 @@ public class Map {
    *          The action the unit is attempting to make.
    * @return
    */
-  public boolean isMovePossible(MapLocation fromLocation, UnitAction move) {
-    //Switch on the type of move described in the UnitAction
-    switch(move.getActionType()) {
+  public boolean isMovePossible(MapLocation fromLocation, UnitOrder move) {
+    //Switch on the type of move described in the UnitOrder
+    switch(move.getOrderType()) {
       case MOVE_NORTH:
         return isMovePossible(fromLocation, Direction.NORTH);
       case MOVE_EAST:

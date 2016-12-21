@@ -1,19 +1,23 @@
 package main.java.net.codepoke.ai.challenge.hunterkiller;
 
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
+import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 import net.codepoke.ai.GameRules.Action;
+import com.badlogic.gdx.utils.IntArray;
 
 /**
- * Abstract class representing an {@link Action} in the game. A {@link Player}'s turn consists of a
- * collection of actions that mutate the current game state. Note that for an action to be executed,
- * the player and round must match the current state's player and round. Otherwise, the action will
- * be marked as invalid and ignored.
+ * Class representing an {@link Action} in the game. A {@link Player}'s turn consists of a
+ * collection of orders that mutate the current game state. Note that for an order to be executed,
+ * the player and round must match the current state's player and round. Otherwise, the order will
+ * be ignored.
  * 
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
 @Getter
-public abstract class HunterKillerAction implements Action {
+public class HunterKillerAction implements Action {
   
   //region Properties
   
@@ -26,6 +30,11 @@ public abstract class HunterKillerAction implements Action {
    * The round number of the current state.
    */
   private int currentRound;
+  
+  /**
+   * Collection of orders in this action.
+   */
+  private List<HunterKillerOrder> orders;
   
   //endregion
   
@@ -40,6 +49,63 @@ public abstract class HunterKillerAction implements Action {
   public HunterKillerAction(HunterKillerState state) {
     this.actingPlayerID = state.getCurrentPlayer();
     this.currentRound = state.getCurrentRound();
+    orders = new ArrayList<HunterKillerOrder>();
+  }
+  
+  //endregion
+  
+  //region
+  
+  /**
+   * Add an order to this action's list of orders. An order will only be added if the current list
+   * does not yet contain an order for the object that the order is for.
+   * 
+   * @param order
+   *          The order to add.
+   * @return Whether or not the order was successfully added.
+   */
+  public boolean addOrder(HunterKillerOrder order) {
+    //Check if there isn't already an order for the object
+    IntArray objectIDs = new IntArray(getObjectIDs());
+    if(!objectIDs.contains(order.getObjectID())) {
+      orders.add(order);
+      return true;
+    }
+    return false;
+  }
+  
+  /**
+   * Tries to remove an order from this action's list of orders.
+   * 
+   * @param object
+   *          The object to remove an order for.
+   * @return Whether or not the order for the specified object was successfully removed.
+   */
+  public boolean removeOrderForObject(GameObject object) {
+    //Try to remove the order that is for the specified object
+    IntArray objectIDs = new IntArray(getObjectIDs());
+    if(objectIDs.contains(object.getID())) {
+      for(HunterKillerOrder order : orders) {
+        if(order.getObjectID() == object.getID()) {
+          return orders.remove(order);
+        }
+      }
+      return false;
+    }
+    return false;
+  }
+  
+  /**
+   * Returns the IDs of the objects that have orders in this action.
+   * 
+   * @return Array containing the object's IDs.
+   */
+  public int[] getObjectIDs() {
+    int[] ids = new int[orders.size()];
+    for(int i = 0; i < orders.size(); i++) {
+      ids[i] = orders.get(i).getObjectID();
+    }
+    return ids;
   }
   
   //endregion
