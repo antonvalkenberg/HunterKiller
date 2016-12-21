@@ -61,13 +61,15 @@ public class Medic extends Unit {
    * 
    * @param id
    *          The Medic's unique identifier.
+   * @param spawningPlayerID
+   *          The ID of the Player that spawned this Medic.
    * @param mapLocation
    *          The Medic's location on the map.
    * @param facing
    *          The Direction the Medic is facing.
    */
-  public Medic(int id, MapLocation mapLocation, Direction facing) {
-    this(id, mapLocation, MEDIC_MAX_HP, MEDIC_MAX_HP, facing, MEDIC_FOV_RANGE, MEDIC_FOV_ANGLE, MEDIC_ATTACK_RANGE, MEDIC_ATTACK_DAMAGE, MEDIC_COOLDOWN, MEDIC_SPAWN_COST, MEDIC_SCORE);
+  public Medic(int id, int spawningPlayerID, MapLocation mapLocation, Direction facing) {
+    this(id, spawningPlayerID, mapLocation, MEDIC_MAX_HP, MEDIC_MAX_HP, facing, MEDIC_FOV_RANGE, MEDIC_FOV_ANGLE, MEDIC_ATTACK_RANGE, MEDIC_ATTACK_DAMAGE, MEDIC_COOLDOWN, MEDIC_SPAWN_COST, MEDIC_SCORE);
   }
   
   /**
@@ -75,6 +77,8 @@ public class Medic extends Unit {
    * 
    * @param id
    *          The Medic's unique identifier.
+   * @param spawningPlayerID
+   *          The ID of the Player that spawned this Medic.
    * @param mapLocation
    *          The Medic's location on the map.
    * @param maxHP
@@ -98,15 +102,15 @@ public class Medic extends Unit {
    * @param score
    *          The score the Medic is worth when defeated
    */
-  public Medic(int id, MapLocation mapLocation, int maxHP, int currentHP, Direction facing, int fovRange, int fovAngle, int attckRange, int attckDmg, int cooldown, int cost, int score) {
-    super(id, mapLocation, maxHP, currentHP, facing, fovRange, fovAngle, attckRange, attckDmg, cooldown, cost, score);
+  public Medic(int id, int spawningPlayerID, MapLocation mapLocation, int maxHP, int currentHP, Direction facing, int fovRange, int fovAngle, int attckRange, int attckDmg, int cooldown, int cost, int score) {
+    super(id, spawningPlayerID, mapLocation, maxHP, currentHP, facing, fovRange, fovAngle, attckRange, attckDmg, cooldown, cost, score);
   }
   
   //endregion
   
   @Override
   public Medic copy(int id) {
-    return new Medic(id, this.getLocation(), this.getHpMax(), this.getHpCurrent(), this.getOrientation(), this.getFieldOfViewRange(), this.getFieldOfViewAngle(), this.getAttackRange(), this.getAttackDamage(), this.getSpecialAttackCooldown(), this.getSpawnCost(), this.getScoreWorth());
+    return new Medic(id, this.getSquadPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(), this.getOrientation(), this.getFieldOfViewRange(), this.getFieldOfViewAngle(), this.getAttackRange(), this.getAttackDamage(), this.getSpecialAttackCooldown(), this.getSpawnCost(), this.getScoreWorth());
   }
   
   public String toString() {

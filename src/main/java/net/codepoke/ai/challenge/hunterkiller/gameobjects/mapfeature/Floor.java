@@ -56,4 +56,5 @@ public class Floor extends MapFeature {
   public String toString() {
     return TileType.FLOOR.txt;
   }
+  
 }

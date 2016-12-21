@@ -52,4 +52,5 @@ public class Space extends MapFeature {
   public String toString() {
     return TileType.SPACE.txt;
   }
+  
 }

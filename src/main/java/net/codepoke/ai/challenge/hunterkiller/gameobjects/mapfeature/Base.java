@@ -118,4 +118,5 @@ public class Base extends MapFeature {
   public String toString() {
     return TileType.BASE.txt;
   }
+  
 }

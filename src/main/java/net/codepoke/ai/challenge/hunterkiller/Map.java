@@ -568,6 +568,7 @@ public class Map {
    *          The current state of the game.
    */
   protected void tick(HunterKillerState state) {
+    //Check the map content for 'dead' objects
     for(int i = 0; i < mapWidth * mapHeight; i++) {
       for(int j = 0; j < INTERNAL_MAP_LAYERS; j++) {
         GameObject object = mapContent[i][j];
@@ -575,6 +576,11 @@ public class Map {
         if(object != null && object.tick(state)) {
           //Returning true indicates that the object should be removed
           remove(i, object);
+          //If the object is a Unit, tell it's Player to remove it from it's squad
+          if(object instanceof Unit) {
+            Unit unit = (Unit)object;
+            state.getPlayer(unit.getSquadPlayerID()).removeUnitFromSquad(unit);
+          }
         }
       }
     }

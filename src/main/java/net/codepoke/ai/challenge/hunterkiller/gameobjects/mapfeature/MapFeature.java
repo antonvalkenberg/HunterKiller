@@ -3,6 +3,7 @@ package main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import main.java.net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import main.java.net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 
@@ -125,4 +126,12 @@ public abstract class MapFeature extends GameObject {
   
   //endregion
   
+  //region Overridden methods
+  
+  @Override
+  public boolean tick(HunterKillerState state) {
+    return this.isDestructible() && this.getHpCurrent() <= 0;
+  }
+  
+  //endregion
 }

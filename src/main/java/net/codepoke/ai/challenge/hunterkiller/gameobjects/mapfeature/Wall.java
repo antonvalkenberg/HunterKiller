@@ -56,4 +56,5 @@ public class Wall extends MapFeature {
   public String toString() {
     return TileType.WALL.txt;
   }
+  
 }

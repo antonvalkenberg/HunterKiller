@@ -17,6 +17,19 @@ import net.codepoke.ai.GameRules.State;
 @EqualsAndHashCode
 public class HunterKillerState implements State {
   
+  //region Constants
+  
+  /**
+   * The frequency (in rounds) with which resources are awarded to players.
+   */
+  private static final int RESOURCE_AWARD_FREQUENCY = 3;
+  /**
+   * The amount of resources awarded to a player.
+   */
+  private static final int RESOURCE_AWARD_AMOUNT = 12;
+  
+  //endregion
+  
   //region Properties
   
   /**
@@ -90,6 +103,21 @@ public class HunterKillerState implements State {
   }
   
   /**
+   * Returns the player with a specific ID. If no such player is found, null is returned.
+   * 
+   * @param playerID
+   *          The ID of the player to return.
+   * @return
+   */
+  public Player getPlayer(int playerID) {
+    for(int i = 0; i < players.length; i++) {
+      if(players[i].getID() == playerID)
+        return players[i];
+    }
+    return null;
+  }
+  
+  /**
    * Determines whether or not this state represents a completed game.
    * 
    * @return
@@ -108,10 +136,18 @@ public class HunterKillerState implements State {
     activePlayerID = ++activePlayerID % players.length;
     //Check if we've reached a new round
     if(activePlayerID == 0) {
+      //Reduce open-timers for Doors and special-attack cooldowns for Units.
+      //TODO ^this
       currentRound++;
     }
     //Do a tick after each player's turn, to check for killed units/features
     map.tick(this);
+    //If the next round-threshold has been reached, award players with new resources
+    if(currentRound % RESOURCE_AWARD_FREQUENCY == 0) {
+      for(Player player : players) {
+        player.resource += RESOURCE_AWARD_AMOUNT;
+      }
+    }
   }
   
   //endregion

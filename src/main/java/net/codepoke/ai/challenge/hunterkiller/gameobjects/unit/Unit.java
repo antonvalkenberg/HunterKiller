@@ -3,6 +3,7 @@ package main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import main.java.net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import main.java.net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import main.java.net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
@@ -62,6 +63,11 @@ public abstract class Unit extends GameObject {
   //region Properties
   
   /**
+   * The ID of the player that has this Unit in it's squad.
+   */
+  private int squadPlayerID;
+  
+  /**
    * The Direction the Unit is facing.
    */
   private Direction orientation = DEFAULT_ORIENTATION;
@@ -110,6 +116,8 @@ public abstract class Unit extends GameObject {
    * 
    * @param id
    *          The Unit's unique identifier.
+   * @param spawningPlayerID
+   *          The ID of the Player that spawned this Unit.
    * @param mapLocation
    *          The Unit's location on the Map.
    * @param facing
@@ -129,8 +137,8 @@ public abstract class Unit extends GameObject {
    * @param score
    *          The score the Unit is worth.
    */
-  public Unit(int id, MapLocation mapLocation, Direction facing, int fovRange, int fovAngle, int attckRange, int attckDmg, int cooldown, int cost, int score) {
-    this(id, mapLocation, DEFAULT_UNIT_HP, facing, fovRange, fovAngle, attckRange, attckDmg, cooldown, cost, score);
+  public Unit(int id, int spawningPlayerID, MapLocation mapLocation, Direction facing, int fovRange, int fovAngle, int attckRange, int attckDmg, int cooldown, int cost, int score) {
+    this(id, spawningPlayerID, mapLocation, DEFAULT_UNIT_HP, facing, fovRange, fovAngle, attckRange, attckDmg, cooldown, cost, score);
   }
   
   /**
@@ -138,6 +146,8 @@ public abstract class Unit extends GameObject {
    * 
    * @param id
    *          The Unit's unique identifier.
+   * @param spawningPlayerID
+   *          The ID of the Player that spawned this Unit.
    * @param mapLocation
    *          The Unit's location on the Map.
    * @param maxHP
@@ -159,8 +169,8 @@ public abstract class Unit extends GameObject {
    * @param score
    *          The score the Unit is worth.
    */
-  public Unit(int id, MapLocation mapLocation, int maxHP, Direction facing, int fovRange, int fovAngle, int attckRange, int attckDmg, int cooldown, int cost, int score) {
-    this(id, mapLocation, maxHP, maxHP, facing, fovRange, fovAngle, attckRange, attckDmg, cooldown, cost, score);
+  public Unit(int id, int spawningPlayerID, MapLocation mapLocation, int maxHP, Direction facing, int fovRange, int fovAngle, int attckRange, int attckDmg, int cooldown, int cost, int score) {
+    this(id, spawningPlayerID, mapLocation, maxHP, maxHP, facing, fovRange, fovAngle, attckRange, attckDmg, cooldown, cost, score);
   }
   
   /**
@@ -168,6 +178,8 @@ public abstract class Unit extends GameObject {
    * 
    * @param id
    *          The Unit's unique identifier.
+   * @param spawningPlayerID
+   *          The ID of the Player that spawned this Unit.
    * @param mapLocation
    *          The Unit's location on the Map.
    * @param maxHP
@@ -191,8 +203,9 @@ public abstract class Unit extends GameObject {
    * @param score
    *          The score the Unit is worth.
    */
-  public Unit(int id, MapLocation mapLocation, int maxHP, int currentHP, Direction facing, int fovRange, int fovAngle, int attckRange, int attckDmg, int cooldown, int cost, int score) {
+  public Unit(int id, int spawningPlayerID, MapLocation mapLocation, int maxHP, int currentHP, Direction facing, int fovRange, int fovAngle, int attckRange, int attckDmg, int cooldown, int cost, int score) {
     super(id, mapLocation, maxHP, currentHP);
+    squadPlayerID = spawningPlayerID;
     orientation = facing;
     fieldOfViewRange = fovRange;
     fieldOfViewAngle = fovAngle;
@@ -205,4 +218,12 @@ public abstract class Unit extends GameObject {
   
   //endregion
   
+  //region Overridden methods
+  
+  @Override
+  public boolean tick(HunterKillerState state) {
+    return this.getHpCurrent() <= 0;
+  }
+  
+  //endregion
 }

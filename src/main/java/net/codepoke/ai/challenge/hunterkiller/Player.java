@@ -6,6 +6,7 @@ import lombok.Getter;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 import net.codepoke.ai.GameRules.Action;
+import net.codepoke.ai.GameRules.Result.Ranking;
 
 /**
  * Abstract class representing a player in the game. A player has a {@link Base} from which they can
@@ -17,7 +18,7 @@ import net.codepoke.ai.GameRules.Action;
  *
  */
 @Getter
-public abstract class Player {
+public abstract class Player implements Comparable<Player> {
   
   //region Constants
   
@@ -86,6 +87,24 @@ public abstract class Player {
   
   //region Public methods
   
+  /**
+   * Compares two players according to their scores. Zero means the two players have equal score. A
+   * negative number means this player has a higher score. A positive number means the other player
+   * has a higher score. This seems nonintuitive, but when we make our {@link Ranking}, we want the
+   * player with the highest score as the first in the collection (the lowest index).
+   */
+  public int compareTo(Player other) {
+    if(this.score > other.score) {
+      return -1;
+    }
+    else if(this.score == other.score) {
+      return 0;
+    }
+    else {
+      return 1;
+    }
+  }
+  
   public String toString() {
     return String.format("%s (ID: %d)", this.name, this.ID);
   }
@@ -102,6 +121,26 @@ public abstract class Player {
    */
   protected void awardScore(int value) {
     score += value;
+  }
+  
+  /**
+   * Adds a Unit to this Player's squad.
+   * 
+   * @param unit
+   *          The unit to add.
+   */
+  protected void addUnitToSquad(Unit unit) {
+    squad.add(unit);
+  }
+  
+  /**
+   * Removes a Unit from this Player's squad.
+   * 
+   * @param unit
+   *          The unit to remove.
+   */
+  protected void removeUnitFromSquad(Unit unit) {
+    squad.remove(unit);
   }
   
   //endregion

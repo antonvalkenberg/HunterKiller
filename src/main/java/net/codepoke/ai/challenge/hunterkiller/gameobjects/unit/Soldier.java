@@ -61,13 +61,15 @@ public class Soldier extends Unit {
    * 
    * @param id
    *          The Soldier's unique identifier.
+   * @param spawningPlayerID
+   *          The ID of the Player that spawned this Soldier.
    * @param mapLocation
    *          The Soldier's location on the map.
    * @param facing
    *          The Direction the Soldier is facing.
    */
-  public Soldier(int id, MapLocation mapLocation, Direction facing) {
-    this(id, mapLocation, SOLDIER_MAX_HP, SOLDIER_MAX_HP, facing, SOLDIER_FOV_RANGE, SOLDIER_FOV_ANGLE, SOLDIER_ATTACK_RANGE, SOLDIER_ATTACK_DAMAGE, SOLDIER_COOLDOWN, SOLDIER_SPAWN_COST, SOLDIER_SCORE);
+  public Soldier(int id, int spawningPlayerID, MapLocation mapLocation, Direction facing) {
+    this(id, spawningPlayerID, mapLocation, SOLDIER_MAX_HP, SOLDIER_MAX_HP, facing, SOLDIER_FOV_RANGE, SOLDIER_FOV_ANGLE, SOLDIER_ATTACK_RANGE, SOLDIER_ATTACK_DAMAGE, SOLDIER_COOLDOWN, SOLDIER_SPAWN_COST, SOLDIER_SCORE);
   }
   
   /**
@@ -75,6 +77,8 @@ public class Soldier extends Unit {
    * 
    * @param id
    *          The Soldier's unique identifier.
+   * @param spawningPlayerID
+   *          The ID of the Player that spawned this Soldier.
    * @param mapLocation
    *          The Soldier's location on the map.
    * @param maxHP
@@ -98,15 +102,15 @@ public class Soldier extends Unit {
    * @param score
    *          The score the Soldier is worth when defeated
    */
-  public Soldier(int id, MapLocation mapLocation, int maxHP, int currentHP, Direction facing, int fovRange, int fovAngle, int attckRange, int attckDmg, int cooldown, int cost, int score) {
-    super(id, mapLocation, maxHP, currentHP, facing, fovRange, fovAngle, attckRange, attckDmg, cooldown, cost, score);
+  public Soldier(int id, int spawningPlayerID, MapLocation mapLocation, int maxHP, int currentHP, Direction facing, int fovRange, int fovAngle, int attckRange, int attckDmg, int cooldown, int cost, int score) {
+    super(id, spawningPlayerID, mapLocation, maxHP, currentHP, facing, fovRange, fovAngle, attckRange, attckDmg, cooldown, cost, score);
   }
   
   //endregion
   
   @Override
   public Soldier copy(int id) {
-    return new Soldier(id, this.getLocation(), this.getHpMax(), this.getHpCurrent(), this.getOrientation(), this.getFieldOfViewRange(), this.getFieldOfViewAngle(), this.getAttackRange(), this.getAttackDamage(), this.getSpecialAttackCooldown(), this.getSpawnCost(), this.getScoreWorth());
+    return new Soldier(id, this.getSquadPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(), this.getOrientation(), this.getFieldOfViewRange(), this.getFieldOfViewAngle(), this.getAttackRange(), this.getAttackDamage(), this.getSpecialAttackCooldown(), this.getSpawnCost(), this.getScoreWorth());
   }
   
   public String toString() {

@@ -117,4 +117,5 @@ public class Door extends MapFeature {
   public String toString() {
     return isOpen() ? TileType.DOOR_OPEN.txt : TileType.DOOR_CLOSED.txt;
   }
+  
 }

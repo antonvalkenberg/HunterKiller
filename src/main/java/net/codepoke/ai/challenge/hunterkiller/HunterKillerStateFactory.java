@@ -12,10 +12,6 @@ import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.D
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Floor;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Space;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Wall;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 import main.java.net.codepoke.ai.challenge.hunterkiller.players.TestPlayer;
 import net.codepoke.ai.GameRules.Generator;
 
@@ -117,16 +113,13 @@ public class HunterKillerStateFactory implements Generator<HunterKillerState> {
                     mapData[position][Map.INTERNAL_MAP_FEATURE_INDEX] = new Door(newMap.requestNewGameObjectID(), location, Door.DOOR_OPEN_TICKS);
                     break;
                   case SOLDIER:
-                    mapData[position][Map.INTERNAL_MAP_UNIT_INDEX] = new Soldier(newMap.requestNewGameObjectID(), location, Unit.DEFAULT_ORIENTATION);
-                    break;
+                    //mapData[position][Map.INTERNAL_MAP_UNIT_INDEX] = new Soldier(newMap.requestNewGameObjectID(), location, Unit.DEFAULT_ORIENTATION);
                   case MEDIC:
-                    mapData[position][Map.INTERNAL_MAP_UNIT_INDEX] = new Medic(newMap.requestNewGameObjectID(), location, Unit.DEFAULT_ORIENTATION);
-                    break;
+                    //mapData[position][Map.INTERNAL_MAP_UNIT_INDEX] = new Medic(newMap.requestNewGameObjectID(), location, Unit.DEFAULT_ORIENTATION);
                   case INFECTED:
-                    mapData[position][Map.INTERNAL_MAP_UNIT_INDEX] = new Infected(newMap.requestNewGameObjectID(), location, Unit.DEFAULT_ORIENTATION);
-                    break;
+                    //mapData[position][Map.INTERNAL_MAP_UNIT_INDEX] = new Infected(newMap.requestNewGameObjectID(), location, Unit.DEFAULT_ORIENTATION);
                   default:
-                    System.err.println("UNHANDLED TILE TYPE!");
+                    System.err.println("WARNING: UNHANDLED TILE TYPE!");
                 }
               }
             }
@@ -183,7 +176,7 @@ public class HunterKillerStateFactory implements Generator<HunterKillerState> {
     
     //Create the initial state
     //TODO create a turn order for players?
-    return new HunterKillerState(map, players, 0, 0);
+    return new HunterKillerState(map, players, 1, 0);
   }
   
   //endregion
