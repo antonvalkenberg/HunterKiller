@@ -1,10 +1,19 @@
 package test.java;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import main.java.net.codepoke.ai.challenge.hunterkiller.FourPatch;
 import main.java.net.codepoke.ai.challenge.hunterkiller.HunterKillerStateFactory;
 import main.java.net.codepoke.ai.challenge.hunterkiller.Map;
 import main.java.net.codepoke.ai.challenge.hunterkiller.MapLocation;
-import main.java.net.codepoke.ai.challenge.hunterkiller.enums.PremadeMap;
+import main.java.net.codepoke.ai.challenge.hunterkiller.enums.Direction;
+import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
+import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
+import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Door;
+import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Floor;
+import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Space;
+import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Wall;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -105,11 +114,59 @@ public class MapTest {
   }
   
   @Test
-  public void testCreation() {
+  public void testMapFeatureCreation() {
+    //Create a FourPatch to test
+    FourPatch testPatch = new FourPatch("._[\nD_O\n", 3, 2);
+    int basePosition = 4;
+    Direction spawnDirection = Direction.NORTH;
     //Test the creation from a pre made map
-    Map createdMap = HunterKillerStateFactory.constructMap(PremadeMap.TEST);
-    String x = createdMap.toString();
-    //TODO: test
+    Map createdMap = HunterKillerStateFactory.constructFromFourPatch(testPatch, basePosition, spawnDirection);
+    //Go through the MapFeatures
+    GameObject[][] content = createdMap.getMapContent();
+    int index = Map.INTERNAL_MAP_FEATURE_INDEX;
+    //Should be 24 positions on the map
+    assertEquals(24, content.length);
+    //Go through all positions and check if the correct object was created
+    assertTrue(content[0][index] instanceof Space);
+    assertTrue(content[1][index] instanceof Floor); //This is also the spawn point for top-left base
+    assertTrue(content[2][index] instanceof Wall);
+    assertTrue(content[3][index] instanceof Wall);
+    assertTrue(content[4][index] instanceof Floor);
+    assertTrue(content[5][index] instanceof Space);
+    assertTrue(content[6][index] instanceof Door); //This door should be closed
+    assertTrue(content[7][index] instanceof Base); //Top-left base
+    assertTrue(content[8][index] instanceof Door); //This door should be open
+    assertTrue(content[9][index] instanceof Door); //This door should be open
+    assertTrue(content[10][index] instanceof Floor);
+    assertTrue(content[11][index] instanceof Door); //This door should be closed
+    assertTrue(content[12][index] instanceof Door); //This door should be closed
+    assertTrue(content[13][index] instanceof Floor);
+    assertTrue(content[14][index] instanceof Door); //This door should be open
+    assertTrue(content[15][index] instanceof Door); //This door should be open
+    assertTrue(content[16][index] instanceof Base); //Bottom-right base
+    assertTrue(content[17][index] instanceof Door); //This door should be closed
+    assertTrue(content[18][index] instanceof Space);
+    assertTrue(content[19][index] instanceof Floor);
+    assertTrue(content[20][index] instanceof Wall);
+    assertTrue(content[21][index] instanceof Wall);
+    assertTrue(content[22][index] instanceof Floor); //This is also the spawn point for bottom-right base
+    assertTrue(content[23][index] instanceof Space);
+    //Check if the doors are created correctly (open/closed)
+    //Closed door positions: 6, 11, 12, 17
+    assertFalse(((Door)content[6][index]).isOpen());
+    assertFalse(((Door)content[11][index]).isOpen());
+    assertFalse(((Door)content[12][index]).isOpen());
+    assertFalse(((Door)content[17][index]).isOpen());
+    //Open door positions: 8, 9, 14, 15
+    assertTrue(((Door)content[8][index]).isOpen());
+    assertTrue(((Door)content[9][index]).isOpen());
+    assertTrue(((Door)content[14][index]).isOpen());
+    assertTrue(((Door)content[15][index]).isOpen());
+    //Check if the bases have their spawn locations set correctly
+    int topLeftSpawnPosition = Map.toPosition(((Base)content[7][index]).getSpawnLocation(), createdMap.getMapWidth());
+    assertEquals(1, topLeftSpawnPosition);
+    int bottomRightSpawnPosition = Map.toPosition(((Base)content[16][index]).getSpawnLocation(), createdMap.getMapWidth());
+    assertEquals(22, bottomRightSpawnPosition);
   }
   
   //endregion

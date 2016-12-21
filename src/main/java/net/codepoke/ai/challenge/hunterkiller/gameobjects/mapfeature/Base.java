@@ -1,5 +1,6 @@
 package main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature;
 
+import lombok.Getter;
 import main.java.net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import main.java.net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
@@ -11,6 +12,7 @@ import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
+@Getter
 public class Base extends MapFeature {
   
   //region Constants

@@ -294,6 +294,7 @@ public class Map {
    */
   public boolean move(MapLocation targetLocation, GameObject object) {
     boolean success = false;
+    int targetPosition = toPosition(targetLocation);
     //Check if the targetLocation is traversable
     if(!isTraversable(targetLocation))
       return false;
@@ -304,7 +305,13 @@ public class Map {
     success = remove(toPosition(object.getLocation()), object);
     //Only continue with placement if removal was successful
     if(success)
-      success = place(toPosition(targetLocation), object);
+      success = place(targetPosition, object);
+    //If the move was successful and the target location was a closed Door, open it
+    if(success && mapContent[targetPosition][INTERNAL_MAP_FEATURE_INDEX] instanceof Door) {
+      Door door = (Door)mapContent[targetPosition][INTERNAL_MAP_FEATURE_INDEX];
+      if(!door.isOpen())
+        door.open();
+    }
     return success;
   }
   
