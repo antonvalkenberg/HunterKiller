@@ -92,6 +92,9 @@ public class HunterKillerStateFactory implements Generator<HunterKillerState> {
         positions = new int[] { topleftPosition, toprightPosition, bottomleftPosition, bottomrightPosition };
         //Add tiles to the previously determined positions
         for(int position : positions) {
+          //Skip any positions that are one of the two base-positions
+          if(position == mapBasePosition || position == mapBasePositionMirrored)
+            continue;
           if(tiles != null) {
             for(TileType tile : tiles) {
               if(tile != null) {
