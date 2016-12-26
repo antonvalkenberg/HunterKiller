@@ -133,8 +133,28 @@ public abstract class GameObject {
    *          The new location for this object
    */
   public void setLocation(MapLocation location) {
-    //TODO add some precautions?
+    //TODO Add some precautions to restrict setting of location?
     this.location = new MapLocation(location.getX(), location.getY());
+  }
+  
+  /**
+   * Reduce this object's health points.
+   * 
+   * @param amount
+   *          The amount to reduce by.
+   */
+  public void reduceHP(int amount) {
+    this.hpCurrent -= amount;
+  }
+  
+  /**
+   * Increase this object's health points.
+   * 
+   * @param amount
+   *          The amount to increase by.
+   */
+  public void increaseHP(int amount) {
+    this.hpCurrent += amount;
   }
   
 }

@@ -162,7 +162,7 @@ public class HunterKillerStateFactory implements Generator<HunterKillerState> {
     
     //Check if there is a Base for each player
     if(bases.size() != playerNames.length) {
-      //TODO throw an error?
+      //TODO Throw an error?
     }
     
     //Load the players
@@ -170,12 +170,12 @@ public class HunterKillerStateFactory implements Generator<HunterKillerState> {
     for(int i = 0; i < players.length; i++) {
       //Assign the player a random base
       Base base = bases.remove(r.nextInt(bases.size()));
-      //TODO custom class loader?
+      //TODO Create a custom class loader to load Players from different classes?
       players[i] = new TestPlayer(map.requestNewPlayerID(), playerNames[i], base);
     }
     
     //Create the initial state
-    //TODO create a turn order for players?
+    //TODO Create a turn order for players?
     return new HunterKillerState(map, players, 1, 0);
   }
   

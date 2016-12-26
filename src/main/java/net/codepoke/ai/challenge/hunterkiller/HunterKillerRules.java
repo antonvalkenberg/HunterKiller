@@ -5,6 +5,7 @@ import main.java.net.codepoke.ai.challenge.hunterkiller.actions.UnitOrder;
 import main.java.net.codepoke.ai.challenge.hunterkiller.enums.BaseOrderType;
 import main.java.net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
+import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.MapFeature;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
@@ -97,16 +98,20 @@ public class HunterKillerRules implements GameRules<HunterKillerState, HunterKil
               failCount++;
             break;
           case MOVE_NORTH:
-            break;
           case MOVE_EAST:
-            break;
           case MOVE_SOUTH:
-            break;
           case MOVE_WEST:
+            //Try to move the unit
+            if(!moveUnit(map, unitOrder))
+              failCount++;
             break;
           case ATTACK:
+            //Try to execute the ordered attack
+            if(!attackLocation(map, unitOrder))
+              failCount++;
             break;
           case ATTACK_SPECIAL:
+            //TODO Implement special attacks
             break;
           default:
             System.err.println("WARNING: Unsupported UnitOrderType.");
@@ -137,7 +142,7 @@ public class HunterKillerRules implements GameRules<HunterKillerState, HunterKil
   private boolean spawnUnit(Map map, Player player, BaseOrderType spawnType) {
     boolean spawnSuccess = false;
     MapLocation spawnlocation = player.getBase().getSpawnLocation();
-    //TODO get proper direction in this call
+    //TODO Get the proper direction in this call
     Direction spawnDirection = Direction.NORTH;
     //Get the correct costs
     int spawnCosts = -1;
@@ -234,6 +239,59 @@ public class HunterKillerRules implements GameRules<HunterKillerState, HunterKil
     }
     //Return
     return rotationalSuccess;
+  }
+  
+  /**
+   * Move a Unit.
+   * 
+   * @param map
+   *          The map to move the unit on.
+   * @param moveOrder
+   *          The order.
+   * @return Whether or not the unit was successfully moved.
+   */
+  private boolean moveUnit(Map map, UnitOrder moveOrder) {
+    boolean movementSuccess = false;
+    //Check if there is a object on the map with the specified ID.
+    GameObject object = map.getObject(moveOrder.getObjectID());
+    //Check if an object was found, and that object is a Unit.
+    if(object == null)
+      return false;
+    if(!(object instanceof Unit))
+      return false;
+    //Check if the ordered move is possible
+    if(!map.isMovePossible(map.getObjectLocation(moveOrder.getObjectID()), moveOrder))
+      return false;
+    //Execute the move
+    movementSuccess = map.move(moveOrder.getTargetLocation(), object);
+    //Return
+    return movementSuccess;
+  }
+  
+  /**
+   * Attack a location. Any {@link Unit} or {@link MapFeature} at the location will be damaged.
+   * 
+   * @param map
+   *          The map the attack is being performed on.
+   * @param attackOrder
+   *          The order.
+   * @return Whether or not the attack was successfully executed.
+   */
+  private boolean attackLocation(Map map, UnitOrder attackOrder) {
+    boolean attackSuccess = false;
+    //Check if there is a object on the map with the specified ID.
+    GameObject object = map.getObject(attackOrder.getObjectID());
+    //Check if an object was found, and that object is a Unit.
+    if(object == null)
+      return false;
+    if(!(object instanceof Unit))
+      return false;
+    //Check if the target location is in the Unit's field of view.
+    //TODO Check if the target location is in the Unit's field of view
+    //Tell the map that the target location is being attacked for X damage
+    attackSuccess = map.attackLocation(attackOrder.getTargetLocation(), ((Unit)object).getAttackDamage());
+    //Return
+    return attackSuccess;
   }
   
 }

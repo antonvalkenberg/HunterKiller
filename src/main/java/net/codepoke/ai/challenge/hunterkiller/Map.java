@@ -248,6 +248,12 @@ public class Map {
    * @return
    */
   public boolean isMovePossible(MapLocation fromLocation, UnitOrder move) {
+    //Check that there is a unit on the origin location
+    if(mapContent[toPosition(fromLocation)][INTERNAL_MAP_UNIT_INDEX] == null)
+      return false;
+    //Check that the unit that is trying to move is actually at the location they are trying to move from
+    if(move.getObjectID() != ((Unit)mapContent[toPosition(fromLocation)][INTERNAL_MAP_UNIT_INDEX]).getID())
+      return false;
     //Switch on the type of move described in the UnitOrder
     switch(move.getOrderType()) {
       case MOVE_NORTH:
@@ -421,6 +427,26 @@ public class Map {
       for(int j = 0; j < INTERNAL_MAP_LAYERS; j++) {
         if(mapContent[i][j] != null && mapContent[i][j].getID() == objectID) {
           return mapContent[i][j];
+        }
+      }
+    }
+    return null;
+  }
+  
+  /**
+   * Returns the location of the object with the specified ID. If no such object can be found, null
+   * is returned.
+   * 
+   * @param objectID
+   *          The unique identifier of the object.
+   * @return The {@link MapLocation} of the object, or null if no object was found.
+   */
+  public MapLocation getObjectLocation(int objectID) {
+    //Check the map content
+    for(int i = 0; i < mapWidth * mapHeight; i++) {
+      for(int j = 0; j < INTERNAL_MAP_LAYERS; j++) {
+        if(mapContent[i][j] != null && mapContent[i][j].getID() == objectID) {
+          return toLocation(i);
         }
       }
     }
@@ -698,6 +724,31 @@ public class Map {
     }
     //Return the created content
     return newContent;
+  }
+  
+  /**
+   * Attack a location on the map.
+   * 
+   * @param location
+   *          The {@link MapLocation} to attack.
+   * @param damage
+   *          The damage to inflict.
+   * @return Whether or not the attack was successful.
+   */
+  protected boolean attackLocation(MapLocation location, int damage) {
+    //Check if the location is on the map
+    if(!(isXonMap(location.getX()) && isYonMap(location.getY())))
+      return false;
+    int position = toPosition(location);
+    //Get the map feature on this position
+    MapFeature feature = (MapFeature)mapContent[position][INTERNAL_MAP_FEATURE_INDEX];
+    //If the feature is destructible, reduce it's HP by the damage
+    if(feature.isDestructible())
+      feature.reduceHP(damage);
+    //Check if there is a Unit on this position
+    if(mapContent[position][INTERNAL_MAP_UNIT_INDEX] != null)
+      mapContent[position][INTERNAL_MAP_UNIT_INDEX].reduceHP(damage);
+    return true;
   }
   
   //endregion
