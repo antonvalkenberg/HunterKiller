@@ -133,7 +133,7 @@ public abstract class GameObject {
    *          The new location for this object
    */
   public void setLocation(MapLocation location) {
-    //TODO Add some precautions to restrict setting of location?
+    //TODO ?Add some precautions to restrict setting of location?
     this.location = new MapLocation(location.getX(), location.getY());
   }
   
@@ -154,7 +154,12 @@ public abstract class GameObject {
    *          The amount to increase by.
    */
   public void increaseHP(int amount) {
-    this.hpCurrent += amount;
+    if(this.hpCurrent + amount > this.hpMax) {
+      this.hpCurrent = hpMax;
+    }
+    else {
+      this.hpCurrent += amount;
+    }
   }
   
 }

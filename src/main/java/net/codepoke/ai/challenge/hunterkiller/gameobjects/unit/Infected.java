@@ -110,7 +110,14 @@ public class Infected extends Unit {
   
   @Override
   public Infected copy(int id) {
-    return new Infected(id, this.getSquadPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(), this.getOrientation(), this.getFieldOfViewRange(), this.getFieldOfViewAngle(), this.getAttackRange(), this.getAttackDamage(), this.getSpecialAttackCooldown(), this.getSpawnCost(), this.getScoreWorth());
+    return new Infected(id, this.getSquadPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(), this.getOrientation(), this.getFieldOfViewRange(), this.getFieldOfViewAngle(), this.getAttackRange(), this.getAttackDamage(), 0, this.getSpawnCost(), this.getScoreWorth());
+  }
+  
+  /**
+   * Start the cooldown of the infected's special attack.
+   */
+  public void startCooldown() {
+    this.setSpecialAttackCooldown(INFECTED_COOLDOWN);
   }
   
   public String toString() {

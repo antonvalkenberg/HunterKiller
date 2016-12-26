@@ -1,5 +1,6 @@
 package main.java.net.codepoke.ai.challenge.hunterkiller;
 
+import java.util.List;
 import main.java.net.codepoke.ai.challenge.hunterkiller.actions.BaseOrder;
 import main.java.net.codepoke.ai.challenge.hunterkiller.actions.UnitOrder;
 import main.java.net.codepoke.ai.challenge.hunterkiller.enums.BaseOrderType;
@@ -111,7 +112,9 @@ public class HunterKillerRules implements GameRules<HunterKillerState, HunterKil
               failCount++;
             break;
           case ATTACK_SPECIAL:
-            //TODO Implement special attacks
+            //Try to execute the ordered attack
+            if(!attackSpecial(map, unitOrder))
+              failCount++;
             break;
           default:
             System.err.println("WARNING: Unsupported UnitOrderType.");
@@ -124,8 +127,8 @@ public class HunterKillerRules implements GameRules<HunterKillerState, HunterKil
         failCount++;
       }
     }
-    
-    return new Result();
+    //Return the action as accepted, but add a count of how many orders failed, if any did.
+    return new Result(true, false, null, "Action accepted", failCount > 0 ? String.format("%d orders ignored", failCount) : "");
   }
   
   /**
@@ -290,6 +293,60 @@ public class HunterKillerRules implements GameRules<HunterKillerState, HunterKil
     //TODO Check if the target location is in the Unit's field of view
     //Tell the map that the target location is being attacked for X damage
     attackSuccess = map.attackLocation(attackOrder.getTargetLocation(), ((Unit)object).getAttackDamage());
+    //Return
+    return attackSuccess;
+  }
+  
+  /**
+   * Perform a special attack on a location. The effect of these attacks differ based on the type of
+   * {@link Unit} performing the attack.
+   * 
+   * @param map
+   *          The map the attack is being performed on.
+   * @param attackOrder
+   *          The order.
+   * @return Whether or not the attack was successfully executed.
+   */
+  private boolean attackSpecial(Map map, UnitOrder attackOrder) {
+    boolean attackSuccess = false;
+    //Check if there is a object on the map with the specified ID.
+    GameObject object = map.getObject(attackOrder.getObjectID());
+    //Check if an object was found, and that object is a Unit.
+    if(object == null)
+      return false;
+    if(!(object instanceof Unit))
+      return false;
+    //Check if the Unit's special attack has cooled down
+    if(((Unit)object).getSpecialAttackCooldown() > 0)
+      return false;
+    //Check if the target location is in the Unit's field of view.
+    //TODO Check if the target location is in the Unit's field of view
+    //Execute the special action, this is different per Unit type
+    if(object instanceof Infected) {
+      //The special attack of an infected can't actually be ordered, since it triggers on kill
+      //TODO Implement Infected's triggered ability
+    }
+    else if(object instanceof Medic) {
+      //The special attack of a medic heals a unit for an amount
+      Unit target = (Unit)map.getMapContent()[map.toPosition(attackOrder.getTargetLocation())][Map.INTERNAL_MAP_UNIT_INDEX];
+      if(target != null) {
+        target.increaseHP(Medic.MEDIC_SPECIAL_HEAL);
+        attackSuccess = true;
+      }
+    }
+    else if(object instanceof Soldier) {
+      //The special attack of a soldier is a grenade that does damage in an area
+      List<MapLocation> areaOfEffect = map.getAreaAround(attackOrder.getTargetLocation(), true);
+      for(MapLocation location : areaOfEffect) {
+        //Call an attack on each location inside the area of effect
+        if(map.attackLocation(location, Soldier.SOLDIER_SPECIAL_DAMAGE)) {
+          //Report success if at least one of the locations is successfully attacked
+          attackSuccess = true;
+        }
+      }
+    }
+    //If we executed the special action, start the cooldown
+    ((Unit)object).startCooldown();
     //Return
     return attackSuccess;
   }

@@ -50,6 +50,14 @@ public class Soldier extends Unit {
    * The amount of points a Soldier is worth when defeated.
    */
   public static final int SOLDIER_SCORE = 25;
+  /**
+   * The range of the Soldier's special attack.
+   */
+  public static final int SOLDIER_SPECIAL_RANGE = 3;
+  /**
+   * The damage of the Soldier's special attack.
+   */
+  public static final int SOLDIER_SPECIAL_DAMAGE = 3;
   
   //endregion
   
@@ -110,7 +118,14 @@ public class Soldier extends Unit {
   
   @Override
   public Soldier copy(int id) {
-    return new Soldier(id, this.getSquadPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(), this.getOrientation(), this.getFieldOfViewRange(), this.getFieldOfViewAngle(), this.getAttackRange(), this.getAttackDamage(), this.getSpecialAttackCooldown(), this.getSpawnCost(), this.getScoreWorth());
+    return new Soldier(id, this.getSquadPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(), this.getOrientation(), this.getFieldOfViewRange(), this.getFieldOfViewAngle(), this.getAttackRange(), this.getAttackDamage(), 0, this.getSpawnCost(), this.getScoreWorth());
+  }
+  
+  /**
+   * Start the cooldown of the soldier's special attack.
+   */
+  public void startCooldown() {
+    this.setSpecialAttackCooldown(SOLDIER_COOLDOWN);
   }
   
   public String toString() {

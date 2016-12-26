@@ -49,7 +49,7 @@ public abstract class Unit extends GameObject {
   /**
    * Default cooldown for a Unit's special attack.
    */
-  public static final int DEFAULT_SPECIAL_COOLDOWN = 5;
+  public static final int DEFAULT_SPECIAL_COOLDOWN = 0;
   /**
    * Default spawn cost for a Unit.
    */
@@ -217,6 +217,26 @@ public abstract class Unit extends GameObject {
     spawnCost = cost;
     scoreWorth = score;
   }
+  
+  //endregion
+  
+  //region Private methods
+  
+  /**
+   * Set the currently remaining cooldown of this Unit's special attack.
+   * 
+   * @param cooldownRemaining
+   *          The remaining cooldown.
+   */
+  protected void setSpecialAttackCooldown(int cooldownRemaining) {
+    this.specialAttackCooldown = cooldownRemaining;
+  }
+  
+  //endregion
+  
+  //region Public methods
+  
+  public abstract void startCooldown();
   
   //endregion
   

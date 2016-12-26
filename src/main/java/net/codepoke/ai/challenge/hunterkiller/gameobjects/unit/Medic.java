@@ -50,6 +50,10 @@ public class Medic extends Unit {
    * The amount of points a Medic is worth when defeated.
    */
   public static final int MEDIC_SCORE = 50;
+  /**
+   * The amount of health points a Medic's special attack heals.
+   */
+  public static final int MEDIC_SPECIAL_HEAL = 2;
   
   //endregion
   
@@ -110,7 +114,14 @@ public class Medic extends Unit {
   
   @Override
   public Medic copy(int id) {
-    return new Medic(id, this.getSquadPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(), this.getOrientation(), this.getFieldOfViewRange(), this.getFieldOfViewAngle(), this.getAttackRange(), this.getAttackDamage(), this.getSpecialAttackCooldown(), this.getSpawnCost(), this.getScoreWorth());
+    return new Medic(id, this.getSquadPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(), this.getOrientation(), this.getFieldOfViewRange(), this.getFieldOfViewAngle(), this.getAttackRange(), this.getAttackDamage(), 0, this.getSpawnCost(), this.getScoreWorth());
+  }
+  
+  /**
+   * Start the cooldown of the medic's special attack.
+   */
+  public void startCooldown() {
+    this.setSpecialAttackCooldown(MEDIC_COOLDOWN);
   }
   
   public String toString() {

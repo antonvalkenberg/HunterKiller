@@ -212,6 +212,17 @@ public class Map {
   }
   
   /**
+   * Whether or not a {@link MapLocation} is on this map.
+   * 
+   * @param location
+   *          The location.
+   * @return
+   */
+  public boolean isOnMap(MapLocation location) {
+    return isXonMap(location.getX()) && isYonMap(location.getY());
+  }
+  
+  /**
    * Whether or not the specified location is traversable. This method checks:
    * <ul>
    * <li>If the {@link MapLocation} is on the map</li>
@@ -412,6 +423,43 @@ public class Map {
     }
     //Return the list
     return neighbours;
+  }
+  
+  /**
+   * Returns a collection of {@link MapLocation}s that are directly around a centre location. This
+   * method is like 'getNeighbours', except that it returns locations in up to 8 directions.
+   * 
+   * @param location
+   *          The centre location.
+   * @param includeCentre
+   *          Whether or not the centre location should also be included in the result collection.
+   * @return
+   */
+  public List<MapLocation> getAreaAround(MapLocation location, boolean includeCentre) {
+    //Set up a list
+    List<MapLocation> area = getNeighbours(location);
+    //Get the corner positions (North-East, South-East, South-West, North-West)
+    //North-East is increasing X, decreasing Y.
+    MapLocation northEast = new MapLocation(location.getX() + 1, location.getY() - mapWidth);
+    if(isOnMap(northEast))
+      area.add(northEast);
+    //South-East is increasing X, increasing Y.
+    MapLocation southEast = new MapLocation(location.getX() + 1, location.getY() + mapWidth);
+    if(isOnMap(southEast))
+      area.add(southEast);
+    //South-West is decreasing X, increasing Y.
+    MapLocation southWest = new MapLocation(location.getX() - 1, location.getY() + mapWidth);
+    if(isOnMap(southWest))
+      area.add(southWest);
+    //North-West is decreasing X, decreasing Y.
+    MapLocation northWest = new MapLocation(location.getX() - 1, location.getY() - mapWidth);
+    if(isOnMap(northWest))
+      area.add(northWest);
+    //If the centre was also requested, add it
+    if(includeCentre)
+      area.add(location);
+    //Return the list of locations
+    return area;
   }
   
   /**
