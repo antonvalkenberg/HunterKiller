@@ -2,6 +2,7 @@ package main.java.net.codepoke.ai.challenge.hunterkiller.actions;
 
 import lombok.Getter;
 import main.java.net.codepoke.ai.challenge.hunterkiller.HunterKillerOrder;
+import main.java.net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import main.java.net.codepoke.ai.challenge.hunterkiller.enums.UnitOrderType;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 
@@ -22,6 +23,11 @@ public class UnitOrder extends HunterKillerOrder {
    */
   private UnitOrderType orderType;
   
+  /**
+   * The target location of this order.
+   */
+  private MapLocation targetLocation;
+  
   //endregion
   
   //region Constructor
@@ -37,6 +43,21 @@ public class UnitOrder extends HunterKillerOrder {
   public UnitOrder(Unit unit, UnitOrderType type) {
     super(unit);
     this.orderType = type;
+  }
+  
+  /**
+   * Constructs a new instance.
+   * 
+   * @param unit
+   *          The unit the order is for.
+   * @param type
+   *          The type of order.
+   * @param target
+   *          The target location for this order.
+   */
+  public UnitOrder(Unit unit, UnitOrderType type, MapLocation target) {
+    this(unit, type);
+    this.targetLocation = new MapLocation(target.getX(), target.getY());
   }
   
   //endregion

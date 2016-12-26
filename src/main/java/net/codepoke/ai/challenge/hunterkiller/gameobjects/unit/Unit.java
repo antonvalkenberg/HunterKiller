@@ -3,6 +3,7 @@ package main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import main.java.net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import main.java.net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import main.java.net.codepoke.ai.challenge.hunterkiller.enums.Direction;
@@ -70,6 +71,7 @@ public abstract class Unit extends GameObject {
   /**
    * The Direction the Unit is facing.
    */
+  @Setter
   private Direction orientation = DEFAULT_ORIENTATION;
   
   /**

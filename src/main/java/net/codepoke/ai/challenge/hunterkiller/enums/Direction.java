@@ -23,4 +23,34 @@ public enum Direction {
         return null;
     }
   }
+  
+  public Direction rotateEast() {
+    switch(this) {
+      case NORTH:
+        return EAST;
+      case EAST:
+        return EAST;
+      case SOUTH:
+        return EAST;
+      case WEST:
+        return NORTH;
+      default:
+        return null;
+    }
+  }
+  
+  public Direction rotateWest() {
+    switch(this) {
+      case NORTH:
+        return WEST;
+      case EAST:
+        return NORTH;
+      case SOUTH:
+        return WEST;
+      case WEST:
+        return WEST;
+      default:
+        return null;
+    }
+  }
 }

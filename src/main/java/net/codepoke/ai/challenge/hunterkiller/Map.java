@@ -409,6 +409,25 @@ public class Map {
   }
   
   /**
+   * Returns the object with the specified ID. If no such object can be found, null is returned.
+   * 
+   * @param objectID
+   *          The unique identifier of the object.
+   * @return The object, or null if no object was found.
+   */
+  public GameObject getObject(int objectID) {
+    //Check the map content
+    for(int i = 0; i < mapWidth * mapHeight; i++) {
+      for(int j = 0; j < INTERNAL_MAP_LAYERS; j++) {
+        if(mapContent[i][j] != null && mapContent[i][j].getID() == objectID) {
+          return mapContent[i][j];
+        }
+      }
+    }
+    return null;
+  }
+  
+  /**
    * Returns the number of {@link Base}s on the map. Used to determine if the game has ended. (Note:
    * game ends when only 1 base remains)
    * 

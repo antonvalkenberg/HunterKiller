@@ -2,10 +2,13 @@ package main.java.net.codepoke.ai.challenge.hunterkiller;
 
 import main.java.net.codepoke.ai.challenge.hunterkiller.actions.BaseOrder;
 import main.java.net.codepoke.ai.challenge.hunterkiller.actions.UnitOrder;
+import main.java.net.codepoke.ai.challenge.hunterkiller.enums.BaseOrderType;
 import main.java.net.codepoke.ai.challenge.hunterkiller.enums.Direction;
+import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
+import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 import net.codepoke.ai.GameRules;
 import net.codepoke.ai.GameRules.Result.Ranking;
 import com.badlogic.gdx.utils.Array;
@@ -76,95 +79,22 @@ public class HunterKillerRules implements GameRules<HunterKillerState, HunterKil
       //Check which type of order we are dealing with
       if(order instanceof BaseOrder) {
         BaseOrder baseOrder = (BaseOrder)order;
-        MapLocation spawnlocation = actingPlayer.getBase().getSpawnLocation();
-        switch(baseOrder.getOrderType()) {
-          case SPAWN_INFECTED:
-            //Check if the player has enough resources
-            if(actingPlayer.getResource() >= Infected.INFECTED_SPAWN_COST) {
-              //Check if the spawn location is available
-              if(map.isTraversable(spawnlocation)) {
-                //Charge the costs
-                actingPlayer.resource -= Infected.INFECTED_SPAWN_COST;
-                //Create a new Infected
-                //TODO get proper direction in this call
-                Infected unit = new Infected(map.requestNewGameObjectID(), actingPlayer.getID(), spawnlocation, Direction.NORTH);
-                //Place the unit on the map
-                map.place(map.toPosition(spawnlocation), unit);
-                //Add the unit to the Player's squad
-                actingPlayer.addUnitToSquad(unit);
-              }
-              else {
-                //Silently fail this order
-                failCount++;
-              }
-            }
-            else {
-              //Silently fail this order
-              failCount++;
-            }
-            break;
-          case SPAWN_MEDIC:
-            //Check if the player has enough resources
-            if(actingPlayer.getResource() >= Medic.MEDIC_SPAWN_COST) {
-              //Check if the spawn location is available
-              if(map.isTraversable(spawnlocation)) {
-                //Charge the costs
-                actingPlayer.resource -= Medic.MEDIC_SPAWN_COST;
-                //Create a new Infected
-                //TODO get proper direction in this call
-                Medic unit = new Medic(map.requestNewGameObjectID(), actingPlayer.getID(), spawnlocation, Direction.NORTH);
-                //Place the unit on the map
-                map.place(map.toPosition(spawnlocation), unit);
-                //Add the unit to the Player's squad
-                actingPlayer.addUnitToSquad(unit);
-              }
-              else {
-                //Silently fail this order
-                failCount++;
-              }
-            }
-            else {
-              //Silently fail this order
-              failCount++;
-            }
-            break;
-          case SPAWN_SOLDIER:
-            //Check if the player has enough resources
-            if(actingPlayer.getResource() >= Soldier.SOLDIER_SPAWN_COST) {
-              //Check if the spawn location is available
-              if(map.isTraversable(spawnlocation)) {
-                //Charge the costs
-                actingPlayer.resource -= Soldier.SOLDIER_SPAWN_COST;
-                //Create a new Infected
-                //TODO get proper direction in this call
-                Soldier unit = new Soldier(map.requestNewGameObjectID(), actingPlayer.getID(), spawnlocation, Direction.NORTH);
-                //Place the unit on the map
-                map.place(map.toPosition(spawnlocation), unit);
-                //Add the unit to the Player's squad
-                actingPlayer.addUnitToSquad(unit);
-              }
-              else {
-                //Silently fail this order
-                failCount++;
-              }
-            }
-            else {
-              //Silently fail this order
-              failCount++;
-            }
-            break;
-          default:
-            System.err.println("WARNING: Unsupported BaseOrderType.");
-            failCount++;
-            break;
-        }
+        //Try to spawn the Unit
+        if(!spawnUnit(map, actingPlayer, baseOrder.getOrderType()))
+          failCount++;
       }
       else if(order instanceof UnitOrder) {
         UnitOrder unitOrder = (UnitOrder)order;
         switch(unitOrder.getOrderType()) {
           case ROTATE_EAST:
+            //Try to rotate the unit east
+            if(!rotateUnit(map, unitOrder.getObjectID(), Direction.EAST))
+              failCount++;
             break;
           case ROTATE_WEST:
+            //Try to rotate the unit west
+            if(!rotateUnit(map, unitOrder.getObjectID(), Direction.WEST))
+              failCount++;
             break;
           case MOVE_NORTH:
             break;
@@ -192,4 +122,118 @@ public class HunterKillerRules implements GameRules<HunterKillerState, HunterKil
     
     return new Result();
   }
+  
+  /**
+   * Spawn a Unit.
+   * 
+   * @param map
+   *          The map to spawn on.
+   * @param player
+   *          The player to spawn a unit for.
+   * @param spawnType
+   *          The type of order that was issued.
+   * @return Whether or not the spawning was successful.
+   */
+  private boolean spawnUnit(Map map, Player player, BaseOrderType spawnType) {
+    boolean spawnSuccess = false;
+    MapLocation spawnlocation = player.getBase().getSpawnLocation();
+    //TODO get proper direction in this call
+    Direction spawnDirection = Direction.NORTH;
+    //Get the correct costs
+    int spawnCosts = -1;
+    switch(spawnType) {
+      case SPAWN_INFECTED:
+        spawnCosts = Infected.INFECTED_SPAWN_COST;
+        break;
+      case SPAWN_MEDIC:
+        spawnCosts = Medic.MEDIC_SPAWN_COST;
+        break;
+      case SPAWN_SOLDIER:
+        spawnCosts = Soldier.SOLDIER_SPAWN_COST;
+        break;
+      default:
+        System.err.println("WARNING: Unsupported BaseOrderType.");
+        return false;
+    }
+    //Check if the player has enough resources
+    if(player.getResource() >= spawnCosts) {
+      //Check if the spawn location is available
+      if(map.isTraversable(spawnlocation)) {
+        //Charge the costs
+        player.resource -= spawnCosts;
+        //Create a new Unit of the correct type
+        Unit unit;
+        switch(spawnType) {
+          case SPAWN_INFECTED:
+            unit = new Infected(map.requestNewGameObjectID(), player.getID(), spawnlocation, spawnDirection);
+            break;
+          case SPAWN_MEDIC:
+            unit = new Medic(map.requestNewGameObjectID(), player.getID(), spawnlocation, spawnDirection);
+            break;
+          case SPAWN_SOLDIER:
+            unit = new Soldier(map.requestNewGameObjectID(), player.getID(), spawnlocation, spawnDirection);
+            break;
+          default:
+            System.err.println("WARNING: Unsupported BaseOrderType.");
+            return false;
+        }
+        //Place the unit on the map
+        spawnSuccess = map.place(map.toPosition(spawnlocation), unit);
+        //Add the unit to the Player's squad if successfully spawned
+        if(spawnSuccess)
+          player.addUnitToSquad(unit);
+      }
+      else {
+        //Silently fail this order
+        return false;
+      }
+    }
+    else {
+      //Silently fail this order
+      return false;
+    }
+    //Return
+    return spawnSuccess;
+  }
+  
+  /**
+   * Rotate a Unit.
+   * 
+   * @param map
+   *          The map that the unit is on.
+   * @param unitID
+   *          The unique identifier of the unit.
+   * @param rotationalDirection
+   *          The direction to rotate the unit in. Note: only EAST and WEST are functional
+   *          rotational directions.
+   * @return Whether or not the rotation succeeded.
+   */
+  private boolean rotateUnit(Map map, int unitID, Direction rotationalDirection) {
+    boolean rotationalSuccess = false;
+    //Check if there is a object on the map with the specified ID.
+    GameObject object = map.getObject(unitID);
+    //Check if an object was found, and that object is a Unit.
+    if(object == null)
+      return false;
+    if(!(object instanceof Unit))
+      return false;
+    //Rotate the unit in the specified direction
+    Unit unit = (Unit)object;
+    switch(rotationalDirection) {
+      case EAST:
+        unit.setOrientation(unit.getOrientation().rotateEast());
+        rotationalSuccess = true;
+        break;
+      case WEST:
+        unit.setOrientation(unit.getOrientation().rotateWest());
+        rotationalSuccess = true;
+        break;
+      default:
+        System.err.println("WARNING: Unsupported Rotational Direction.");
+        return false;
+    }
+    //Return
+    return rotationalSuccess;
+  }
+  
 }
