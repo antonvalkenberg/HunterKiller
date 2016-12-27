@@ -1,7 +1,6 @@
-package main.java.net.codepoke.ai.challenge.hunterkiller.actions;
+package main.java.net.codepoke.ai.challenge.hunterkiller.orders;
 
 import lombok.Getter;
-import main.java.net.codepoke.ai.challenge.hunterkiller.HunterKillerOrder;
 import main.java.net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import main.java.net.codepoke.ai.challenge.hunterkiller.enums.UnitOrderType;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;

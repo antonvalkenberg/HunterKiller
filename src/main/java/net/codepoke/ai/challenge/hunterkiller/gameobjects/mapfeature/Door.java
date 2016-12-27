@@ -109,6 +109,18 @@ public class Door extends MapFeature {
     isBlockingLOS = true;
   }
   
+  /**
+   * Reduces the timer that keeps track of how long this door remains open.
+   */
+  public void reduceTimer() {
+    //Don't reduce if already at 0
+    if(openTimer > 0)
+      openTimer--;
+    //Check if the door should be closed now
+    if(openTimer == 0 && !isBlockingLOS)
+      isBlockingLOS = true;
+  }
+  
   @Override
   public Door copy(int id) {
     return new Door(id, this.getLocation(), openTimer);

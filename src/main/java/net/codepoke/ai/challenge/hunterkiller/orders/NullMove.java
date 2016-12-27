@@ -1,4 +1,4 @@
-package main.java.net.codepoke.ai.challenge.hunterkiller.actions;
+package main.java.net.codepoke.ai.challenge.hunterkiller.orders;
 
 import main.java.net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
 import main.java.net.codepoke.ai.challenge.hunterkiller.HunterKillerState;

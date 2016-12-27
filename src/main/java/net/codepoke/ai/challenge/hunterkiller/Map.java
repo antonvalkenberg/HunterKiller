@@ -3,7 +3,6 @@ package main.java.net.codepoke.ai.challenge.hunterkiller;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
-import main.java.net.codepoke.ai.challenge.hunterkiller.actions.UnitOrder;
 import main.java.net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
@@ -16,6 +15,7 @@ import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infecte
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
+import main.java.net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
 
 /**
  * The map on which the game is played. The map is internally represented as a 2-dimensional array.
@@ -673,6 +673,33 @@ public class Map {
           if(object instanceof Unit) {
             Unit unit = (Unit)object;
             state.getPlayer(unit.getSquadPlayerID()).removeUnitFromSquad(unit);
+          }
+        }
+      }
+    }
+  }
+  
+  /**
+   * Reduces the timers on open doors and unit's cooldowns. This method should be called at the
+   * start of a new round.
+   */
+  protected void timer() {
+    for(int i = 0; i < mapWidth * mapHeight; i++) {
+      for(int j = 0; j < INTERNAL_MAP_LAYERS; j++) {
+        GameObject object = mapContent[i][j];
+        //Check if there is anything there
+        if(object != null) {
+          //Check if it's a Door
+          if(object instanceof Door) {
+            //Reduce the timer if the door is open
+            Door door = (Door)object;
+            if(door.isOpen())
+              door.reduceTimer();
+          }
+          //Check if it's a Unit
+          else if(object instanceof Unit) {
+            //Reduce the unit's cooldown
+            ((Unit)object).reduceCooldown();
           }
         }
       }

@@ -2,7 +2,7 @@ package main.java.net.codepoke.ai.challenge.hunterkiller;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import main.java.net.codepoke.ai.challenge.hunterkiller.actions.NullMove;
+import main.java.net.codepoke.ai.challenge.hunterkiller.orders.NullMove;
 import net.codepoke.ai.GameRules.State;
 
 /**
@@ -137,7 +137,8 @@ public class HunterKillerState implements State {
     //Check if we've reached a new round
     if(activePlayerID == 0) {
       //Reduce open-timers for Doors and special-attack cooldowns for Units.
-      //TODO Reduce open-timers for Doors and special-attack cooldowns for Units
+      map.timer();
+      //Increase round count
       currentRound++;
     }
     //Do a tick after each player's turn, to check for killed units/features

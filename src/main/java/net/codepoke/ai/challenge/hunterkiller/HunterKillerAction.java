@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
+import main.java.net.codepoke.ai.challenge.hunterkiller.orders.HunterKillerOrder;
 import net.codepoke.ai.GameRules.Action;
 import com.badlogic.gdx.utils.IntArray;
 

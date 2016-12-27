@@ -220,7 +220,7 @@ public abstract class Unit extends GameObject {
   
   //endregion
   
-  //region Private methods
+  //region Protected methods
   
   /**
    * Set the currently remaining cooldown of this Unit's special attack.
@@ -237,6 +237,15 @@ public abstract class Unit extends GameObject {
   //region Public methods
   
   public abstract void startCooldown();
+  
+  /**
+   * Reduces the cooldown for this unit's special attack.
+   */
+  public void reduceCooldown() {
+    //Don't reduce anything if already at 0
+    if(specialAttackCooldown > 0)
+      specialAttackCooldown--;
+  }
   
   //endregion
   

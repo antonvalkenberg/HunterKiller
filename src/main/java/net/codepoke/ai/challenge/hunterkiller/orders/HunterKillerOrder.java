@@ -1,6 +1,7 @@
-package main.java.net.codepoke.ai.challenge.hunterkiller;
+package main.java.net.codepoke.ai.challenge.hunterkiller.orders;
 
 import lombok.Getter;
+import main.java.net.codepoke.ai.challenge.hunterkiller.Player;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 
 /**

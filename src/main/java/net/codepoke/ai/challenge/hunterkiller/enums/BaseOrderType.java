@@ -1,6 +1,6 @@
 package main.java.net.codepoke.ai.challenge.hunterkiller.enums;
 
-import main.java.net.codepoke.ai.challenge.hunterkiller.HunterKillerOrder;
+import main.java.net.codepoke.ai.challenge.hunterkiller.orders.HunterKillerOrder;
 
 /**
  * Enumeration of all types of {@link HunterKillerOrder}s available to the {@link Base}. These

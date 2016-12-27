@@ -7,7 +7,22 @@ package main.java.net.codepoke.ai.challenge.hunterkiller.enums;
  *
  */
 public enum Direction {
-  NORTH, EAST, SOUTH, WEST;
+  /**
+   * On this game's map structure, north is: decreasing Y, equal X.
+   */
+  NORTH,
+  /**
+   * On this game's map structure, east is: equal Y, increasing X.
+   */
+  EAST,
+  /**
+   * On this game's map structure, south is: increasing Y, equal X.
+   */
+  SOUTH,
+  /**
+   * On this game's map structure, west is: equal Y, decreasing X.
+   */
+  WEST;
   
   public Direction getOppositeDirection() {
     switch(this) {

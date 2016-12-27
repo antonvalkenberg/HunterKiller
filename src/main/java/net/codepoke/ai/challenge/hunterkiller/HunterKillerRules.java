@@ -1,8 +1,6 @@
 package main.java.net.codepoke.ai.challenge.hunterkiller;
 
 import java.util.List;
-import main.java.net.codepoke.ai.challenge.hunterkiller.actions.BaseOrder;
-import main.java.net.codepoke.ai.challenge.hunterkiller.actions.UnitOrder;
 import main.java.net.codepoke.ai.challenge.hunterkiller.enums.BaseOrderType;
 import main.java.net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
@@ -11,6 +9,9 @@ import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infecte
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
+import main.java.net.codepoke.ai.challenge.hunterkiller.orders.BaseOrder;
+import main.java.net.codepoke.ai.challenge.hunterkiller.orders.HunterKillerOrder;
+import main.java.net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
 import net.codepoke.ai.GameRules;
 import net.codepoke.ai.GameRules.Result.Ranking;
 import com.badlogic.gdx.utils.Array;
@@ -145,8 +146,13 @@ public class HunterKillerRules implements GameRules<HunterKillerState, HunterKil
   private boolean spawnUnit(Map map, Player player, BaseOrderType spawnType) {
     boolean spawnSuccess = false;
     MapLocation spawnlocation = player.getBase().getSpawnLocation();
-    //TODO Get the proper direction in this call
-    Direction spawnDirection = Direction.NORTH;
+    //The direction a unit faces when they spawn will be in line with the direction the spawn location is relative to the base.
+    Direction spawnDirection = MapLocation.getDirectionTo(player.getBase().getLocation(), spawnlocation);
+    //Make sure we got a direction
+    if(spawnDirection == null) {
+      System.err.println("WARNING: Spawn location is not on a cardinal direction relative to the base.");
+      return false;
+    }
     //Get the correct costs
     int spawnCosts = -1;
     switch(spawnType) {
