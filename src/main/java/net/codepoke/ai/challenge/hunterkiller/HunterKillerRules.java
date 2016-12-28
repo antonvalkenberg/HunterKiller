@@ -288,17 +288,22 @@ public class HunterKillerRules implements GameRules<HunterKillerState, HunterKil
    */
   private boolean attackLocation(Map map, UnitOrder attackOrder) {
     boolean attackSuccess = false;
-    //Check if there is a object on the map with the specified ID.
+    //Check if there is a object on the map with the specified ID
     GameObject object = map.getObject(attackOrder.getObjectID());
-    //Check if an object was found, and that object is a Unit.
+    //Check if an object was found, and that object is a Unit
     if(object == null)
       return false;
     if(!(object instanceof Unit))
       return false;
-    //Check if the target location is in the Unit's field of view.
-    //TODO Check if the target location is in the Unit's field of view
+    Unit unit = (Unit)object;
+    //Check if the target location is in the Unit's field of view
+    if(!unit.isInFieldOfView(attackOrder.getTargetLocation()))
+      return false;
+    //Check if the target location is within the Unit's attack range
+    if(unit.getAttackRange() < MapLocation.getManhattanDist(unit.getLocation(), attackOrder.getTargetLocation()))
+      return false;
     //Tell the map that the target location is being attacked for X damage
-    attackSuccess = map.attackLocation(attackOrder.getTargetLocation(), ((Unit)object).getAttackDamage());
+    attackSuccess = map.attackLocation(attackOrder.getTargetLocation(), unit.getAttackDamage());
     //Return
     return attackSuccess;
   }
@@ -322,11 +327,16 @@ public class HunterKillerRules implements GameRules<HunterKillerState, HunterKil
       return false;
     if(!(object instanceof Unit))
       return false;
+    Unit unit = (Unit)object;
     //Check if the Unit's special attack has cooled down
-    if(((Unit)object).getSpecialAttackCooldown() > 0)
+    if(unit.getSpecialAttackCooldown() > 0)
       return false;
     //Check if the target location is in the Unit's field of view.
-    //TODO Check if the target location is in the Unit's field of view
+    if(!unit.isInFieldOfView(attackOrder.getTargetLocation()))
+      return false;
+    //Check if the target location is within the Unit's attack range
+    if(unit.getAttackRange() < MapLocation.getManhattanDist(unit.getLocation(), attackOrder.getTargetLocation()))
+      return false;
     //Execute the special action, this is different per Unit type
     if(object instanceof Infected) {
       //The special attack of an infected can't actually be ordered, since it triggers on kill

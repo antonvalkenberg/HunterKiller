@@ -3,6 +3,10 @@ package main.java.net.codepoke.ai.challenge.hunterkiller;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import main.java.net.codepoke.ai.challenge.hunterkiller.LineOfSight.BlocksLightFunction;
+import main.java.net.codepoke.ai.challenge.hunterkiller.LineOfSight.GetDistanceFunction;
+import main.java.net.codepoke.ai.challenge.hunterkiller.LineOfSight.SetVisibleFunction;
 import main.java.net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
@@ -83,6 +87,27 @@ public class Map {
    */
   private int internalObjectIDCounter;
   
+  /**
+   * The line-of-sight implementation that is used on this map.
+   */
+  private LineOfSight lineOfSight;
+  
+  /**
+   * Contains this map's implementation of whether or not a location blocks line-of-sight.
+   */
+  private BlocksLight blocksLight;
+  
+  /**
+   * Contains this map's implementation of the distance measure of a location from 0,0.
+   */
+  private GetDistance getDistance;
+  
+  /**
+   * Contains this map's implementation of how to handle locations that are deemed visible from
+   * another location.
+   */
+  private SetVisible setVisible;
+  
   //endregion
   
   //region Constructor
@@ -103,6 +128,11 @@ public class Map {
     //Reset the Player and Unit ID counters
     internalPlayerIDCounter = -1;
     internalObjectIDCounter = -1;
+    //Create the classes required for line-of-sight
+    blocksLight = new BlocksLight(this);
+    getDistance = new GetDistance();
+    setVisible = new SetVisible();
+    lineOfSight = new LineOfSight(blocksLight, setVisible, getDistance);
   }
   
   //endregion
@@ -463,6 +493,24 @@ public class Map {
   }
   
   /**
+   * Returns a collection of locations that are in the field-of-view from a certain location.
+   * 
+   * @param location
+   *          The location to view from.
+   * @param viewRange
+   *          The range of the view.
+   * @return
+   */
+  public List<MapLocation> getFieldOfView(MapLocation location, int viewRange) {
+    //Reset any previously computed locations
+    setVisible.resetLocations();
+    //Ask the line-of-sight implementation to compute the field-of-view
+    lineOfSight.compute(location, viewRange);
+    //Return the list of computed locations
+    return setVisible.getVisibleLocations();
+  }
+  
+  /**
    * Returns the object with the specified ID. If no such object can be found, null is returned.
    * 
    * @param objectID
@@ -655,7 +703,8 @@ public class Map {
   
   /**
    * Ticks the map forward, this means that we should check the {@link GameObject}s on the map to
-   * see if any should be removed.
+   * see if any should be removed. This method also updates the field-of-view of any surviving
+   * {@link Unit}s.
    * 
    * @param state
    *          The current state of the game.
@@ -666,13 +715,25 @@ public class Map {
       for(int j = 0; j < INTERNAL_MAP_LAYERS; j++) {
         GameObject object = mapContent[i][j];
         //Check if there is anything there
-        if(object != null && object.tick(state)) {
-          //Returning true indicates that the object should be removed
-          remove(i, object);
-          //If the object is a Unit, tell it's Player to remove it from it's squad
-          if(object instanceof Unit) {
-            Unit unit = (Unit)object;
-            state.getPlayer(unit.getSquadPlayerID()).removeUnitFromSquad(unit);
+        if(object != null) {
+          if(object.tick(state)) {
+            //Returning true indicates that the object should be removed
+            remove(i, object);
+            //If the object is a Unit, tell it's Player to remove it from it's squad
+            if(object instanceof Unit) {
+              Unit unit = (Unit)object;
+              state.getPlayer(unit.getSquadPlayerID()).removeUnitFromSquad(unit);
+            }
+          }
+          else {
+            //Means that the object is still alive, so check if it's a Unit
+            if(object instanceof Unit) {
+              Unit unit = (Unit)object;
+              //Get the field-of-view collection from the unit's location
+              List<MapLocation> fieldOfView = getFieldOfView(unit.getLocation(), unit.getFieldOfViewRange());
+              //Tell the unit to update it's field-of-view
+              unit.updateFieldOfView(fieldOfView);
+            }
           }
         }
       }
@@ -824,6 +885,61 @@ public class Map {
     if(mapContent[position][INTERNAL_MAP_UNIT_INDEX] != null)
       mapContent[position][INTERNAL_MAP_UNIT_INDEX].reduceHP(damage);
     return true;
+  }
+  
+  //endregion
+  
+  //region Private classes
+  
+  private class BlocksLight implements BlocksLightFunction {
+    
+    private Map map;
+    
+    public BlocksLight(Map map) {
+      this.map = map;
+    }
+    
+    @Override
+    public boolean func(int x, int y) {
+      //Check if both coordinates are within the map's bounds
+      if(!isXonMap(x) || !isYonMap(y))
+        return true;
+      //Check the feature at the specified position
+      return ((MapFeature)map.getMapContent()[map.toPosition(x, y)][Map.INTERNAL_MAP_FEATURE_INDEX]).isBlockingLOS();
+    }
+    
+  }
+  
+  @NoArgsConstructor
+  private class GetDistance implements GetDistanceFunction {
+    
+    @Override
+    public int func(int x, int y) {
+      return MapLocation.getManhattanDist(0, 0, x, y);
+    }
+    
+  }
+  
+  private class SetVisible implements SetVisibleFunction {
+    
+    @Getter
+    private List<MapLocation> visibleLocations;
+    
+    public SetVisible() {
+      this.visibleLocations = new ArrayList<MapLocation>();
+    }
+    
+    public void resetLocations() {
+      this.visibleLocations = new ArrayList<MapLocation>();
+    }
+    
+    @Override
+    public void func(int x, int y) {
+      //Ignore any coordinates that are not on the map
+      if(isXonMap(x) && isYonMap(y))
+        this.visibleLocations.add(new MapLocation(x, y));
+    }
+    
   }
   
   //endregion

@@ -141,7 +141,7 @@ public class HunterKillerState implements State {
       //Increase round count
       currentRound++;
     }
-    //Do a tick after each player's turn, to check for killed units/features
+    //Do a tick on the map after each player's turn
     map.tick(this);
     //If the next round-threshold has been reached, award players with new resources
     if(currentRound % RESOURCE_AWARD_FREQUENCY == 0) {

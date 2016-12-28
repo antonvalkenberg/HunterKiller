@@ -1,5 +1,6 @@
 package main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit;
 
+import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -108,6 +109,11 @@ public abstract class Unit extends GameObject {
    * The score this Unit is worth when defeated by the opposing team.
    */
   private int scoreWorth = DEFAULT_SCORE;
+  
+  /**
+   * The current field-of-view of this Unit.
+   */
+  private boolean[][] fieldOfView;
   
   //endregion
   
@@ -220,6 +226,19 @@ public abstract class Unit extends GameObject {
   
   //endregion
   
+  /**
+   * Calculates the location of the specified location, relative to this Unit's current location and
+   * facing.
+   * 
+   * @param location
+   *          The location to translate.
+   * @return
+   */
+  private MapLocation getRelativeLocation(MapLocation location) {
+    //TODO return the location of the specified location, relative to this Unit's current location and facing
+    return new MapLocation(0, 0);
+  }
+  
   //region Protected methods
   
   /**
@@ -245,6 +264,29 @@ public abstract class Unit extends GameObject {
     //Don't reduce anything if already at 0
     if(specialAttackCooldown > 0)
       specialAttackCooldown--;
+  }
+  
+  /**
+   * Whether or not a location is within this unit's field-of-view.
+   * 
+   * @param location
+   *          The location.
+   * @return
+   */
+  public boolean isInFieldOfView(MapLocation location) {
+    MapLocation rl = getRelativeLocation(location);
+    //Check internal fov representation
+    return fieldOfView[rl.getX()][rl.getY()];
+  }
+  
+  /**
+   * Update the unit's internal field-of-view.
+   * 
+   * @param fieldOfView
+   *          The collection of {@link MapLocation}s that are currently in the unit's field-of-view
+   */
+  public void updateFieldOfView(List<MapLocation> fieldOfView) {
+    //TODO implement updating field-of-view in Unit
   }
   
   //endregion
