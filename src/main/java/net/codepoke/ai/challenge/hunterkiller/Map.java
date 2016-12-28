@@ -723,6 +723,7 @@ public class Map {
             if(object instanceof Unit) {
               Unit unit = (Unit)object;
               state.getPlayer(unit.getSquadPlayerID()).removeUnitFromSquad(unit);
+              //TODO Or check for Infected's triggered ability here
             }
           }
           else {
@@ -884,6 +885,7 @@ public class Map {
     //Check if there is a Unit on this position
     if(mapContent[position][INTERNAL_MAP_UNIT_INDEX] != null)
       mapContent[position][INTERNAL_MAP_UNIT_INDEX].reduceHP(damage);
+    //TODO Either check for Infected's triggered ability here, or
     return true;
   }
   
