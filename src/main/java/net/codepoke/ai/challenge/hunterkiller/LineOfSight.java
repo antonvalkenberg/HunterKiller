@@ -1,16 +1,28 @@
 package net.codepoke.ai.challenge.hunterkiller;
 
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+
+import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
+
 /**
  * Class representing the line of sight implementation for the game. See:
  * http://www.adammil.net/blog/v125_Roguelike_Vision_Algorithms.html
+ * 
+ * Uses temporary variables, NOT MULTITHREADABLE. 
  * 
  * @author Adam Milazzo
  */
 public class LineOfSight {
   
+  private static final int NO_ANGLE_LIMIT = -1;
+  
   private BlocksLightFunction _blocksLight;
   private GetDistanceFunction _getDistance;
   private SetVisibleFunction _setVisible;
+
+  // Temporary variables, NOT MULTITHREADABLE
+  private Vector2 tmpAngleCalc = new Vector2();
   
   /**
    * Construct a new instance of the LineOfSight class. This class contains a method to compute the
@@ -33,6 +45,10 @@ public class LineOfSight {
     _setVisible = setVisible;
   }
   
+  public void compute(MapLocation origin, int rangeLimit){
+	  compute(origin, rangeLimit, 0, NO_ANGLE_LIMIT);
+  }
+
   /**
    * Compute the field-of-view from a location within a specific range.
    * 
@@ -40,14 +56,31 @@ public class LineOfSight {
    *          The location to get the field-of-view for.
    * @param rangeLimit
    *          The viewing range.
+   * @param direction The direction the unit is facing
+   * @param angleLimit The limit in degrees of the given cone of vision. 
    */
-  public void compute(MapLocation origin, int rangeLimit) {
-    _setVisible.func(origin.getX(), origin.getY());
-    for(int octant = 0; octant < 8; octant++)
-      compute(octant, origin, rangeLimit, 1, new Slope(1, 1), new Slope(0, 1));
+  public void compute(MapLocation origin, int rangeLimit, Direction direction, float angleLimit){
+	  compute(origin, rangeLimit, direction.angle, angleLimit);
   }
   
-  private void compute(int octant, MapLocation origin, int rangeLimit, int x, Slope top, Slope bottom) {
+  /**
+   * Compute the field-of-view from a location within a specific range.
+   * 
+   * @param origin
+   *          The location to get the field-of-view for.
+   * @param rangeLimit
+   *          The viewing range.
+   * @param facingAngle The angle the unit is facing in degrees, X-positive axis (Y==0) is 0, increasing counter clockwise
+   * @param angleLimit The limit in degrees of the given cone of vision. 
+   */
+  public void compute(MapLocation origin, int rangeLimit, float facingAngle, float angleLimit) {
+    _setVisible.func(origin.getX(), origin.getY());
+    for(int octant = 0; octant < 8; octant++)
+      compute(octant, origin, rangeLimit, facingAngle, angleLimit / 2f, 1, new Slope(1, 1), new Slope(0, 1));
+  }
+  
+  private void compute(int octant, MapLocation mapOrigin, int rangeLimit, float facingAngle, float halfAngleLimit, int x, Slope top, Slope bottom) {
+
     // throughout this function there are references to various parts of tiles. a tile's coordinates refer to its
     // centre, and the following diagram shows the parts of the tile and the vectors from the origin that pass through
     // those parts. given a part of a tile with vector u, a vector v passes above it if v > u and below it if v < u
@@ -78,7 +111,7 @@ public class LineOfSight {
         topY = ((x * 2 - 1) * top.Y + top.X) / (top.X * 2); // the Y coordinate of the tile entered from the left
         // now it's possible that the vector passes from the left side of the tile up into the tile above before
         // exiting from the right side of this column. so we may need to increment topY
-        if(blocksLight(x, topY, octant, origin)) // if the tile blocks light (i.e. is a wall)...
+        if(blocksLight(x, topY, octant, mapOrigin, facingAngle, halfAngleLimit)) // if the tile blocks light (i.e. is a wall)...
         {
           // if the tile entered from the left blocks light, whether it passes into the tile above depends on the shape
           // of the wall tile as well as the angle of the vector. if the tile has does not have a bevelled top-left
@@ -89,7 +122,7 @@ public class LineOfSight {
           // otherwise, with a bevelled top-left corner, the slope of the vector must be greater than or equal to the
           // slope of the vector to the top centre of the tile (x*2, topY*2+1) in order for it to miss the wall and
           // pass into the tile above
-          if(top.greaterOrEqual(topY * 2 + 1, x * 2) && !blocksLight(x, topY + 1, octant, origin))
+          if(top.greaterOrEqual(topY * 2 + 1, x * 2) && !blocksLight(x, topY + 1, octant, mapOrigin, facingAngle, halfAngleLimit))
             topY++;
         }
         else // the tile doesn't block light
@@ -117,7 +150,7 @@ public class LineOfSight {
           // there's no point in incrementing topY even if light passes through the corner of the tile above. so we
           // might as well use the bottom centre for both cases.
           int ax = x * 2; // centre
-          if(blocksLight(x + 1, topY + 1, octant, origin))
+          if(blocksLight(x + 1, topY + 1, octant, mapOrigin, facingAngle, halfAngleLimit))
             ax++; // use bottom-right if the tile above and right is a wall
           if(top.greater(topY * 2 + 1, ax))
             topY++;
@@ -137,18 +170,18 @@ public class LineOfSight {
         // is bevelled and bottom >= (bottomY*2+1)/(x*2). finally, the top-left corner is bevelled if the tiles to the
         // left and above are clear. we can assume the tile to the left is clear because otherwise the bottom vector
         // would be greater, so we only have to check above
-        if(bottom.greaterOrEqual(bottomY * 2 + 1, x * 2) && blocksLight(x, bottomY, octant, origin) && !blocksLight(x, bottomY + 1, octant, origin)) {
+        if(bottom.greaterOrEqual(bottomY * 2 + 1, x * 2) && blocksLight(x, bottomY, octant, mapOrigin, facingAngle, halfAngleLimit) && !blocksLight(x, bottomY + 1, octant, mapOrigin, facingAngle, halfAngleLimit)) {
           bottomY++;
         }
       }
       
       // go through the tiles in the column now that we know which ones could possibly be visible
-      int wasOpaque = -1; // 0:false, 1:true, -1:not applicable
+      int wasOpaque = NO_ANGLE_LIMIT; // 0:false, 1:true, -1:not applicable
       for(int y = topY; y >= bottomY; y--) // use a signed comparison because y can wrap around when decremented
       {
         if(rangeLimit < 0 || _getDistance.func(x, y) <= rangeLimit) // skip the tile if it's out of visual range
         {
-          boolean isOpaque = blocksLight(x, y, octant, origin);
+          boolean isOpaque = blocksLight(x, y, octant, mapOrigin, facingAngle, halfAngleLimit);
           // every tile where topY > y > bottomY is guaranteed to be visible. also, the code that initialises topY and
           // bottomY guarantees that if the tile is opaque then it's visible. so we only have to do extra work for the
           // case where the tile is clear and y == topY or y == bottomY. if y == topY then we have to make sure that
@@ -160,8 +193,9 @@ public class LineOfSight {
           // only if there's an unobstructed line to its centre. if you want it to be fully symmetrical, also remove
           // the "isOpaque ||" part and see NOTE comments further down
           // bool isVisible = isOpaque || ((y != topY || top.GreaterOrEqual(y, x)) && (y != bottomY || bottom.LessOrEqual(y, x)));
+                    
           if(isVisible)
-            setVisible(x, y, octant, origin);
+            setVisible(x, y, octant, mapOrigin);
           
           // if we found a transition from clear to opaque or vice versa, adjust the top and bottom vectors
           if(x != rangeLimit) // but don't bother adjusting them if this is the last column anyway
@@ -175,7 +209,7 @@ public class LineOfSight {
                 // we only have to check the tile above
                 int nx = x * 2, ny = y * 2 + 1; // top centre by default
                 // NOTE: if you're using full symmetry and want more expansive walls (recommended), comment out the next line
-                if(blocksLight(x, y + 1, octant, origin))
+                if(blocksLight(x, y + 1, octant, mapOrigin, facingAngle, halfAngleLimit))
                   nx--; // top left if the corner is not bevelled
                 if(top.greater(ny, nx)) // we have to maintain the invariant that top > bottom, so the new sector
                 {                       // created by adjusting the bottom is only valid if that's the case
@@ -186,7 +220,7 @@ public class LineOfSight {
                     break;
                   } // don't recurse unless necessary
                   else
-                    compute(octant, origin, rangeLimit, x + 1, top, new Slope(ny, nx));
+                    compute(octant, mapOrigin, rangeLimit, facingAngle, halfAngleLimit, x + 1, top, new Slope(ny, nx));
                 }
                 else // the new bottom is greater than or equal to the top, so the new sector is empty and we'll ignore
                 {    // it. if we're at the bottom of the column, we'd normally adjust the current sector rather than
@@ -204,7 +238,7 @@ public class LineOfSight {
                 // are clear. we know the tile below is clear because that's the current tile, so just check to the right
                 int nx = x * 2, ny = y * 2 + 1; // the bottom of the opaque tile (oy*2-1) equals the top of this tile (y*2+1)
                 // NOTE: if you're using full symmetry and want more expansive walls (recommended), comment out the next line
-                if(blocksLight(x + 1, y + 1, octant, origin))
+                if(blocksLight(x + 1, y + 1, octant, mapOrigin, facingAngle, halfAngleLimit))
                   nx++; // check the right of the opaque tile (y+1), not this one
                 // we have to maintain the invariant that top > bottom. if not, the sector is empty and we're done
                 if(bottom.greaterOrEqual(ny, nx))
@@ -228,9 +262,9 @@ public class LineOfSight {
   }
   
   // NOTE: the code duplication between BlocksLight and SetVisible is for performance. don't refactor the octant
-  // translation out unless you don't mind an 18% drop in speed
-  private boolean blocksLight(int x, int y, int octant, MapLocation origin) {
-    int nx = origin.getX(), ny = origin.getY();
+  // translation out unless you don't mind an 18% drop in speed (no value types in Java, yay!)
+  private boolean blocksLight(int x, int y, int octant, MapLocation mapOrigin, float facingAngle, float halfAngleLimit) {
+    int nx = mapOrigin.getX(), ny = mapOrigin.getY();
     switch(octant) {
       case 0:
         nx += x;
@@ -265,6 +299,15 @@ public class LineOfSight {
         ny += y;
         break;
     }
+    
+    // CODEPOKE: Calculate whether we go OoB on angle
+    if(halfAngleLimit != NO_ANGLE_LIMIT){
+    	float angle = tmpAngleCalc.set(nx - mapOrigin.getX(), ny - mapOrigin.getY()).angle();
+    	
+    	if(angle > halfAngleLimit && angle < 360 - halfAngleLimit)
+    		return true;
+    }
+    
     return _blocksLight.func(nx, ny);
   }
   

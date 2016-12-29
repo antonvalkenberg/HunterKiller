@@ -1,28 +1,37 @@
 package net.codepoke.ai.challenge.hunterkiller.enums;
 
+import lombok.AllArgsConstructor;
+
 /**
  * Enumeration of the directions used in the game.
  * 
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
+@AllArgsConstructor
 public enum Direction {
   /**
    * On this game's map structure, north is: decreasing Y, equal X.
    */
-  NORTH,
+  NORTH(270),
   /**
    * On this game's map structure, east is: equal Y, increasing X.
    */
-  EAST,
+  EAST(0),
   /**
    * On this game's map structure, south is: increasing Y, equal X.
    */
-  SOUTH,
+  SOUTH(90),
   /**
    * On this game's map structure, west is: equal Y, decreasing X.
    */
-  WEST;
+  WEST(180);
+	
+  /**
+   * The angle of this direction, which assumes that X-positive, Y == 0 will be 0.
+   * This is primarily used in LOS calculations and can be safely ignored. 
+   */
+  public float angle;
   
   public Direction getOppositeDirection() {
     switch(this) {
@@ -68,4 +77,6 @@ public enum Direction {
         return null;
     }
   }
+  
+  
 }

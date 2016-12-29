@@ -120,11 +120,14 @@ public class MapTest {
     Direction spawnDirection = Direction.NORTH;
     //Test the creation from a pre made map
     Map createdMap = HunterKillerStateFactory.constructFromFourPatch(testPatch, basePosition, spawnDirection);
+    
     //Go through the MapFeatures
     GameObject[][] content = createdMap.getMapContent();
     int index = Map.INTERNAL_MAP_FEATURE_INDEX;
+    
     //Should be 24 positions on the map
     assertEquals(24, content.length);
+    
     //Go through all positions and check if the correct object was created
     assertTrue(content[0][index] instanceof Space);
     assertTrue(content[1][index] instanceof Floor); //This is also the spawn point for top-left base
@@ -150,6 +153,7 @@ public class MapTest {
     assertTrue(content[21][index] instanceof Wall);
     assertTrue(content[22][index] instanceof Floor); //This is also the spawn point for bottom-right base
     assertTrue(content[23][index] instanceof Space);
+    
     //Check if the doors are created correctly (open/closed)
     //Closed door positions: 6, 11, 12, 17
     assertFalse(((Door)content[6][index]).isOpen());
