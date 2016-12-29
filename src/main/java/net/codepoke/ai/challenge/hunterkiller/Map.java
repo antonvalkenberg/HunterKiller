@@ -9,7 +9,6 @@ import net.codepoke.ai.challenge.hunterkiller.LineOfSight.BlocksLightFunction;
 import net.codepoke.ai.challenge.hunterkiller.LineOfSight.GetDistanceFunction;
 import net.codepoke.ai.challenge.hunterkiller.LineOfSight.SetVisibleFunction;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
-import net.codepoke.ai.challenge.hunterkiller.enums.UnitOrderType;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Door;
@@ -591,11 +590,33 @@ public class Map {
   }
   
   /**
+   * Creates a deep copy of this map.
+   * 
+   * @return
+   */
+  public Map copy() {
+    //Create a new map
+    Map newMap = new Map(this.mapWidth, this.mapHeight);
+    //Deep copy the map content
+    GameObject[][] content = copyMapContent();
+    //Set some things
+    newMap.setObjectIDCounter(this.internalObjectIDCounter);
+    newMap.setPlayerIDCounter(this.internalPlayerIDCounter);
+    newMap.setMapContent(content);
+    //Return the created map
+    return newMap;
+  }
+  
+  //endregion
+  
+  //region Overridden methods
+  
+  /**
    * Returns a string representation of the current map state. In this representation the left side
    * is the MapFeature layer while the right side is the Unit layer.
    */
   @Override
-public String toString() {
+  public String toString() {
     StringBuilder builder = new StringBuilder();
     for(int y = 0; y < mapHeight; y++) {
       //This will be one line of the printed map
@@ -617,22 +638,24 @@ public String toString() {
     return builder.toString();
   }
   
-  /**
-   * Creates a deep copy of this map.
-   * 
-   * @return
-   */
-  public Map copy() {
-    //Create a new map
-    Map newMap = new Map(this.mapWidth, this.mapHeight);
-    //Deep copy the map content
-    GameObject[][] content = copyMapContent();
-    //Set some things
-    newMap.setObjectIDCounter(this.internalObjectIDCounter);
-    newMap.setPlayerIDCounter(this.internalPlayerIDCounter);
-    newMap.setMapContent(content);
-    //Return the created map
-    return newMap;
+  @Override
+  public int hashCode() {
+    //We've chosen a prime number close to 50 to make the hash code slightly more like a number that does not occur naturally
+    int output = 43;
+    //Move through all positions on the map
+    for(int i = 0; i < mapContent.length; i++) {
+      GameObject[] cell = mapContent[i];
+      for(int j = 0; j < cell.length; j++) {
+        if(cell[j] == null) {
+          //Ignore positions that do not contain anything
+          continue;
+        }
+        //Update the output; XOR the ID of the object with the coordinates (i = position, j = level)
+        output ^= cell[j].getID() ^ i ^ j;
+      }
+    }
+    //Return the created code
+    return output;
   }
   
   //endregion
@@ -727,7 +750,6 @@ public String toString() {
             if(object instanceof Unit) {
               Unit unit = (Unit)object;
               state.getPlayer(unit.getSquadPlayerID()).removeUnitFromSquad(unit);
-              //TODO Or check for Infected's triggered ability here
             }
           }
           else {
@@ -889,7 +911,6 @@ public String toString() {
     //Check if there is a Unit on this position
     if(mapContent[position][INTERNAL_MAP_UNIT_INDEX] != null)
       mapContent[position][INTERNAL_MAP_UNIT_INDEX].reduceHP(damage);
-    //TODO Either check for Infected's triggered ability here, or
     return true;
   }
   
@@ -947,23 +968,6 @@ public String toString() {
     }
     
   }
-  
-  @Override
-	public int hashCode() {
-	  	int output = 43;
-	  	
-	  	for (int i = 0; i < mapContent.length; i++) {
-	  		GameObject[] cell = mapContent[i];
-			for (int j = 0; j < cell.length; j++) {
-				
-				if(cell[j] == null) continue;
-				
-				output ^= cell[j].getID() ^ i ^ j;
-			}
-		}
-	  	
-	  	return output;
-	}
   
   //endregion
 }

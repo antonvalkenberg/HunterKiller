@@ -2,7 +2,6 @@ package net.codepoke.ai.challenge.hunterkiller;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import lombok.Getter;
 import net.codepoke.ai.GameRules.Action;
 import net.codepoke.ai.GameRules.Result.Ranking;
@@ -86,7 +85,7 @@ public abstract class Player implements Comparable<Player> {
   
   //endregion
   
-  //region Public methods
+  //region Overridden methods
   
   /**
    * Compares two players according to their scores. Zero means the two players have equal score. A
@@ -95,7 +94,7 @@ public abstract class Player implements Comparable<Player> {
    * player with the highest score as the first in the collection (the lowest index).
    */
   @Override
-public int compareTo(Player other) {
+  public int compareTo(Player other) {
     if(this.score > other.score) {
       return -1;
     }
@@ -108,7 +107,12 @@ public int compareTo(Player other) {
   }
   
   @Override
-public String toString() {
+  public int hashCode() {
+    return ID;
+  }
+  
+  @Override
+  public String toString() {
     return String.format("%s (ID: %d)", this.name, this.ID);
   }
   
@@ -165,11 +169,6 @@ public String toString() {
    * @return
    */
   public abstract Player copy();
-  
-  @Override
-	public int hashCode() {	
-		return ID;
-	}
   
   //endregion
   

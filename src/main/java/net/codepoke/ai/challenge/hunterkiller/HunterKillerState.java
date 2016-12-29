@@ -157,11 +157,6 @@ public class HunterKillerState implements State {
   
   @Override
   public long hashKey() {
-    // TODO ?Create a hash of:
-    //    - round #
-    //    - active player ID
-    //    - player IDs
-    //    - all object IDs on the map
     return hashCode();
   }
   

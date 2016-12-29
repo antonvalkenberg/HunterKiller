@@ -1,4 +1,3 @@
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -165,6 +164,7 @@ public class MapTest {
     assertTrue(((Door)content[9][index]).isOpen());
     assertTrue(((Door)content[14][index]).isOpen());
     assertTrue(((Door)content[15][index]).isOpen());
+    
     //Check if the bases have their spawn locations set correctly
     int topLeftSpawnPosition = Map.toPosition(((Base)content[7][index]).getSpawnLocation(), createdMap.getMapWidth());
     assertEquals(1, topLeftSpawnPosition);

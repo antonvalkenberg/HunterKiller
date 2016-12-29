@@ -2,8 +2,6 @@ package net.codepoke.ai.challenge.hunterkiller;
 
 import java.util.List;
 
-import com.badlogic.gdx.utils.Array;
-
 import net.codepoke.ai.GameRules;
 import net.codepoke.ai.GameRules.Result.Ranking;
 import net.codepoke.ai.challenge.hunterkiller.enums.BaseOrderType;
@@ -17,6 +15,8 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 import net.codepoke.ai.challenge.hunterkiller.orders.BaseOrder;
 import net.codepoke.ai.challenge.hunterkiller.orders.HunterKillerOrder;
 import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
+
+import com.badlogic.gdx.utils.Array;
 
 /**
  * Class representing the game logic for HunterKiller.
@@ -306,6 +306,7 @@ public class HunterKillerRules implements GameRules<HunterKillerState, HunterKil
       return false;
     //Tell the map that the target location is being attacked for X damage
     attackSuccess = map.attackLocation(attackOrder.getTargetLocation(), unit.getAttackDamage());
+    //TODO Implement check for and resolution of Infected's triggered ability
     //Return
     return attackSuccess;
   }
@@ -342,7 +343,7 @@ public class HunterKillerRules implements GameRules<HunterKillerState, HunterKil
     //Execute the special action, this is different per Unit type
     if(object instanceof Infected) {
       //The special attack of an infected can't actually be ordered, since it triggers on kill
-      //TODO Implement Infected's triggered ability
+      return false;
     }
     else if(object instanceof Medic) {
       //The special attack of a medic heals a unit for an amount

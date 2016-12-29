@@ -134,7 +134,6 @@ public abstract class GameObject {
    *          The new location for this object
    */
   public void setLocation(MapLocation location) {
-    //TODO ?Add some precautions to restrict setting of location?
     this.location = new MapLocation(location.getX(), location.getY());
   }
   

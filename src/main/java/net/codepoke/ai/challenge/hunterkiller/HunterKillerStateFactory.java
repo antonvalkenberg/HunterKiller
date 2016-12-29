@@ -2,7 +2,6 @@ package net.codepoke.ai.challenge.hunterkiller;
 
 import java.util.ArrayList;
 import java.util.Random;
-
 import lombok.val;
 import net.codepoke.ai.GameRules.Generator;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
@@ -52,7 +51,7 @@ public class HunterKillerStateFactory implements Generator<HunterKillerState> {
   public static Map constructFromFourPatch(FourPatch patch, int basePosition, Direction spawnDirection) {
     //Set the dimensions of the map we are creating
     int mapWidth = patch.repeatX * 2;
-    int mapHeight = patch.repeatY * 2;	
+    int mapHeight = patch.repeatY * 2;
     //Create an empty Map
     Map newMap = new Map(mapWidth, mapHeight);
     
@@ -137,7 +136,7 @@ public class HunterKillerStateFactory implements Generator<HunterKillerState> {
   
   /**
    * Generates an initial state of the game from a collection of players that will participate and a
-   * String defining some options for the game.
+   * String defining some options for the game. Currently no options are supported.
    */
   @Override
   public HunterKillerState generateInitialState(String[] playerNames, String options) {
@@ -163,7 +162,7 @@ public class HunterKillerStateFactory implements Generator<HunterKillerState> {
     
     //Check if there is a Base for each player
     if(bases.size() != playerNames.length) {
-      //TODO ?Throw an error?
+      //TODO Throw an error!
     }
     
     //Load the players
@@ -171,12 +170,10 @@ public class HunterKillerStateFactory implements Generator<HunterKillerState> {
     for(int i = 0; i < players.length; i++) {
       //Assign the player a random base
       Base base = bases.remove(r.nextInt(bases.size()));
-      //TODO ?Create a custom class loader to load Players from different classes?
       players[i] = new TestPlayer(map.requestNewPlayerID(), playerNames[i], base);
     }
     
     //Create the initial state
-    //TODO ?Create a turn order for players
     return new HunterKillerState(map, players, 1, 0);
   }
   
