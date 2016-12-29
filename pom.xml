@@ -4,7 +4,7 @@
   <artifactId>poke-ai-hunterkiller</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>HunterKiller</name>
-  <description>Game developed for AI Challenge 7</description>
+  <description>A squad-based AI challenge in which the players are tasked with eliminating each others bases while ensuring their base remains intact.</description>
   
   <build>  
     <plugins>    
