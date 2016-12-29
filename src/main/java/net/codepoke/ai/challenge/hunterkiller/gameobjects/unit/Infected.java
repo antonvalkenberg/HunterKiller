@@ -1,10 +1,10 @@
-package main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit;
+package net.codepoke.ai.challenge.hunterkiller.gameobjects.unit;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import main.java.net.codepoke.ai.challenge.hunterkiller.MapLocation;
-import main.java.net.codepoke.ai.challenge.hunterkiller.enums.Direction;
-import main.java.net.codepoke.ai.challenge.hunterkiller.enums.TileType;
+import net.codepoke.ai.challenge.hunterkiller.MapLocation;
+import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
+import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 
 /**
  * Class representing an Infected unit in the game.
@@ -116,7 +116,8 @@ public class Infected extends Unit {
   /**
    * Start the cooldown of the infected's special attack.
    */
-  public void startCooldown() {
+  @Override
+public void startCooldown() {
     this.setSpecialAttackCooldown(INFECTED_COOLDOWN);
   }
   

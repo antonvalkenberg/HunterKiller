@@ -1,10 +1,10 @@
-package main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit;
+package net.codepoke.ai.challenge.hunterkiller.gameobjects.unit;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import main.java.net.codepoke.ai.challenge.hunterkiller.MapLocation;
-import main.java.net.codepoke.ai.challenge.hunterkiller.enums.Direction;
-import main.java.net.codepoke.ai.challenge.hunterkiller.enums.TileType;
+import net.codepoke.ai.challenge.hunterkiller.MapLocation;
+import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
+import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 
 /**
  * Class representing a Soldier unit in the game.
@@ -124,7 +124,8 @@ public class Soldier extends Unit {
   /**
    * Start the cooldown of the soldier's special attack.
    */
-  public void startCooldown() {
+  @Override
+public void startCooldown() {
     this.setSpecialAttackCooldown(SOLDIER_COOLDOWN);
   }
   

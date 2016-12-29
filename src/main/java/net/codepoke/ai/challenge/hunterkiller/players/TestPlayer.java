@@ -1,10 +1,11 @@
-package main.java.net.codepoke.ai.challenge.hunterkiller.players;
+package net.codepoke.ai.challenge.hunterkiller.players;
 
 import java.util.List;
-import main.java.net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
-import main.java.net.codepoke.ai.challenge.hunterkiller.Player;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
+
 import net.codepoke.ai.GameRules.Action;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
+import net.codepoke.ai.challenge.hunterkiller.Player;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
 
 /**
  * A player to test with, does mostly random things.
@@ -27,7 +28,7 @@ public class TestPlayer extends Player {
    * (non-Javadoc)
    * 
    * @see
-   * main.java.net.codepoke.ai.challenge.hunterkiller.Player#act(main.java.net.codepoke.ai.challenge
+   * net.codepoke.ai.challenge.hunterkiller.Player#act(main.java.net.codepoke.ai.challenge
    * .hunterkiller.HunterKillerState)
    */
   @Override

@@ -1,8 +1,8 @@
-package main.java.net.codepoke.ai.challenge.hunterkiller;
+package net.codepoke.ai.challenge.hunterkiller;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import main.java.net.codepoke.ai.challenge.hunterkiller.enums.Direction;
+import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 
 /**
  * Represents a location on the {@link Map}. Contains utility methods for calculating distances

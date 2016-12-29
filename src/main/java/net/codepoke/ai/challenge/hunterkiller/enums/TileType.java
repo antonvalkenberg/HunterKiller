@@ -1,4 +1,4 @@
-package main.java.net.codepoke.ai.challenge.hunterkiller.enums;
+package net.codepoke.ai.challenge.hunterkiller.enums;
 
 /**
  * Defines the various types of tiles that can be at a location and their String representation.

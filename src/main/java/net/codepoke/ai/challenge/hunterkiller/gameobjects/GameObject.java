@@ -1,10 +1,10 @@
-package main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects;
+package net.codepoke.ai.challenge.hunterkiller.gameobjects;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import main.java.net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
-import main.java.net.codepoke.ai.challenge.hunterkiller.MapLocation;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
+import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 
 /**
  * Abstract class representing any object in the game that can be placed on the map. The game engine
@@ -116,6 +116,7 @@ public abstract class GameObject {
   /**
    * Returns a string representation of this GameObject.
    */
+  @Override
   public abstract String toString();
   
   /**

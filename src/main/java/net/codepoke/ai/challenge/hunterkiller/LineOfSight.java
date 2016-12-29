@@ -1,4 +1,4 @@
-package main.java.net.codepoke.ai.challenge.hunterkiller;
+package net.codepoke.ai.challenge.hunterkiller;
 
 /**
  * Class representing the line of sight implementation for the game. See:
@@ -61,7 +61,7 @@ public class LineOfSight {
     // |  \/  |   g top centre:    (y*2+1) / (x*2)     e-h are the corners of the inner (wall) diamond
     // c------d   h bottom centre: (y*2-1) / (x*2)     i-m are the corners of the inner square (1/2 tile width)
     //    h
-    for(; x <= (int)rangeLimit; x++) // (x <= (int)rangeLimit) == (rangeLimit < 0 || x <= rangeLimit)
+    for(; x <= rangeLimit; x++) // (x <= (int)rangeLimit) == (rangeLimit < 0 || x <= rangeLimit)
     {
       // compute the Y coordinates of the top and bottom of the sector. we maintain that top > bottom
       int topY;
@@ -144,9 +144,9 @@ public class LineOfSight {
       
       // go through the tiles in the column now that we know which ones could possibly be visible
       int wasOpaque = -1; // 0:false, 1:true, -1:not applicable
-      for(int y = topY; (int)y >= (int)bottomY; y--) // use a signed comparison because y can wrap around when decremented
+      for(int y = topY; y >= bottomY; y--) // use a signed comparison because y can wrap around when decremented
       {
-        if(rangeLimit < 0 || _getDistance.func((int)x, (int)y) <= rangeLimit) // skip the tile if it's out of visual range
+        if(rangeLimit < 0 || _getDistance.func(x, y) <= rangeLimit) // skip the tile if it's out of visual range
         {
           boolean isOpaque = blocksLight(x, y, octant, origin);
           // every tile where topY > y > bottomY is guaranteed to be visible. also, the code that initialises topY and
@@ -265,7 +265,7 @@ public class LineOfSight {
         ny += y;
         break;
     }
-    return _blocksLight.func((int)nx, (int)ny);
+    return _blocksLight.func(nx, ny);
   }
   
   private void setVisible(int x, int y, int octant, MapLocation origin) {
@@ -304,7 +304,7 @@ public class LineOfSight {
         ny += y;
         break;
     }
-    _setVisible.func((int)nx, (int)ny);
+    _setVisible.func(nx, ny);
   }
   
   // represents the slope Y/X as a rational number

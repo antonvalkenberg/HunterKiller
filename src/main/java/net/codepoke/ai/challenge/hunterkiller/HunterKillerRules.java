@@ -1,20 +1,22 @@
-package main.java.net.codepoke.ai.challenge.hunterkiller;
+package net.codepoke.ai.challenge.hunterkiller;
 
 import java.util.List;
-import main.java.net.codepoke.ai.challenge.hunterkiller.enums.BaseOrderType;
-import main.java.net.codepoke.ai.challenge.hunterkiller.enums.Direction;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.MapFeature;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
-import main.java.net.codepoke.ai.challenge.hunterkiller.orders.BaseOrder;
-import main.java.net.codepoke.ai.challenge.hunterkiller.orders.HunterKillerOrder;
-import main.java.net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
+
+import com.badlogic.gdx.utils.Array;
+
 import net.codepoke.ai.GameRules;
 import net.codepoke.ai.GameRules.Result.Ranking;
-import com.badlogic.gdx.utils.Array;
+import net.codepoke.ai.challenge.hunterkiller.enums.BaseOrderType;
+import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.MapFeature;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
+import net.codepoke.ai.challenge.hunterkiller.orders.BaseOrder;
+import net.codepoke.ai.challenge.hunterkiller.orders.HunterKillerOrder;
+import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
 
 /**
  * Class representing the game logic for HunterKiller.

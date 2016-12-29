@@ -1,7 +1,6 @@
-package main.java.net.codepoke.ai.challenge.hunterkiller.enums;
+package net.codepoke.ai.challenge.hunterkiller.enums;
 
-import main.java.net.codepoke.ai.challenge.hunterkiller.FourPatch;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
+import net.codepoke.ai.challenge.hunterkiller.FourPatch;
 
 /**
  * Defines a list of pre-made Maps (limited to the top-left quadrant since this is copied).

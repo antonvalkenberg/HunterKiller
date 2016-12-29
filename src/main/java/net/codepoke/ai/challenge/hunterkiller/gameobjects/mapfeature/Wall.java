@@ -1,9 +1,9 @@
-package main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature;
+package net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import main.java.net.codepoke.ai.challenge.hunterkiller.MapLocation;
-import main.java.net.codepoke.ai.challenge.hunterkiller.enums.TileType;
+import net.codepoke.ai.challenge.hunterkiller.MapLocation;
+import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 
 /**
  * Class representing a wall in the game.

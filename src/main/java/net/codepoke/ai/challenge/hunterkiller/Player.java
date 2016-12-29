@@ -1,12 +1,13 @@
-package main.java.net.codepoke.ai.challenge.hunterkiller;
+package net.codepoke.ai.challenge.hunterkiller;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import lombok.Getter;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 import net.codepoke.ai.GameRules.Action;
 import net.codepoke.ai.GameRules.Result.Ranking;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 
 /**
  * Abstract class representing a player in the game. A player has a {@link Base} from which they can
@@ -93,7 +94,8 @@ public abstract class Player implements Comparable<Player> {
    * has a higher score. This seems nonintuitive, but when we make our {@link Ranking}, we want the
    * player with the highest score as the first in the collection (the lowest index).
    */
-  public int compareTo(Player other) {
+  @Override
+public int compareTo(Player other) {
     if(this.score > other.score) {
       return -1;
     }
@@ -105,7 +107,8 @@ public abstract class Player implements Comparable<Player> {
     }
   }
   
-  public String toString() {
+  @Override
+public String toString() {
     return String.format("%s (ID: %d)", this.name, this.ID);
   }
   

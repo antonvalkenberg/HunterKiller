@@ -1,9 +1,9 @@
-package main.java.net.codepoke.ai.challenge.hunterkiller.orders;
+package net.codepoke.ai.challenge.hunterkiller.orders;
 
 import lombok.Getter;
-import main.java.net.codepoke.ai.challenge.hunterkiller.MapLocation;
-import main.java.net.codepoke.ai.challenge.hunterkiller.enums.UnitOrderType;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
+import net.codepoke.ai.challenge.hunterkiller.MapLocation;
+import net.codepoke.ai.challenge.hunterkiller.enums.UnitOrderType;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 
 /**
  * Class representing a {@link HunterKillerOrder} performed by a {@link Unit}. An order can

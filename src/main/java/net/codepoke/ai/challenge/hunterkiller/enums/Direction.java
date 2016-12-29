@@ -1,4 +1,4 @@
-package main.java.net.codepoke.ai.challenge.hunterkiller.enums;
+package net.codepoke.ai.challenge.hunterkiller.enums;
 
 /**
  * Enumeration of the directions used in the game.

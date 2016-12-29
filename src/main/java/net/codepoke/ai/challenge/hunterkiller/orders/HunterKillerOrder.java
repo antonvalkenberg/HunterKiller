@@ -1,8 +1,8 @@
-package main.java.net.codepoke.ai.challenge.hunterkiller.orders;
+package net.codepoke.ai.challenge.hunterkiller.orders;
 
 import lombok.Getter;
-import main.java.net.codepoke.ai.challenge.hunterkiller.Player;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
+import net.codepoke.ai.challenge.hunterkiller.Player;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 
 /**
  * Abstract class representing a {@link Player}'s order to a single {@link GameObject}.
@@ -36,3 +36,4 @@ public abstract class HunterKillerOrder {
   
   //endregion
 }
+	

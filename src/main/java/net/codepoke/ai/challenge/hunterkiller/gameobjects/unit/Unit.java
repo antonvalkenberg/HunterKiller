@@ -1,14 +1,15 @@
-package main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit;
+package net.codepoke.ai.challenge.hunterkiller.gameobjects.unit;
 
 import java.util.List;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import main.java.net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
-import main.java.net.codepoke.ai.challenge.hunterkiller.MapLocation;
-import main.java.net.codepoke.ai.challenge.hunterkiller.enums.Direction;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
+import net.codepoke.ai.challenge.hunterkiller.MapLocation;
+import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 
 /**
  * Abstract class representing a Unit in the game.

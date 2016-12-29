@@ -1,9 +1,9 @@
-package main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature;
+package net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature;
 
 import lombok.Getter;
-import main.java.net.codepoke.ai.challenge.hunterkiller.MapLocation;
-import main.java.net.codepoke.ai.challenge.hunterkiller.enums.TileType;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
+import net.codepoke.ai.challenge.hunterkiller.MapLocation;
+import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 
 /**
  * Class representing the base for a player. The base can spawn {@link Unit}s and is the ultimate

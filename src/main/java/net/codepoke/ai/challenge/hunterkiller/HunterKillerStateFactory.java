@@ -1,19 +1,20 @@
-package main.java.net.codepoke.ai.challenge.hunterkiller;
+package net.codepoke.ai.challenge.hunterkiller;
 
 import java.util.ArrayList;
 import java.util.Random;
+
 import lombok.val;
-import main.java.net.codepoke.ai.challenge.hunterkiller.enums.Direction;
-import main.java.net.codepoke.ai.challenge.hunterkiller.enums.PremadeMap;
-import main.java.net.codepoke.ai.challenge.hunterkiller.enums.TileType;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Door;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Floor;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Space;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Wall;
-import main.java.net.codepoke.ai.challenge.hunterkiller.players.TestPlayer;
 import net.codepoke.ai.GameRules.Generator;
+import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
+import net.codepoke.ai.challenge.hunterkiller.enums.PremadeMap;
+import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Door;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Floor;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Space;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Wall;
+import net.codepoke.ai.challenge.hunterkiller.players.TestPlayer;
 
 /**
  * Class representing a {@link Generator} for a {@link Map}. Contains methods to generate a map from

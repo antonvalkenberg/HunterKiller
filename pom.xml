@@ -6,19 +6,16 @@
   <name>HunterKiller</name>
   <description>Game developed for AI Challenge 7</description>
   
-  <build>
-    <sourceDirectory>src</sourceDirectory>
-    <plugins>
-    
+  <build>  
+    <plugins>    
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.3</version>
+        <version>3.6.0</version>
         <configuration>
           <source>1.6</source>
           <target>1.6</target>
         </configuration>
-      </plugin>
-      
+      </plugin>      
     </plugins>
   </build>
   

@@ -1,6 +1,6 @@
-package main.java.net.codepoke.ai.challenge.hunterkiller;
+package net.codepoke.ai.challenge.hunterkiller;
 
-import main.java.net.codepoke.ai.challenge.hunterkiller.enums.TileType;
+import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 
 /**
  * This class represents an alternative form of the ninepatch concept. It defines the left top

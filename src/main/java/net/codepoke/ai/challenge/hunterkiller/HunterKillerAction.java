@@ -1,12 +1,14 @@
-package main.java.net.codepoke.ai.challenge.hunterkiller;
+package net.codepoke.ai.challenge.hunterkiller;
 
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Getter;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
-import main.java.net.codepoke.ai.challenge.hunterkiller.orders.HunterKillerOrder;
-import net.codepoke.ai.GameRules.Action;
+
 import com.badlogic.gdx.utils.IntArray;
+
+import lombok.Getter;
+import net.codepoke.ai.GameRules.Action;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
+import net.codepoke.ai.challenge.hunterkiller.orders.HunterKillerOrder;
 
 /**
  * Class representing an {@link Action} in the game. A {@link Player}'s turn consists of a

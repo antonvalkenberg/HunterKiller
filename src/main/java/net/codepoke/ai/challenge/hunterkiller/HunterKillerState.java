@@ -1,9 +1,9 @@
-package main.java.net.codepoke.ai.challenge.hunterkiller;
+package net.codepoke.ai.challenge.hunterkiller;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import main.java.net.codepoke.ai.challenge.hunterkiller.orders.NullMove;
 import net.codepoke.ai.GameRules.State;
+import net.codepoke.ai.challenge.hunterkiller.orders.NullMove;
 
 /**
  * Class representing the state of the HunterKiller game. In this state one {@link Player} is the

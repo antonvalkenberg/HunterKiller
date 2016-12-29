@@ -1,11 +1,11 @@
-package main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature;
+package net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import main.java.net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
-import main.java.net.codepoke.ai.challenge.hunterkiller.MapLocation;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
+import net.codepoke.ai.challenge.hunterkiller.MapLocation;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 
 /**
  * Abstract class representing a feature on the Map of the game.

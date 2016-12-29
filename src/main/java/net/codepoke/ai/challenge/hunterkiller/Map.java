@@ -1,25 +1,27 @@
-package main.java.net.codepoke.ai.challenge.hunterkiller;
+package net.codepoke.ai.challenge.hunterkiller;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import main.java.net.codepoke.ai.challenge.hunterkiller.LineOfSight.BlocksLightFunction;
-import main.java.net.codepoke.ai.challenge.hunterkiller.LineOfSight.GetDistanceFunction;
-import main.java.net.codepoke.ai.challenge.hunterkiller.LineOfSight.SetVisibleFunction;
-import main.java.net.codepoke.ai.challenge.hunterkiller.enums.Direction;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Door;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Floor;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.MapFeature;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Space;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Wall;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
-import main.java.net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
-import main.java.net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
+import net.codepoke.ai.challenge.hunterkiller.LineOfSight.BlocksLightFunction;
+import net.codepoke.ai.challenge.hunterkiller.LineOfSight.GetDistanceFunction;
+import net.codepoke.ai.challenge.hunterkiller.LineOfSight.SetVisibleFunction;
+import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
+import net.codepoke.ai.challenge.hunterkiller.enums.UnitOrderType;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Door;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Floor;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.MapFeature;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Space;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Wall;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
+import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
 
 /**
  * The map on which the game is played. The map is internally represented as a 2-dimensional array.
@@ -295,6 +297,7 @@ public class Map {
     //Check that the unit that is trying to move is actually at the location they are trying to move from
     if(move.getObjectID() != ((Unit)mapContent[toPosition(fromLocation)][INTERNAL_MAP_UNIT_INDEX]).getID())
       return false;
+    
     //Switch on the type of move described in the UnitOrder
     switch(move.getOrderType()) {
       case MOVE_NORTH:
@@ -591,7 +594,8 @@ public class Map {
    * Returns a string representation of the current map state. In this representation the left side
    * is the MapFeature layer while the right side is the Unit layer.
    */
-  public String toString() {
+  @Override
+public String toString() {
     StringBuilder builder = new StringBuilder();
     for(int y = 0; y < mapHeight; y++) {
       //This will be one line of the printed map

@@ -1,7 +1,8 @@
-package main.java.net.codepoke.ai.challenge.hunterkiller.orders;
+package net.codepoke.ai.challenge.hunterkiller.orders;
 
-import main.java.net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
-import main.java.net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
+import net.codepoke.ai.GameRules.State;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 
 /**
  * Class representing a null move. No action is taken. Does not serve much purpose other than
