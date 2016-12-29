@@ -48,36 +48,16 @@ public class Base extends MapFeature {
   //region Constructor
   
   /**
-   * Constructs a new instance of a Base.
-   * 
-   * @param id
-   *          The Base's unique identifier.
-   * @param mapLocation
-   *          The location of the Base on the map.
-   * @param spawnLocation
-   *          The location of the Base's spawn point.
+   * Constructs a new instance of a Base with default values.
+   * {@link Base#Base(int, MapLocation, MapLocation, int, int, boolean, boolean, boolean)}
    */
   public Base(int id, MapLocation mapLocation, MapLocation spawnLocation) {
     this(id, mapLocation, spawnLocation, BASE_MAX_HP, BASE_DESTRUCTIBLE, BASE_BLOCKING_LOS, BASE_WALKABLE);
   }
   
   /**
-   * Constructs a new instance of a Base.
-   * 
-   * @param id
-   *          The Base's unique identifier.
-   * @param mapLocation
-   *          The location of the Base on the map.
-   * @param spawnLocation
-   *          The location of the Base's spawn point.
-   * @param maxHP
-   *          The maximum amount of health points the Base has.
-   * @param destructible
-   *          Whether or not the Base is destructible.
-   * @param blockingLOS
-   *          Whether or not the Base blocks Line of Sight for Units.
-   * @param walkable
-   *          Whether or not Units can move over the Base.
+   * Constructs a new instance of a Base with a specific HP, and uses default values for other values.
+   * {@link Base#Base(int, MapLocation, MapLocation, int, int, boolean, boolean, boolean)}
    */
   public Base(int id, MapLocation mapLocation, MapLocation spawnLocation, int maxHP, boolean destructible, boolean blockingLOS, boolean walkable) {
     this(id, mapLocation, spawnLocation, maxHP, maxHP, destructible, blockingLOS, walkable);
