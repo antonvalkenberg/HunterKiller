@@ -51,8 +51,8 @@ public class HunterKillerStateFactory implements Generator<HunterKillerState> {
    */
   public static Map constructFromFourPatch(FourPatch patch, int basePosition, Direction spawnDirection) {
     //Set the dimensions of the map we are creating
-    int mapWidth = patch.quadrantWidth * 2;
-    int mapHeight = patch.quadrantHeight * 2;
+    int mapWidth = patch.repeatX * 2;
+    int mapHeight = patch.repeatY * 2;	
     //Create an empty Map
     Map newMap = new Map(mapWidth, mapHeight);
     
@@ -60,7 +60,7 @@ public class HunterKillerStateFactory implements Generator<HunterKillerState> {
     GameObject[][] mapData = new GameObject[mapWidth * mapHeight][Map.INTERNAL_MAP_LAYERS];
     
     //The provided position of the base is where it's at on the quadrant, so we need to adjust it to the actual map.
-    MapLocation baseLocation = Map.toLocation(basePosition, patch.quadrantWidth);
+    MapLocation baseLocation = Map.toLocation(basePosition, patch.repeatX);
     int mapBasePosition = Map.toPosition(baseLocation, mapWidth);
     MapLocation mapBaseLocation = Map.toLocation(mapBasePosition, mapWidth);
     MapLocation mapBaseSpawnLocation = newMap.getLocationInDirection(mapBaseLocation, spawnDirection, 1);
