@@ -166,6 +166,11 @@ public String toString() {
    */
   public abstract Player copy();
   
+  @Override
+	public int hashCode() {	
+		return ID;
+	}
+  
   //endregion
   
 }

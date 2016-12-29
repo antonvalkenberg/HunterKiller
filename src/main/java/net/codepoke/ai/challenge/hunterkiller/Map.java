@@ -948,5 +948,22 @@ public String toString() {
     
   }
   
+  @Override
+	public int hashCode() {
+	  	int output = 43;
+	  	
+	  	for (int i = 0; i < mapContent.length; i++) {
+	  		GameObject[] cell = mapContent[i];
+			for (int j = 0; j < cell.length; j++) {
+				
+				if(cell[j] == null) continue;
+				
+				output ^= cell[j].getID() ^ i ^ j;
+			}
+		}
+	  	
+	  	return output;
+	}
+  
   //endregion
 }
