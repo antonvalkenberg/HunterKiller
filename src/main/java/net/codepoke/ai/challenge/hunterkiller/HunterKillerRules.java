@@ -1,11 +1,11 @@
 package net.codepoke.ai.challenge.hunterkiller;
 
 import java.util.List;
-
 import net.codepoke.ai.GameRules;
 import net.codepoke.ai.GameRules.Result.Ranking;
 import net.codepoke.ai.challenge.hunterkiller.enums.BaseOrderType;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
+import net.codepoke.ai.challenge.hunterkiller.enums.Direction.Rotation;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.MapFeature;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
@@ -15,7 +15,6 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 import net.codepoke.ai.challenge.hunterkiller.orders.BaseOrder;
 import net.codepoke.ai.challenge.hunterkiller.orders.HunterKillerOrder;
 import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
-
 import com.badlogic.gdx.utils.Array;
 
 /**
@@ -93,12 +92,12 @@ public class HunterKillerRules implements GameRules<HunterKillerState, HunterKil
         switch(unitOrder.getOrderType()) {
           case ROTATE_EAST:
             //Try to rotate the unit east
-            if(!rotateUnit(map, unitOrder.getObjectID(), Direction.EAST))
+            if(!rotateUnit(map, unitOrder.getObjectID(), Rotation.EAST))
               failCount++;
             break;
           case ROTATE_WEST:
             //Try to rotate the unit west
-            if(!rotateUnit(map, unitOrder.getObjectID(), Direction.WEST))
+            if(!rotateUnit(map, unitOrder.getObjectID(), Rotation.WEST))
               failCount++;
             break;
           case MOVE_NORTH:
@@ -219,13 +218,11 @@ public class HunterKillerRules implements GameRules<HunterKillerState, HunterKil
    *          The map that the unit is on.
    * @param unitID
    *          The unique identifier of the unit.
-   * @param rotationalDirection
-   *          The direction to rotate the unit in. Note: only EAST and WEST are functional
-   *          rotational directions.
+   * @param rotation
+   *          The direction to rotate the unit in.
    * @return Whether or not the rotation succeeded.
    */
-  private boolean rotateUnit(Map map, int unitID, Direction rotationalDirection) {
-    boolean rotationalSuccess = false;
+  private boolean rotateUnit(Map map, int unitID, Rotation rotation) {
     //Check if there is a object on the map with the specified ID.
     GameObject object = map.getObject(unitID);
     //Check if an object was found, and that object is a Unit.
@@ -235,21 +232,9 @@ public class HunterKillerRules implements GameRules<HunterKillerState, HunterKil
       return false;
     //Rotate the unit in the specified direction
     Unit unit = (Unit)object;
-    switch(rotationalDirection) {
-      case EAST:
-        unit.setOrientation(unit.getOrientation().rotateEast());
-        rotationalSuccess = true;
-        break;
-      case WEST:
-        unit.setOrientation(unit.getOrientation().rotateWest());
-        rotationalSuccess = true;
-        break;
-      default:
-        System.err.println("WARNING: Unsupported Rotational Direction.");
-        return false;
-    }
+    unit.setOrientation(Direction.rotate(unit.getOrientation(), rotation));
     //Return
-    return rotationalSuccess;
+    return true;
   }
   
   /**
