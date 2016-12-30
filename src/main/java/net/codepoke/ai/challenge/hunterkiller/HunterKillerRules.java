@@ -114,7 +114,7 @@ public class HunterKillerRules implements GameRules<HunterKillerState, HunterKil
             break;
           case ATTACK:
             //Try to execute the ordered attack
-            if(!attackLocation(map, unitOrder))
+            if(!attackLocation(map, actingPlayer, unitOrder))
               failCount++;
             break;
           case ATTACK_SPECIAL:
@@ -273,11 +273,13 @@ public class HunterKillerRules implements GameRules<HunterKillerState, HunterKil
    * 
    * @param map
    *          The map the attack is being performed on.
+   * @param player
+   *          The player ordering this attack.
    * @param attackOrder
    *          The order.
    * @return Whether or not the attack was successfully executed.
    */
-  private boolean attackLocation(Map map, UnitOrder attackOrder) {
+  private boolean attackLocation(Map map, Player player, UnitOrder attackOrder) {
     boolean attackSuccess = false;
     //Check if there is a object on the map with the specified ID
     GameObject object = map.getObject(attackOrder.getObjectID());
@@ -287,15 +289,34 @@ public class HunterKillerRules implements GameRules<HunterKillerState, HunterKil
     if(!(object instanceof Unit))
       return false;
     Unit unit = (Unit)object;
+    MapLocation targetLocation = attackOrder.getTargetLocation();
     //Check if the target location is in the Unit's field of view
-    if(!unit.isInFieldOfView(attackOrder.getTargetLocation()))
+    if(!unit.isInFieldOfView(targetLocation))
       return false;
     //Check if the target location is within the Unit's attack range
-    if(unit.getAttackRange() < MapLocation.getManhattanDist(unit.getLocation(), attackOrder.getTargetLocation()))
+    if(unit.getAttackRange() < MapLocation.getManhattanDist(unit.getLocation(), targetLocation))
       return false;
     //Tell the map that the target location is being attacked for X damage
-    attackSuccess = map.attackLocation(attackOrder.getTargetLocation(), unit.getAttackDamage());
-    //TODO Implement check for and resolution of Infected's triggered ability
+    attackSuccess = map.attackLocation(targetLocation, unit.getAttackDamage());
+    //Check if we need to trigger an Infected's special attack.
+    //Several conditions need to hold: (in order of most likely to break out of the statement)
+    //  - An Infected was the source of the attack
+    //  - There is a unit on the targeted location
+    //  - The unit is now dead
+    //  - The Infected's special attack is not on cooldown
+    //  - The attack succeeded
+    if(unit instanceof Infected && map.getUnitAtLocation(targetLocation) != null && map.getUnitAtLocation(targetLocation).getHpCurrent() <= 0 && unit.getSpecialAttackCooldown() == 0 && attackSuccess) {
+      //Remove the dead unit
+      attackSuccess = map.remove(map.toPosition(targetLocation), map.getUnitAtLocation(targetLocation));
+      if(attackSuccess) {
+        //Spawn a new Infected, on the same team as the Infected that performed this attack
+        Infected spawn = new Infected(map.requestNewGameObjectID(), player.getID(), targetLocation, unit.getOrientation());
+        attackSuccess = map.place(map.toPosition(targetLocation), spawn);
+        //Add the newly spawned unit to the player's squad
+        if(attackSuccess)
+          player.addUnitToSquad(spawn);
+      }
+    }
     //Return
     return attackSuccess;
   }

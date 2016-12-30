@@ -551,6 +551,20 @@ public class Map {
   }
   
   /**
+   * Returns the unit at the specified location on the map, or null if no unit is found.
+   * 
+   * @param location
+   *          The location to find a unit at.
+   * @return
+   */
+  public Unit getUnitAtLocation(MapLocation location) {
+    if(mapContent[toPosition(location)][INTERNAL_MAP_UNIT_INDEX] != null) {
+      return (Unit)mapContent[toPosition(location)][INTERNAL_MAP_UNIT_INDEX];
+    }
+    return null;
+  }
+  
+  /**
    * Returns the number of {@link Base}s on the map. Used to determine if the game has ended. (Note:
    * game ends when only 1 base remains)
    * 
