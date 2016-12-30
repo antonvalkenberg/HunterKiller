@@ -58,7 +58,7 @@ public class HunterKillerRules implements GameRules<HunterKillerState, HunterKil
         ranking.add(r);
       }
       //Return the final result
-      return new Result(true, true, ranking, "Game completed", "I say GG, but it wasnt GG. It was BG ... Delirium.");
+      return new Result(true, true, ranking, "Game completed", "GG");
     }
     
     //Return the result from the player's action
@@ -78,8 +78,12 @@ public class HunterKillerRules implements GameRules<HunterKillerState, HunterKil
     int failCount = 0;
     Player actingPlayer = state.getPlayer(action.getActingPlayerID());
     Map map = state.getMap();
-    //Go through the list of orders
-    for(HunterKillerOrder order : action.getOrders()) {
+    //Get the orders contained in the action
+    List<HunterKillerOrder> orders = action.getOrders();
+    //Sort the orders by their natural ordering
+    orders.sort(null);
+    //Go through the sorted list of orders
+    for(HunterKillerOrder order : orders) {
       //Check which type of order we are dealing with
       if(order instanceof BaseOrder) {
         BaseOrder baseOrder = (BaseOrder)order;

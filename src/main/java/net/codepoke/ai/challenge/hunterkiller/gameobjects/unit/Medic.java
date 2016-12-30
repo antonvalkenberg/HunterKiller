@@ -1,19 +1,15 @@
 package net.codepoke.ai.challenge.hunterkiller.gameobjects.unit;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 
 /**
- * Class representing a Medic unit in the game.
+ * Class representing a Medic unit in HunterKiller.
  * 
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
-@Getter
-@EqualsAndHashCode(callSuper = true)
 public class Medic extends Unit {
   
   //region Constants
@@ -63,14 +59,7 @@ public class Medic extends Unit {
    * Constructs a new instance of a Medic on the specified location on the Map, facing the specified
    * direction.
    * 
-   * @param id
-   *          The Medic's unique identifier.
-   * @param spawningPlayerID
-   *          The ID of the Player that spawned this Medic.
-   * @param mapLocation
-   *          The Medic's location on the map.
-   * @param facing
-   *          The Direction the Medic is facing.
+   * {@link Medic#Medic(int, int, MapLocation, int, int, Direction, int, int, int, int, int, int, int)}
    */
   public Medic(int id, int spawningPlayerID, MapLocation mapLocation, Direction facing) {
     this(id, spawningPlayerID, mapLocation, MEDIC_MAX_HP, MEDIC_MAX_HP, facing, MEDIC_FOV_RANGE, MEDIC_FOV_ANGLE, MEDIC_ATTACK_RANGE, MEDIC_ATTACK_DAMAGE, MEDIC_COOLDOWN, MEDIC_SPAWN_COST, MEDIC_SCORE);
@@ -112,20 +101,26 @@ public class Medic extends Unit {
   
   //endregion
   
+  //region Overridden methods
+  
   @Override
   public Medic copy(int id) {
-    return new Medic(id, this.getSquadPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(), this.getOrientation(), this.getFieldOfViewRange(), this.getFieldOfViewAngle(), this.getAttackRange(), this.getAttackDamage(), 0, this.getSpawnCost(), this.getScoreWorth());
+    return new Medic(id, this.getSquadPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(), this.getOrientation(), this.getFieldOfViewRange(), this.getFieldOfViewAngle(), this.getAttackRange(), this.getAttackDamage(), this.getSpecialAttackCooldown(), this.getSpawnCost(), this.getScoreWorth());
   }
   
   /**
    * Start the cooldown of the medic's special attack.
    */
   @Override
-public void startCooldown() {
+  public void startCooldown() {
     this.setSpecialAttackCooldown(MEDIC_COOLDOWN);
   }
   
+  @Override
   public String toString() {
     return TileType.MEDIC.txt;
   }
+  
+  //endregion
+  
 }

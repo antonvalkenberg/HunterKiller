@@ -4,7 +4,7 @@ import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 
 /**
- * Class representing a space tile in the game.
+ * Class representing a space tile in HunterKiller.
  * 
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
@@ -44,13 +44,18 @@ public class Space extends MapFeature {
   
   //endregion
   
+  //region Overridden methods
+  
   @Override
   public Space copy(int id) {
     return new Space(id, this.getLocation());
   }
   
+  @Override
   public String toString() {
     return TileType.SPACE.txt;
   }
+  
+  //endregion
   
 }

@@ -2,20 +2,18 @@ package net.codepoke.ai.challenge.hunterkiller.gameobjects;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 
 /**
- * Abstract class representing any object in the game that can be placed on the map. The game engine
- * will call the object at the start of each round for a response.
+ * Abstract class representing any object in HunterKiller that can be placed on the map. The game
+ * engine will call the object at the start of each round for a response.
  * 
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
 @Getter
 @EqualsAndHashCode
-@NoArgsConstructor
 public abstract class GameObject {
   
   //region Constants
@@ -34,7 +32,8 @@ public abstract class GameObject {
   //region Properties
   
   /**
-   * The GameObject's ID, assigned to them by the {@link Map}.
+   * The GameObject's ID, assigned to them by the {@link net.codepoke.ai.challenge.hunterkiller.Map
+   * Map}.
    */
   private int ID;
   
@@ -60,24 +59,16 @@ public abstract class GameObject {
   /**
    * Constructs a new instance of a GameObject with default HP.
    * 
-   * @param id
-   *          The GameObject's unique identifier.
-   * @param mapLocation
-   *          The GameObject's location on the Map.
+   * {@link GameObject#GameObject(int, MapLocation, int, int)}
    */
   public GameObject(int id, MapLocation mapLocation) {
     this(id, mapLocation, DEFAULT_HP);
   }
   
   /**
-   * Constructs a new instance of a GameObject.
+   * Constructs a new instance of a GameObject at full health.
    * 
-   * @param id
-   *          The GameObject's unique identifier.
-   * @param mapLocation
-   *          The GameObject's location on the Map.
-   * @param maxHP
-   *          The maximum amount of health points this GameObject can have.
+   * {@link GameObject#GameObject(int, MapLocation, int, int)}
    */
   public GameObject(int id, MapLocation mapLocation, int maxHP) {
     this(id, mapLocation, maxHP, maxHP);
@@ -120,7 +111,7 @@ public abstract class GameObject {
   public abstract String toString();
   
   /**
-   * The tick call received upon every start of a round. When true is returned, the GameObject
+   * The tick call received upon the end of a player turn. When true is returned, the GameObject
    * should be removed from the map.
    */
   public boolean tick(HunterKillerState state) {

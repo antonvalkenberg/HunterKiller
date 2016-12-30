@@ -17,7 +17,7 @@ import net.codepoke.ai.challenge.hunterkiller.players.TestPlayer;
 
 /**
  * Class representing a {@link Generator} for a {@link Map}. Contains methods to generate a map from
- * a {@link FourPatch} or String representation.
+ * a {@link FourPatch} or string representation.
  * 
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
@@ -110,7 +110,7 @@ public class HunterKillerStateFactory implements Generator<HunterKillerState> {
                     mapData[position][Map.INTERNAL_MAP_FEATURE_INDEX] = new Door(newMap.requestNewGameObjectID(), location);
                     break;
                   case DOOR_OPEN:
-                    mapData[position][Map.INTERNAL_MAP_FEATURE_INDEX] = new Door(newMap.requestNewGameObjectID(), location, Door.DOOR_OPEN_TICKS);
+                    mapData[position][Map.INTERNAL_MAP_FEATURE_INDEX] = new Door(newMap.requestNewGameObjectID(), location, Door.DOOR_OPEN_ROUNDS);
                     break;
                   case SOLDIER:
                     //mapData[position][Map.INTERNAL_MAP_UNIT_INDEX] = new Soldier(newMap.requestNewGameObjectID(), location, Unit.DEFAULT_ORIENTATION);
@@ -133,6 +133,10 @@ public class HunterKillerStateFactory implements Generator<HunterKillerState> {
     //Return the created Map
     return newMap;
   }
+  
+  //endregion
+  
+  //region Overridden methods
   
   /**
    * Generates an initial state of the game from a collection of players that will participate and a

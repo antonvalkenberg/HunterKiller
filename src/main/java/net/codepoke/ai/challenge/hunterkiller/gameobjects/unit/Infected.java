@@ -1,19 +1,15 @@
 package net.codepoke.ai.challenge.hunterkiller.gameobjects.unit;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 
 /**
- * Class representing an Infected unit in the game.
+ * Class representing an Infected unit in HunterKiller.
  * 
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
-@Getter
-@EqualsAndHashCode(callSuper = true)
 public class Infected extends Unit {
   
   //region Constants
@@ -59,14 +55,7 @@ public class Infected extends Unit {
    * Constructs a new instance of an Infected on the specified location on the Map, facing the
    * specified direction.
    * 
-   * @param id
-   *          The Infected's unique identifier.
-   * @param spawningPlayerID
-   *          The ID of the Player that spawned this Infected.
-   * @param mapLocation
-   *          The Infected's location on the map.
-   * @param facing
-   *          The Direction the Infected is facing.
+   * {@link Infected#Infected(int, int, MapLocation, int, int, Direction, int, int, int, int, int, int, int)}
    */
   public Infected(int id, int spawningPlayerID, MapLocation mapLocation, Direction facing) {
     this(id, spawningPlayerID, mapLocation, INFECTED_MAX_HP, INFECTED_MAX_HP, facing, INFECTED_FOV_RANGE, INFECTED_FOV_ANGLE, INFECTED_ATTACK_RANGE, INFECTED_ATTACK_DAMAGE, INFECTED_COOLDOWN, INFECTED_SPAWN_COST, INFECTED_SCORE);
@@ -108,21 +97,26 @@ public class Infected extends Unit {
   
   //endregion
   
+  //region Overridden methods
+  
   @Override
   public Infected copy(int id) {
-    return new Infected(id, this.getSquadPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(), this.getOrientation(), this.getFieldOfViewRange(), this.getFieldOfViewAngle(), this.getAttackRange(), this.getAttackDamage(), 0, this.getSpawnCost(), this.getScoreWorth());
+    return new Infected(id, this.getSquadPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(), this.getOrientation(), this.getFieldOfViewRange(), this.getFieldOfViewAngle(), this.getAttackRange(), this.getAttackDamage(), this.getSpecialAttackCooldown(), this.getSpawnCost(), this.getScoreWorth());
   }
   
   /**
    * Start the cooldown of the infected's special attack.
    */
   @Override
-public void startCooldown() {
+  public void startCooldown() {
     this.setSpecialAttackCooldown(INFECTED_COOLDOWN);
   }
   
+  @Override
   public String toString() {
     return TileType.INFECTED.txt;
   }
+  
+  //endregion
   
 }

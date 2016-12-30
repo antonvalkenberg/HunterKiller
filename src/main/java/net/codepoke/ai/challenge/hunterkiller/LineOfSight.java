@@ -1,15 +1,14 @@
 package net.codepoke.ai.challenge.hunterkiller;
 
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
-
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
+import com.badlogic.gdx.math.Vector2;
 
 /**
- * Class representing the line of sight implementation for the game. See:
- * http://www.adammil.net/blog/v125_Roguelike_Vision_Algorithms.html
+ * Class representing the line of sight implementation for HunterKiller. See: <a
+ * href='http://www.adammil.net/blog/v125_Roguelike_Vision_Algorithms.html'>Roguelike Vision
+ * Algorithms</a>
  * 
- * Uses temporary variables, NOT MULTITHREADABLE. 
+ * Uses temporary variables, NOT MULTITHREADABLE.
  * 
  * @author Adam Milazzo
  */
@@ -20,7 +19,7 @@ public class LineOfSight {
   private BlocksLightFunction _blocksLight;
   private GetDistanceFunction _getDistance;
   private SetVisibleFunction _setVisible;
-
+  
   // Temporary variables, NOT MULTITHREADABLE
   private Vector2 tmpAngleCalc = new Vector2();
   
@@ -45,22 +44,8 @@ public class LineOfSight {
     _setVisible = setVisible;
   }
   
-  public void compute(MapLocation origin, int rangeLimit){
-	  compute(origin, rangeLimit, 0, NO_ANGLE_LIMIT);
-  }
-
-  /**
-   * Compute the field-of-view from a location within a specific range.
-   * 
-   * @param origin
-   *          The location to get the field-of-view for.
-   * @param rangeLimit
-   *          The viewing range.
-   * @param direction The direction the unit is facing
-   * @param angleLimit The limit in degrees of the given cone of vision. 
-   */
-  public void compute(MapLocation origin, int rangeLimit, Direction direction, float angleLimit){
-	  compute(origin, rangeLimit, direction.angle, angleLimit);
+  public void compute(MapLocation origin, int rangeLimit) {
+    compute(origin, rangeLimit, 0, NO_ANGLE_LIMIT);
   }
   
   /**
@@ -70,8 +55,27 @@ public class LineOfSight {
    *          The location to get the field-of-view for.
    * @param rangeLimit
    *          The viewing range.
-   * @param facingAngle The angle the unit is facing in degrees, X-positive axis (Y==0) is 0, increasing counter clockwise
-   * @param angleLimit The limit in degrees of the given cone of vision. 
+   * @param direction
+   *          The direction the unit is facing
+   * @param angleLimit
+   *          The limit in degrees of the given cone of vision.
+   */
+  public void compute(MapLocation origin, int rangeLimit, Direction direction, float angleLimit) {
+    compute(origin, rangeLimit, direction.angle, angleLimit);
+  }
+  
+  /**
+   * Compute the field-of-view from a location within a specific range.
+   * 
+   * @param origin
+   *          The location to get the field-of-view for.
+   * @param rangeLimit
+   *          The viewing range.
+   * @param facingAngle
+   *          The angle the unit is facing in degrees, X-positive axis (Y==0) is 0, increasing
+   *          counter clockwise
+   * @param angleLimit
+   *          The limit in degrees of the given cone of vision.
    */
   public void compute(MapLocation origin, int rangeLimit, float facingAngle, float angleLimit) {
     _setVisible.func(origin.getX(), origin.getY());
@@ -80,7 +84,7 @@ public class LineOfSight {
   }
   
   private void compute(int octant, MapLocation mapOrigin, int rangeLimit, float facingAngle, float halfAngleLimit, int x, Slope top, Slope bottom) {
-
+    
     // throughout this function there are references to various parts of tiles. a tile's coordinates refer to its
     // centre, and the following diagram shows the parts of the tile and the vectors from the origin that pass through
     // those parts. given a part of a tile with vector u, a vector v passes above it if v > u and below it if v < u
@@ -193,7 +197,7 @@ public class LineOfSight {
           // only if there's an unobstructed line to its centre. if you want it to be fully symmetrical, also remove
           // the "isOpaque ||" part and see NOTE comments further down
           // bool isVisible = isOpaque || ((y != topY || top.GreaterOrEqual(y, x)) && (y != bottomY || bottom.LessOrEqual(y, x)));
-                    
+          
           if(isVisible)
             setVisible(x, y, octant, mapOrigin);
           
@@ -301,11 +305,11 @@ public class LineOfSight {
     }
     
     // CODEPOKE: Calculate whether we go OoB on angle
-    if(halfAngleLimit != NO_ANGLE_LIMIT){
-    	float angle = tmpAngleCalc.set(nx - mapOrigin.getX(), ny - mapOrigin.getY()).angle();
-    	
-    	if(angle > halfAngleLimit && angle < 360 - halfAngleLimit)
-    		return true;
+    if(halfAngleLimit != NO_ANGLE_LIMIT) {
+      float angle = tmpAngleCalc.set(nx - mapOrigin.getX(), ny - mapOrigin.getY()).angle();
+      
+      if(angle > halfAngleLimit && angle < 360 - halfAngleLimit)
+        return true;
     }
     
     return _blocksLight.func(nx, ny);

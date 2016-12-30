@@ -1,18 +1,14 @@
 package net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 
 /**
- * Class representing a floor tile in the game.
+ * Class representing a floor tile in HunterKiller.
  * 
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
-@Getter
-@EqualsAndHashCode(callSuper = true)
 public class Floor extends MapFeature {
   
   //region Constants
@@ -48,13 +44,18 @@ public class Floor extends MapFeature {
   
   //endregion
   
+  //region Overridden methods
+  
   @Override
   public Floor copy(int id) {
     return new Floor(id, this.getLocation());
   }
   
+  @Override
   public String toString() {
     return TileType.FLOOR.txt;
   }
+  
+  //endregion
   
 }

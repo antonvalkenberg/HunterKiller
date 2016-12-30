@@ -1,24 +1,26 @@
 package net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 
 /**
- * Class representing the base for a player. The base can spawn {@link Unit}s and is the ultimate
- * objective of the game.
+ * Class representing the base for a player. The base can spawn {@link Unit}s on a nearby
+ * {@link MapLocation}.
  * 
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
 @Getter
+@EqualsAndHashCode(callSuper = true)
 public class Base extends MapFeature {
   
   //region Constants
   
   /**
-   * Health points for a Base.
+   * Health points for a base.
    */
   public static final int BASE_MAX_HP = 50;
   /**
@@ -39,7 +41,7 @@ public class Base extends MapFeature {
   //region Properties
   
   /**
-   * The location on the map where this Base spawns it's {@link Unit}s.
+   * The location on the map where this base spawns it's {@link Unit}s.
    */
   private MapLocation spawnLocation;
   
@@ -49,6 +51,7 @@ public class Base extends MapFeature {
   
   /**
    * Constructs a new instance of a Base with default values.
+   * 
    * {@link Base#Base(int, MapLocation, MapLocation, int, int, boolean, boolean, boolean)}
    */
   public Base(int id, MapLocation mapLocation, MapLocation spawnLocation) {
@@ -56,7 +59,9 @@ public class Base extends MapFeature {
   }
   
   /**
-   * Constructs a new instance of a Base with a specific HP, and uses default values for other values.
+   * Constructs a new instance of a Base with a specific HP, and uses default values for other
+   * values.
+   * 
    * {@link Base#Base(int, MapLocation, MapLocation, int, int, boolean, boolean, boolean)}
    */
   public Base(int id, MapLocation mapLocation, MapLocation spawnLocation, int maxHP, boolean destructible, boolean blockingLOS, boolean walkable) {
@@ -90,13 +95,18 @@ public class Base extends MapFeature {
   
   //endregion
   
+  //region Overridden methods
+  
   @Override
   public Base copy(int id) {
-    return new Base(id, this.getLocation(), spawnLocation, this.getHpMax(), this.getHpCurrent(), this.isDestructible(), isBlockingLOS, this.isWalkable());
+    return new Base(id, this.getLocation(), spawnLocation, this.getHpMax(), this.getHpCurrent(), this.isDestructible(), this.isBlockingLOS(), this.isWalkable());
   }
   
+  @Override
   public String toString() {
     return TileType.BASE.txt;
   }
+  
+  //endregion
   
 }

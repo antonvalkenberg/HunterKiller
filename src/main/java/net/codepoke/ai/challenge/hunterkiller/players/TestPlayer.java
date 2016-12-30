@@ -1,8 +1,6 @@
 package net.codepoke.ai.challenge.hunterkiller.players;
 
-import java.util.List;
-
-import net.codepoke.ai.GameRules.Action;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import net.codepoke.ai.challenge.hunterkiller.Player;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
@@ -27,12 +25,11 @@ public class TestPlayer extends Player {
   /*
    * (non-Javadoc)
    * 
-   * @see
-   * net.codepoke.ai.challenge.hunterkiller.Player#act(main.java.net.codepoke.ai.challenge
+   * @see net.codepoke.ai.challenge.hunterkiller.Player#act(main.java.net.codepoke.ai.challenge
    * .hunterkiller.HunterKillerState)
    */
   @Override
-  public List<Action> act(HunterKillerState state) {
+  public HunterKillerAction act(HunterKillerState state) {
     // TODO Auto-generated method stub
     return null;
   }

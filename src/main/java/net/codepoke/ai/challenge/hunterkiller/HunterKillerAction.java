@@ -2,18 +2,16 @@ package net.codepoke.ai.challenge.hunterkiller;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.badlogic.gdx.utils.IntArray;
-
 import lombok.Getter;
 import net.codepoke.ai.GameRules.Action;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 import net.codepoke.ai.challenge.hunterkiller.orders.HunterKillerOrder;
+import com.badlogic.gdx.utils.IntArray;
 
 /**
  * Class representing an {@link Action} in the game. A {@link Player}'s turn consists of a
- * collection of orders that mutate the current game state. Note that for an order to be executed,
- * the player and round must match the current state's player and round. Otherwise, the order will
+ * collection of orders that mutate the current game state. Note that for an action to be executed,
+ * the player and round must match the current state's player and round. Otherwise, the action will
  * be ignored.
  * 
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
@@ -57,7 +55,7 @@ public class HunterKillerAction implements Action {
   
   //endregion
   
-  //region
+  //region Public methods
   
   /**
    * Add an order to this action's list of orders. An order will only be added if the current list

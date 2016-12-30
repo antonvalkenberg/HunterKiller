@@ -1,6 +1,7 @@
 package net.codepoke.ai.challenge.hunterkiller.orders;
 
 import lombok.Getter;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
 import net.codepoke.ai.challenge.hunterkiller.enums.BaseOrderType;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
@@ -33,9 +34,11 @@ public class BaseOrder extends HunterKillerOrder {
    *          The base this order is for.
    * @param type
    *          The type of order.
+   * @param actionIndex
+   *          The index this order has in the {@link HunterKillerAction}.
    */
-  public BaseOrder(Base base, BaseOrderType type) {
-    super(base);
+  public BaseOrder(Base base, BaseOrderType type, int actionIndex) {
+    super(base, actionIndex);
     this.orderType = type;
   }
   

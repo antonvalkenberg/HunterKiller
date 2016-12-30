@@ -1,19 +1,15 @@
 package net.codepoke.ai.challenge.hunterkiller.gameobjects.unit;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 
 /**
- * Class representing a Soldier unit in the game.
+ * Class representing a Soldier unit in HunterKiller.
  * 
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
-@Getter
-@EqualsAndHashCode(callSuper = true)
 public class Soldier extends Unit {
   
   //region Constants
@@ -67,14 +63,7 @@ public class Soldier extends Unit {
    * Constructs a new instance of a Soldier on the specified location on the Map, facing the
    * specified direction.
    * 
-   * @param id
-   *          The Soldier's unique identifier.
-   * @param spawningPlayerID
-   *          The ID of the Player that spawned this Soldier.
-   * @param mapLocation
-   *          The Soldier's location on the map.
-   * @param facing
-   *          The Direction the Soldier is facing.
+   * {@link Soldier#Soldier(int, int, MapLocation, int, int, Direction, int, int, int, int, int, int, int)}
    */
   public Soldier(int id, int spawningPlayerID, MapLocation mapLocation, Direction facing) {
     this(id, spawningPlayerID, mapLocation, SOLDIER_MAX_HP, SOLDIER_MAX_HP, facing, SOLDIER_FOV_RANGE, SOLDIER_FOV_ANGLE, SOLDIER_ATTACK_RANGE, SOLDIER_ATTACK_DAMAGE, SOLDIER_COOLDOWN, SOLDIER_SPAWN_COST, SOLDIER_SCORE);
@@ -116,20 +105,26 @@ public class Soldier extends Unit {
   
   //endregion
   
+  //region Overridden methods
+  
   @Override
   public Soldier copy(int id) {
-    return new Soldier(id, this.getSquadPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(), this.getOrientation(), this.getFieldOfViewRange(), this.getFieldOfViewAngle(), this.getAttackRange(), this.getAttackDamage(), 0, this.getSpawnCost(), this.getScoreWorth());
+    return new Soldier(id, this.getSquadPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(), this.getOrientation(), this.getFieldOfViewRange(), this.getFieldOfViewAngle(), this.getAttackRange(), this.getAttackDamage(), this.getSpecialAttackCooldown(), this.getSpawnCost(), this.getScoreWorth());
   }
   
   /**
    * Start the cooldown of the soldier's special attack.
    */
   @Override
-public void startCooldown() {
+  public void startCooldown() {
     this.setSpecialAttackCooldown(SOLDIER_COOLDOWN);
   }
   
+  @Override
   public String toString() {
     return TileType.SOLDIER.txt;
   }
+  
+  //endregion
+  
 }

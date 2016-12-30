@@ -1,10 +1,8 @@
 package net.codepoke.ai.challenge.hunterkiller.gameobjects.unit;
 
 import java.util.List;
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
@@ -12,14 +10,13 @@ import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 
 /**
- * Abstract class representing a Unit in the game.
+ * Abstract class representing a unit in HunterKiller.
  * 
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
 @Getter
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
 public abstract class Unit extends GameObject {
   
   //region Constants
@@ -123,60 +120,16 @@ public abstract class Unit extends GameObject {
   /**
    * Constructs a new instance of a Unit with default HP.
    * 
-   * @param id
-   *          The Unit's unique identifier.
-   * @param spawningPlayerID
-   *          The ID of the Player that spawned this Unit.
-   * @param mapLocation
-   *          The Unit's location on the Map.
-   * @param facing
-   *          The Direction the Unit is facing.
-   * @param fovRange
-   *          The Unit's Field of View range.
-   * @param fovAngle
-   *          The Unit's Field of View angle.
-   * @param attckRange
-   *          The Unit's attack range.
-   * @param attckDmg
-   *          The Unit's attack damage.
-   * @param cooldown
-   *          The cooldown of the Unit's special attack.
-   * @param cost
-   *          The cost to spawn the Unit.
-   * @param score
-   *          The score the Unit is worth.
+   * {@link Unit#Unit(int, int, MapLocation, int, int, Direction, int, int, int, int, int, int, int)}
    */
   public Unit(int id, int spawningPlayerID, MapLocation mapLocation, Direction facing, int fovRange, int fovAngle, int attckRange, int attckDmg, int cooldown, int cost, int score) {
     this(id, spawningPlayerID, mapLocation, DEFAULT_UNIT_HP, facing, fovRange, fovAngle, attckRange, attckDmg, cooldown, cost, score);
   }
   
   /**
-   * Constructs a new instance of a Unit.
+   * Constructs a new instance of a Unit with full health.
    * 
-   * @param id
-   *          The Unit's unique identifier.
-   * @param spawningPlayerID
-   *          The ID of the Player that spawned this Unit.
-   * @param mapLocation
-   *          The Unit's location on the Map.
-   * @param maxHP
-   *          The Unit's maximum number of health points.
-   * @param facing
-   *          The Direction the Unit is facing.
-   * @param fovRange
-   *          The Unit's Field of View range.
-   * @param fovAngle
-   *          The Unit's Field of View angle.
-   * @param attckRange
-   *          The Unit's attack range.
-   * @param attckDmg
-   *          The Unit's attack damage.
-   * @param cooldown
-   *          The cooldown of the Unit's special attack.
-   * @param cost
-   *          The cost to spawn the Unit.
-   * @param score
-   *          The score the Unit is worth.
+   * {@link Unit#Unit(int, int, MapLocation, int, int, Direction, int, int, int, int, int, int, int)}
    */
   public Unit(int id, int spawningPlayerID, MapLocation mapLocation, int maxHP, Direction facing, int fovRange, int fovAngle, int attckRange, int attckDmg, int cooldown, int cost, int score) {
     this(id, spawningPlayerID, mapLocation, maxHP, maxHP, facing, fovRange, fovAngle, attckRange, attckDmg, cooldown, cost, score);
@@ -227,6 +180,8 @@ public abstract class Unit extends GameObject {
   
   //endregion
   
+  //region Private methods
+  
   /**
    * Calculates the location of the specified location, relative to this Unit's current location and
    * facing.
@@ -239,6 +194,8 @@ public abstract class Unit extends GameObject {
     //TODO return the location of the specified location, relative to this Unit's current location and facing
     return new MapLocation(0, 0);
   }
+  
+  //endregion
   
   //region Protected methods
   

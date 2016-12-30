@@ -2,7 +2,6 @@ package net.codepoke.ai.challenge.hunterkiller;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.codepoke.ai.challenge.hunterkiller.LineOfSight.BlocksLightFunction;
@@ -23,11 +22,11 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
 
 /**
- * The map on which the game is played. The map is internally represented as a 2-dimensional array.
- * The first dimension contains all locations on the map (width * height) mapped to a positional
- * index ((y * width) + x). The second dimension contains 2 layers of {@link GameObject}s, where the
- * first layer contains all {@link MapFeature} objects that are present on the map (i.e.
- * {@link Wall}, {@link Floor}), and the second layer contains all {@link Unit} objects (i.e.
+ * The map on which HunterKiller is played. The map is internally represented as a 2-dimensional
+ * array. The first dimension contains all locations on the map (width * height) mapped to a
+ * positional index ((y * width) + x). The second dimension contains 2 layers of {@link GameObject}
+ * s, where the first layer contains all {@link MapFeature} objects that are present on the map
+ * (e.g. {@link Wall}, {@link Floor}), and the second layer contains all {@link Unit} objects (e.g.
  * {@link Soldier}, {@link Medic}). Note that the width of the map is treated as the X-axis, and the
  * height as the Y-axis. Also, the coordinate (0,0) is the top-left corner of the map.
  * 

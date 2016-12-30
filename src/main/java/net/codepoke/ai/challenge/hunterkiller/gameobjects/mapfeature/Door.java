@@ -6,7 +6,7 @@ import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 
 /**
- * Class representing a door in the game.
+ * Class representing a door in HunterKiller.
  * 
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
@@ -26,20 +26,20 @@ public class Door extends MapFeature {
    */
   public static final boolean DOOR_BLOCKS_LOS = true;
   /**
-   * Doors can be moved over. (At which point they will open and remain open for a number of ticks)
+   * Doors can be moved over. (At which point they will open and remain open for a number of rounds)
    */
   public static final boolean DOOR_WALKABLE = true;
   /**
-   * Once opened a Door will remain open for this amount of ticks.
+   * Once opened a door will remain open for this amount of rounds.
    */
-  public static final int DOOR_OPEN_TICKS = 10;
+  public static final int DOOR_OPEN_ROUNDS = 5;
   
   //endregion
   
   //region Properties
   
   /**
-   * Timer that indicates how many ticks the Door will remain open for.
+   * Timer that indicates how many rounds the Door will remain open for.
    */
   private int openTimer = 0;
   
@@ -50,10 +50,7 @@ public class Door extends MapFeature {
   /**
    * Constructs a new instance of a Door.
    * 
-   * @param id
-   *          The Door's unique identifier.
-   * @param mapLocation
-   *          The Door's location on the Map.
+   * {@link Door#Door(int, MapLocation, int)}
    */
   public Door(int id, MapLocation mapLocation) {
     this(id, mapLocation, 0);
@@ -67,7 +64,7 @@ public class Door extends MapFeature {
    * @param mapLocation
    *          The Door's location of the Map.
    * @param timeToClose
-   *          Amount of ticks before the Door closes.
+   *          Amount of rounds before the Door closes.
    */
   public Door(int id, MapLocation mapLocation, int timeToClose) {
     super(id, mapLocation, DOOR_DESTRUCTIBLE, timeToClose <= 0, DOOR_WALKABLE);
@@ -76,13 +73,7 @@ public class Door extends MapFeature {
   
   //endregion
   
-  /**
-   * Whether or not this Door is blocking Line of Sight.
-   */
-  @Override
-  public boolean isBlockingLOS() {
-    return !isOpen();
-  }
+  //region Public methods
   
   /**
    * Whether or not this Door is open.
@@ -94,10 +85,10 @@ public class Door extends MapFeature {
   }
   
   /**
-   * Open this Door. It will close after a predetermined amount of ticks.
+   * Open this Door. It will close after a predetermined amount of rounds.
    */
   public void open() {
-    openTimer = DOOR_OPEN_TICKS;
+    openTimer = DOOR_OPEN_ROUNDS;
     isBlockingLOS = false;
   }
   
@@ -121,13 +112,28 @@ public class Door extends MapFeature {
       isBlockingLOS = true;
   }
   
+  //endregion
+  
+  //region Overridden methods
+  
+  /**
+   * Whether or not this Door is blocking Line of Sight.
+   */
+  @Override
+  public boolean isBlockingLOS() {
+    return !isOpen();
+  }
+  
   @Override
   public Door copy(int id) {
     return new Door(id, this.getLocation(), openTimer);
   }
   
+  @Override
   public String toString() {
     return isOpen() ? TileType.DOOR_OPEN.txt : TileType.DOOR_CLOSED.txt;
   }
+  
+  //endregion
   
 }

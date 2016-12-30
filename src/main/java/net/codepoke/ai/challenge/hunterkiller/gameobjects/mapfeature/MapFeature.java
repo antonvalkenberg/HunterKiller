@@ -2,20 +2,19 @@ package net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 
 /**
- * Abstract class representing a feature on the Map of the game.
+ * Abstract class representing a feature on the {@link net.codepoke.ai.challenge.hunterkiller.Map
+ * Map} of HunterKiller.
  * 
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
 @Getter
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
 public abstract class MapFeature extends GameObject {
   
   //region Constants
@@ -64,16 +63,7 @@ public abstract class MapFeature extends GameObject {
   /**
    * Constructs a new instance of a MapFeature with default HP.
    * 
-   * @param id
-   *          The MapFeature's unique identifier.
-   * @param mapLocation
-   *          The MapFeature's location on the Map.
-   * @param destructible
-   *          Whether or not the MapFeature is destructible.
-   * @param blockingLOS
-   *          Whether or not the MapFeature blocks Line of Sight for Units.
-   * @param walkable
-   *          Whether or not Units can move over the MapFeature.
+   * {@link MapFeature#MapFeature(int, MapLocation, int, int, boolean, boolean, boolean)}
    */
   public MapFeature(int id, MapLocation mapLocation, boolean destructible, boolean blockingLOS, boolean walkable) {
     this(id, mapLocation, DEFAULT_HP, destructible, blockingLOS, walkable);
@@ -82,18 +72,7 @@ public abstract class MapFeature extends GameObject {
   /**
    * Constructs a new instance of a MapFeature.
    * 
-   * @param id
-   *          The MapFeature's unique identifier.
-   * @param mapLocation
-   *          The MapFeature's location on the Map.
-   * @param maxHP
-   *          The maximum amount of health points this MapFeature will have.
-   * @param destructible
-   *          Whether or not the MapFeature is destructible.
-   * @param blockingLOS
-   *          Whether or not the MapFeature blocks Line of Sight for Units.
-   * @param walkable
-   *          Whether or not Units can move over the MapFeature.
+   * {@link MapFeature#MapFeature(int, MapLocation, int, int, boolean, boolean, boolean)}
    */
   public MapFeature(int id, MapLocation mapLocation, int maxHP, boolean destructible, boolean blockingLOS, boolean walkable) {
     this(id, mapLocation, maxHP, maxHP, destructible, blockingLOS, walkable);

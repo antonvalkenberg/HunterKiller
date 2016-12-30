@@ -1,7 +1,5 @@
 package net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 
@@ -11,8 +9,6 @@ import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
-@Getter
-@EqualsAndHashCode(callSuper = true)
 public class Wall extends MapFeature {
   
   //region Constants
@@ -48,13 +44,18 @@ public class Wall extends MapFeature {
   
   //endregion
   
+  //region Overridden methods
+  
   @Override
   public Wall copy(int id) {
     return new Wall(id, this.getLocation());
   }
   
+  @Override
   public String toString() {
     return TileType.WALL.txt;
   }
+  
+  //endregion
   
 }

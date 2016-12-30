@@ -1,17 +1,21 @@
 package net.codepoke.ai.challenge.hunterkiller.orders;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
 import net.codepoke.ai.challenge.hunterkiller.Player;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 
 /**
- * Abstract class representing a {@link Player}'s order to a single {@link GameObject}.
+ * Abstract class representing a {@link Player}'s order to a single {@link GameObject}. Note: this
+ * class has a natural ordering that is inconsistent with equals.
  * 
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
 @Getter
-public abstract class HunterKillerOrder {
+@EqualsAndHashCode
+public abstract class HunterKillerOrder implements Comparable<HunterKillerOrder> {
   
   //region Properties
   
@@ -19,6 +23,11 @@ public abstract class HunterKillerOrder {
    * The ID of the object that this order is for.
    */
   public int objectID;
+  
+  /**
+   * The index of this order in a {@link HunterKillerAction}.
+   */
+  public int actionIndex;
   
   //endregion
   
@@ -29,11 +38,37 @@ public abstract class HunterKillerOrder {
    * 
    * @param object
    *          The object this order is for.
+   * @param index
+   *          The index this order has in the {@link HunterKillerAction}.
    */
-  public HunterKillerOrder(GameObject object) {
+  public HunterKillerOrder(GameObject object, int index) {
     this.objectID = object.getID();
+    this.actionIndex = index;
   }
   
   //endregion
+  
+  //region Overridden methods
+  
+  /**
+   * Compares two orders according to their index. This is used to order orders when executing a
+   * {@link HunterKillerAction}. Zero means they have the same index (note that this is undesired
+   * within a single action). A negative number means this order has a lower index. A positive
+   * number means the other order has a higher index.
+   */
+  @Override
+  public int compareTo(HunterKillerOrder other) {
+    if(this.actionIndex < other.actionIndex) {
+      return -1;
+    }
+    else if(this.actionIndex == other.actionIndex) {
+      return 0;
+    }
+    else {
+      return 1;
+    }
+  }
+  
+  //endregion
+  
 }
-	

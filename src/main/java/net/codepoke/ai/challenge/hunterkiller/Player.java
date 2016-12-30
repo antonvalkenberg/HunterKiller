@@ -3,16 +3,15 @@ package net.codepoke.ai.challenge.hunterkiller;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
-import net.codepoke.ai.GameRules.Action;
 import net.codepoke.ai.GameRules.Result.Ranking;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 
 /**
- * Abstract class representing a player in the game. A player has a {@link Base} from which they can
- * spawn {@link Unit}s, payed for with a currency that is acquired automatically over time. When a
- * player can act during a turn, they create an {@link Action} collection that contains at most one
- * action per base or unit under their control.
+ * Abstract class representing a player in HunterKiller. A player has a {@link Base} from which they
+ * can spawn {@link Unit}s, payed for with a currency that is acquired automatically over time. When
+ * a player can act during a turn, they create a {@link HunterKillerAction} that contains at most
+ * one order per base or unit under their control.
  * 
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
@@ -52,7 +51,7 @@ public abstract class Player implements Comparable<Player> {
   private Base base;
   
   /**
-   * Collection of Units that this player controls.
+   * Collection of {@link Unit}s that this player controls.
    */
   protected List<Unit> squad;
   
@@ -155,13 +154,13 @@ public abstract class Player implements Comparable<Player> {
   //region Abstract methods
   
   /**
-   * Returns a collection of {@link Action}s to enact upon the current game state.
+   * Returns a {@link HunterKillerAction} to enact upon the current game state.
    * 
    * @param state
    *          The current game state.
-   * @return A collection of actions forming this player's turn.
+   * @return
    */
-  public abstract List<Action> act(HunterKillerState state);
+  public abstract HunterKillerAction act(HunterKillerState state);
   
   /**
    * Returns a deep copy of this player.
