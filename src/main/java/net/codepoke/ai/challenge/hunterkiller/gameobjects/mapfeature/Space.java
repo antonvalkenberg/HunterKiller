@@ -53,7 +53,7 @@ public class Space extends MapFeature {
   
   @Override
   public String toString() {
-    return TileType.SPACE.txt;
+    return "" + TileType.SPACE.txt;
   }
   
   //endregion

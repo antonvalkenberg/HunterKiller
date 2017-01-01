@@ -118,7 +118,7 @@ public class Medic extends Unit {
   
   @Override
   public String toString() {
-    return TileType.MEDIC.txt;
+    return "" + TileType.MEDIC.txt;
   }
   
   //endregion

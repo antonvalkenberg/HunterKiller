@@ -45,6 +45,12 @@ public class Base extends MapFeature {
    */
   private MapLocation spawnLocation;
   
+  /**
+   * The unique identifier of the {@link net.codepoke.ai.challenge.hunterkiller.Player Player} this
+   * base belongs to.
+   */
+  private int playerID;
+  
   //endregion
   
   //region Constructor
@@ -54,8 +60,8 @@ public class Base extends MapFeature {
    * 
    * {@link Base#Base(int, MapLocation, MapLocation, int, int, boolean, boolean, boolean)}
    */
-  public Base(int id, MapLocation mapLocation, MapLocation spawnLocation) {
-    this(id, mapLocation, spawnLocation, BASE_MAX_HP, BASE_DESTRUCTIBLE, BASE_BLOCKING_LOS, BASE_WALKABLE);
+  public Base(int id, int playerID, MapLocation mapLocation, MapLocation spawnLocation) {
+    this(id, playerID, mapLocation, spawnLocation, BASE_MAX_HP, BASE_DESTRUCTIBLE, BASE_BLOCKING_LOS, BASE_WALKABLE);
   }
   
   /**
@@ -64,8 +70,8 @@ public class Base extends MapFeature {
    * 
    * {@link Base#Base(int, MapLocation, MapLocation, int, int, boolean, boolean, boolean)}
    */
-  public Base(int id, MapLocation mapLocation, MapLocation spawnLocation, int maxHP, boolean destructible, boolean blockingLOS, boolean walkable) {
-    this(id, mapLocation, spawnLocation, maxHP, maxHP, destructible, blockingLOS, walkable);
+  public Base(int id, int playerID, MapLocation mapLocation, MapLocation spawnLocation, int maxHP, boolean destructible, boolean blockingLOS, boolean walkable) {
+    this(id, playerID, mapLocation, spawnLocation, maxHP, maxHP, destructible, blockingLOS, walkable);
   }
   
   /**
@@ -73,6 +79,8 @@ public class Base extends MapFeature {
    * 
    * @param id
    *          The Base's unique identifier.
+   * @param playerID
+   *          The ID of the player that controls this Base.
    * @param mapLocation
    *          The location of the Base on the map.
    * @param spawnLocation
@@ -88,8 +96,9 @@ public class Base extends MapFeature {
    * @param walkable
    *          Whether or not Units can move over the Base.
    */
-  public Base(int id, MapLocation mapLocation, MapLocation spawnLocation, int maxHP, int currentHP, boolean destructible, boolean blockingLOS, boolean walkable) {
+  public Base(int id, int playerID, MapLocation mapLocation, MapLocation spawnLocation, int maxHP, int currentHP, boolean destructible, boolean blockingLOS, boolean walkable) {
     super(id, mapLocation, maxHP, currentHP, destructible, blockingLOS, walkable);
+    this.playerID = playerID;
     this.spawnLocation = new MapLocation(spawnLocation.getX(), spawnLocation.getY());
   }
   
@@ -99,12 +108,12 @@ public class Base extends MapFeature {
   
   @Override
   public Base copy(int id) {
-    return new Base(id, this.getLocation(), spawnLocation, this.getHpMax(), this.getHpCurrent(), this.isDestructible(), this.isBlockingLOS(), this.isWalkable());
+    return new Base(id, playerID, this.getLocation(), spawnLocation, this.getHpMax(), this.getHpCurrent(), this.isDestructible(), this.isBlockingLOS(), this.isWalkable());
   }
   
   @Override
   public String toString() {
-    return TileType.BASE.txt;
+    return "" + TileType.BASE.txt;
   }
   
   //endregion

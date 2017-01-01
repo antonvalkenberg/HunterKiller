@@ -122,7 +122,7 @@ public class Soldier extends Unit {
   
   @Override
   public String toString() {
-    return TileType.SOLDIER.txt;
+    return "" + TileType.SOLDIER.txt;
   }
   
   //endregion

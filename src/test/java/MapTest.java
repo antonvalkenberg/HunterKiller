@@ -17,6 +17,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import com.badlogic.gdx.utils.IntArray;
 
 /**
  * Test class for Map.
@@ -114,11 +115,13 @@ public class MapTest {
   @Test
   public void testMapFeatureCreation() {
     //Create a FourPatch to test
-    FourPatch testPatch = new FourPatch("._[\nD_O\n", 3, 2);
-    int basePosition = 4;
+    FourPatch testPatch = new FourPatch(new HunterKillerStateFactory.HunterKillerMapCreation(), "._[\nDBO\n", 3, 2);
+    //Setup the player IDs
+    IntArray playerIDs = new IntArray(new int[] { 0, 8 });
+    //Set the spawn direction
     Direction spawnDirection = Direction.NORTH;
     //Test the creation from a pre made map
-    Map createdMap = HunterKillerStateFactory.constructFromFourPatch(testPatch, basePosition, spawnDirection);
+    Map createdMap = HunterKillerStateFactory.constructFromFourPatch(testPatch, playerIDs, spawnDirection);
     
     //Go through the MapFeatures
     GameObject[][] content = createdMap.getMapContent();

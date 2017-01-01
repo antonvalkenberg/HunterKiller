@@ -78,9 +78,9 @@ public class Map {
   private GameObject[][] mapContent;
   
   /**
-   * A counter that records the latest ID given out to a player.
+   * Array containing the IDs of the players in the game.
    */
-  private int internalPlayerIDCounter;
+  private int[] internalPlayerIDs;
   
   /**
    * A counter that records the latest ID given out to a game object.
@@ -125,8 +125,7 @@ public class Map {
     mapHeight = height;
     //Map will have (width * height) positions
     mapContent = new GameObject[width * height][INTERNAL_MAP_LAYERS];
-    //Reset the Player and Unit ID counters
-    internalPlayerIDCounter = -1;
+    //Reset the Object ID counter
     internalObjectIDCounter = -1;
     //Create the classes required for line-of-sight
     blocksLight = new BlocksLight(this);
@@ -581,17 +580,6 @@ public class Map {
   }
   
   /**
-   * Returns the next available ID for a new player.
-   * 
-   * @return
-   */
-  public int requestNewPlayerID() {
-    //Return the next ID
-    internalPlayerIDCounter++;
-    return internalPlayerIDCounter;
-  }
-  
-  /**
    * Returns the next available ID for a new game object.
    * 
    * @return
@@ -600,6 +588,15 @@ public class Map {
     //Return the next ID
     internalObjectIDCounter++;
     return internalObjectIDCounter;
+  }
+  
+  /**
+   * Set the collection of IDs of the players that are participating in the game.
+   * 
+   * @param playerIDs
+   */
+  public void setPlayerIDs(int[] playerIDs) {
+    internalPlayerIDs = playerIDs.clone();
   }
   
   /**
@@ -613,8 +610,8 @@ public class Map {
     //Deep copy the map content
     GameObject[][] content = copyMapContent();
     //Set some things
+    newMap.setPlayerIDs(this.internalPlayerIDs);
     newMap.setObjectIDCounter(this.internalObjectIDCounter);
-    newMap.setPlayerIDCounter(this.internalPlayerIDCounter);
     newMap.setMapContent(content);
     //Return the created map
     return newMap;
@@ -818,16 +815,6 @@ public class Map {
   }
   
   /**
-   * Set the player ID counter to a specific number. Mainly used for copy method.
-   * 
-   * @param counter
-   *          The number the counter should be set to.
-   */
-  protected void setPlayerIDCounter(int counter) {
-    this.internalPlayerIDCounter = counter;
-  }
-  
-  /**
    * Set the object ID counter to a specific number. Mainly used for copy method.
    * 
    * @param counter
@@ -900,6 +887,35 @@ public class Map {
     }
     //Return the created content
     return newContent;
+  }
+  
+  /**
+   * Assigns the Base and all Units a player controls to that player. Note: this method is used
+   * right after the map and players have been created and can safely be ignored.
+   * 
+   * @param player
+   *          The {@link Player} to assign objects to.
+   */
+  protected void assignObjectsToPlayer(Player player) {
+    //Check the map content for Bases or Units
+    for(int i = 0; i < mapWidth * mapHeight; i++) {
+      for(int j = 0; j < INTERNAL_MAP_LAYERS; j++) {
+        GameObject object = mapContent[i][j];
+        //Check if it's a base and belongs to this player
+        if(object instanceof Base && ((Base)object).getPlayerID() == player.getID()) {
+          player.assignBase((Base)object);
+        }
+        //Check if it's a unit and belongs to this player
+        else if(object instanceof Unit && ((Unit)object).getSquadPlayerID() == player.getID()) {
+          if(object instanceof Infected)
+            player.addUnitToSquad((Infected)object);
+          else if(object instanceof Medic)
+            player.addUnitToSquad((Medic)object);
+          else if(object instanceof Soldier)
+            player.addUnitToSquad((Soldier)object);
+        }
+      }
+    }
   }
   
   /**

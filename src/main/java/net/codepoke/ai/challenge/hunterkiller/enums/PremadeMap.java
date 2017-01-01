@@ -13,9 +13,9 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 @AllArgsConstructor
 public enum PremadeMap {
   //@formatter:off
-  TEST("Test", new FourPatch( "[[[\n"
-                            + "[__\n"
-                            + "[__\n", 3, 3), 4, Direction.SOUTH);
+  TEST("Test",   "[[[\n"
+               + "[B_\n"
+               + "[__\n", 3, 3, Direction.SOUTH);
   //@formatter:on
   
   /**
@@ -23,14 +23,17 @@ public enum PremadeMap {
    */
   public String name;
   /**
-   * The {@link FourPatch} to create the map with.
+   * The data that will be copied around the map by {@link FourPatch}.
    */
-  public FourPatch fourPatch;
+  public String mapData;
   /**
-   * The position of the {@link net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base
-   * Base} on the quadrant.
+   * The width of the quadrant 'A' in the {@link FourPatch}.
    */
-  public int basePosition;
+  public int quadrantAWidth;
+  /**
+   * The height of the quadrant 'A' in the {@link FourPatch}.
+   */
+  public int quadrantAHeight;
   /**
    * The {@link Direction} to which the base spawns it's {@link Unit}s.
    */

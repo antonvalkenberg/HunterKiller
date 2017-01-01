@@ -53,7 +53,7 @@ public class Wall extends MapFeature {
   
   @Override
   public String toString() {
-    return TileType.WALL.txt;
+    return "" + TileType.WALL.txt;
   }
   
   //endregion

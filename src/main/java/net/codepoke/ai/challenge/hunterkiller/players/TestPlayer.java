@@ -3,7 +3,6 @@ package net.codepoke.ai.challenge.hunterkiller.players;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import net.codepoke.ai.challenge.hunterkiller.Player;
-import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
 
 /**
  * A player to test with, does mostly random things.
@@ -17,8 +16,8 @@ public class TestPlayer extends Player {
    * @param id
    * @param base
    */
-  public TestPlayer(int id, String name, Base base) {
-    super(id, name, base);
+  public TestPlayer(int id, String name) {
+    super(id, name);
     // TODO Auto-generated constructor stub
   }
   

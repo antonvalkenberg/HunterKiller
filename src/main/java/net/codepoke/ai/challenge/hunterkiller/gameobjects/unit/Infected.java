@@ -114,7 +114,7 @@ public class Infected extends Unit {
   
   @Override
   public String toString() {
-    return TileType.INFECTED.txt;
+    return "" + TileType.INFECTED.txt;
   }
   
   //endregion

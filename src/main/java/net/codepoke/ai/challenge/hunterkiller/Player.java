@@ -71,13 +71,10 @@ public abstract class Player implements Comparable<Player> {
    *          The player's unique identifier.
    * @param name
    *          The player's name.
-   * @param base
-   *          The base that is assigned to this player.
    */
-  public Player(int id, String name, Base base) {
+  public Player(int id, String name) {
     this.ID = id;
     this.name = name;
-    this.base = base;
     //Create a new list to store the squad into
     squad = new ArrayList<Unit>();
   }
@@ -118,6 +115,16 @@ public abstract class Player implements Comparable<Player> {
   //endregion
   
   //region Protected methods
+  
+  /**
+   * Assign a {@link Base} to this player.
+   * 
+   * @param base
+   *          The base to assign.
+   */
+  protected void assignBase(Base base) {
+    this.base = base;
+  }
   
   /**
    * Awards a score to this player.

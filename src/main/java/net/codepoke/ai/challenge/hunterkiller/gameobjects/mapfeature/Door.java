@@ -131,7 +131,7 @@ public class Door extends MapFeature {
   
   @Override
   public String toString() {
-    return isOpen() ? TileType.DOOR_OPEN.txt : TileType.DOOR_CLOSED.txt;
+    return isOpen() ? "" + TileType.DOOR_OPEN.txt : "" + TileType.DOOR_CLOSED.txt;
   }
   
   //endregion
