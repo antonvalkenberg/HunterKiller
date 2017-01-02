@@ -6,11 +6,13 @@ import com.badlogic.gdx.math.Vector2;
 /**
  * Class representing the line of sight implementation for HunterKiller. See: <a
  * href='http://www.adammil.net/blog/v125_Roguelike_Vision_Algorithms.html'>Roguelike Vision
- * Algorithms</a>
+ * Algorithms</a>. Several adjustments were made by CodePoKE.
  * 
  * Uses temporary variables, NOT MULTITHREADABLE.
  * 
  * @author Adam Milazzo
+ * @author Anton Valkenberg (anton.valkenberg@gmail.com)
+ * 
  */
 public class LineOfSight {
   
@@ -20,7 +22,7 @@ public class LineOfSight {
   private GetDistanceFunction _getDistance;
   private SetVisibleFunction _setVisible;
   
-  // Temporary variables, NOT MULTITHREADABLE
+  //Temporary variable, NOT MULTITHREADABLE
   private Vector2 tmpAngleCalc = new Vector2();
   
   /**
@@ -44,19 +46,25 @@ public class LineOfSight {
     _setVisible = setVisible;
   }
   
+  /**
+   * Compute the field-of-view from a location within a specific range.
+   * 
+   * {@link LineOfSight#compute(MapLocation, int, Direction, float)}
+   */
   public void compute(MapLocation origin, int rangeLimit) {
     compute(origin, rangeLimit, 0, NO_ANGLE_LIMIT);
   }
   
   /**
-   * Compute the field-of-view from a location within a specific range.
+   * Compute the field-of-view from a location within a specific range, but with a limit on the cone
+   * of vision.
    * 
    * @param origin
    *          The location to get the field-of-view for.
    * @param rangeLimit
    *          The viewing range.
    * @param direction
-   *          The direction the unit is facing
+   *          The cardinal direction of the middle of the cone of vision.
    * @param angleLimit
    *          The limit in degrees of the given cone of vision.
    */
@@ -304,11 +312,12 @@ public class LineOfSight {
         break;
     }
     
-    // CODEPOKE: Calculate whether we go OoB on angle
+    //CODEPOKE Calculate whether we go OoB on angle
     if(halfAngleLimit != NO_ANGLE_LIMIT) {
+      //Get the angle between the coordinates we are checking and the Unit's location on the map
       float angle = tmpAngleCalc.set(nx - mapOrigin.getX(), ny - mapOrigin.getY()).angle();
       
-      if(angle > halfAngleLimit && angle < 360 - halfAngleLimit)
+      if(angle >= halfAngleLimit && angle < 360 - halfAngleLimit)
         return true;
     }
     
@@ -379,6 +388,8 @@ public class LineOfSight {
     public int X, Y;
   }
   
+  //region CODEPOKE interfaces
+  
   public interface BlocksLightFunction {
     
     public boolean func(int x, int y);
@@ -393,4 +404,7 @@ public class LineOfSight {
     
     public void func(int x, int y);
   }
+  
+  //endregion
+  
 }

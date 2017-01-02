@@ -14,7 +14,7 @@ public enum Direction {
   /**
    * On this game's map structure, north is: decreasing Y, equal X.
    */
-  NORTH(270),
+  NORTH(90),
   /**
    * On this game's map structure, east is: equal Y, increasing X.
    */
@@ -22,16 +22,17 @@ public enum Direction {
   /**
    * On this game's map structure, south is: increasing Y, equal X.
    */
-  SOUTH(90),
+  SOUTH(270),
   /**
    * On this game's map structure, west is: equal Y, decreasing X.
    */
   WEST(180);
   
   /**
-   * The angle of this direction, which assumes that X-positive, Y == 0 will be 0. This is primarily
-   * used in {@link net.codepoke.ai.challenge.hunterkiller.LineOfSight LineOfSight} calculations and
-   * can be safely ignored.
+   * The angle of this direction, which assumes that X-positive, Y==0 will be 0, and increases
+   * counter-clockwise. This is primarily used in
+   * {@link net.codepoke.ai.challenge.hunterkiller.LineOfSight LineOfSight} calculations and can be
+   * safely ignored.
    */
   public float angle;
   

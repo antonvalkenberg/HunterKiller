@@ -1,6 +1,6 @@
 package net.codepoke.ai.challenge.hunterkiller.gameobjects.unit;
 
-import java.util.List;
+import java.util.HashSet;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -243,7 +243,7 @@ public abstract class Unit extends GameObject {
    * @param fieldOfView
    *          The collection of {@link MapLocation}s that are currently in the unit's field-of-view
    */
-  public void updateFieldOfView(List<MapLocation> fieldOfView) {
+  public void updateFieldOfView(HashSet<MapLocation> fieldOfView) {
     //TODO implement updating field-of-view in Unit
   }
   

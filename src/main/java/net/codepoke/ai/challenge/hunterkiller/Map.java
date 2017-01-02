@@ -1,6 +1,7 @@
 package net.codepoke.ai.challenge.hunterkiller;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -90,6 +91,7 @@ public class Map {
   /**
    * The line-of-sight implementation that is used on this map.
    */
+  @Getter
   private LineOfSight lineOfSight;
   
   /**
@@ -493,19 +495,17 @@ public class Map {
   }
   
   /**
-   * Returns a collection of locations that are in the field-of-view from a certain location.
+   * Returns a collection of locations that are in the Unit's field-of-view.
    * 
-   * @param location
-   *          The location to view from.
-   * @param viewRange
-   *          The range of the view.
+   * @param unit
+   *          The Unit.
    * @return
    */
-  public List<MapLocation> getFieldOfView(MapLocation location, int viewRange) {
+  public HashSet<MapLocation> getFieldOfView(Unit unit) {
     //Reset any previously computed locations
     setVisible.resetLocations();
     //Ask the line-of-sight implementation to compute the field-of-view
-    lineOfSight.compute(location, viewRange);
+    lineOfSight.compute(unit.getLocation(), unit.getFieldOfViewRange(), unit.getOrientation(), unit.getFieldOfViewAngle());
     //Return the list of computed locations
     return setVisible.getVisibleLocations();
   }
@@ -766,8 +766,8 @@ public class Map {
             //Means that the object is still alive, so check if it's a Unit
             if(object instanceof Unit) {
               Unit unit = (Unit)object;
-              //Get the field-of-view collection from the unit's location
-              List<MapLocation> fieldOfView = getFieldOfView(unit.getLocation(), unit.getFieldOfViewRange());
+              //Get the field-of-view collection for the unit
+              HashSet<MapLocation> fieldOfView = getFieldOfView(unit);
               //Tell the unit to update it's field-of-view
               unit.updateFieldOfView(fieldOfView);
             }
@@ -810,7 +810,7 @@ public class Map {
    * @param content
    *          The content of the {@link Map}.
    */
-  protected void setMapContent(GameObject[][] content) {
+  public void setMapContent(GameObject[][] content) {
     this.mapContent = content;
   }
   
@@ -945,9 +945,9 @@ public class Map {
   
   //endregion
   
-  //region Private classes
+  //region Inner classes
   
-  private class BlocksLight implements BlocksLightFunction {
+  public class BlocksLight implements BlocksLightFunction {
     
     private Map map;
     
@@ -967,7 +967,7 @@ public class Map {
   }
   
   @NoArgsConstructor
-  private class GetDistance implements GetDistanceFunction {
+  public class GetDistance implements GetDistanceFunction {
     
     @Override
     public int func(int x, int y) {
@@ -976,17 +976,17 @@ public class Map {
     
   }
   
-  private class SetVisible implements SetVisibleFunction {
+  public class SetVisible implements SetVisibleFunction {
     
     @Getter
-    private List<MapLocation> visibleLocations;
+    private HashSet<MapLocation> visibleLocations;
     
     public SetVisible() {
-      this.visibleLocations = new ArrayList<MapLocation>();
+      this.visibleLocations = new HashSet<MapLocation>();
     }
     
     public void resetLocations() {
-      this.visibleLocations = new ArrayList<MapLocation>();
+      this.visibleLocations = new HashSet<MapLocation>();
     }
     
     @Override

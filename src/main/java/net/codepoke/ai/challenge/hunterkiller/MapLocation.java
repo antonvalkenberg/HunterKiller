@@ -140,4 +140,13 @@ public class MapLocation {
   }
   
   //endregion
+  
+  //region Overridden methods
+  
+  @Override
+  public String toString() {
+    return String.format("[%d,%d]", x, y);
+  }
+  
+  //endregion
 }
