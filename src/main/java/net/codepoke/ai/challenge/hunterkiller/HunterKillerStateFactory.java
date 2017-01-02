@@ -4,6 +4,7 @@ import java.util.Random;
 import lombok.NoArgsConstructor;
 import net.codepoke.ai.GameRules.Generator;
 import net.codepoke.ai.challenge.hunterkiller.FourPatch.DataCreation;
+import net.codepoke.ai.challenge.hunterkiller.FourPatch.Sections;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.enums.PremadeMap;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
@@ -192,10 +193,12 @@ public class HunterKillerStateFactory implements Generator<HunterKillerState> {
     }
     
     @Override
-    public void create(char data, int x, int y, int sectionIndex) {
+    public void create(char data, int x, int y, Sections section) {
+    	
       //Create the map location and position
       MapLocation location = new MapLocation(x, y);
       int mapPosition = map.toPosition(x, y);
+      int sectionIndex = section.ordinal();
       
       //Some documentation about what happens in the following switch-case:
       //  The MapFeature objects are mostly straightforward (except Base, see below).
@@ -244,24 +247,24 @@ public class HunterKillerStateFactory implements Generator<HunterKillerState> {
             //This location is always adjacent to the base, in a predefined direction.
             //Initialise the spawn location with the location for the base defined in the FourPatch (section index 0).
             MapLocation spawnLocation = map.getLocationInDirection(location, patchBaseSpawnDirection, SPAWN_DISTANCE_FROM_BASE);
-            switch(sectionIndex) {
+            switch(section) {
             //We already know it's one of our player-IDs, so it can be only one of the following 4:
-              case 0:
+              case A:
                 //Already initialised it for our patch-section, break out
                 break;
-              case 2:
+              case A_H:
                 //Section 2 (top right of map), spawns in opposite direction when WEST or EAST
                 if(patchBaseSpawnDirection == Direction.NORTH || patchBaseSpawnDirection == Direction.SOUTH) {
                   //spawning in same direction, so break out
                   break;
                 }
-              case 6:
+              case A_V:
                 //Section 6 (bottom left of map), spawns in opposite direction when NORTH or SOUTH
                 if(patchBaseSpawnDirection == Direction.WEST || patchBaseSpawnDirection == Direction.EAST) {
                   //spawning in same direction, so break out
                   break;
                 }
-              case 8:
+              case A_Mirror:
                 //Section 8 always spawns in the opposite direction
               default:
                 spawnLocation = map.getLocationInDirection(location, patchBaseSpawnDirection.getOppositeDirection(), SPAWN_DISTANCE_FROM_BASE);
