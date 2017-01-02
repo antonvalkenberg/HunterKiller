@@ -111,7 +111,7 @@ public abstract class Unit extends GameObject {
   /**
    * The current field-of-view of this Unit.
    */
-  private boolean[][] fieldOfView;
+  private HashSet<MapLocation> fieldOfView;
   
   //endregion
   
@@ -180,23 +180,6 @@ public abstract class Unit extends GameObject {
   
   //endregion
   
-  //region Private methods
-  
-  /**
-   * Calculates the location of the specified location, relative to this Unit's current location and
-   * facing.
-   * 
-   * @param location
-   *          The location to translate.
-   * @return
-   */
-  private MapLocation getRelativeLocation(MapLocation location) {
-    //TODO return the location of the specified location, relative to this Unit's current location and facing
-    return new MapLocation(0, 0);
-  }
-  
-  //endregion
-  
   //region Protected methods
   
   /**
@@ -232,9 +215,8 @@ public abstract class Unit extends GameObject {
    * @return
    */
   public boolean isInFieldOfView(MapLocation location) {
-    MapLocation rl = getRelativeLocation(location);
     //Check internal fov representation
-    return fieldOfView[rl.getX()][rl.getY()];
+    return fieldOfView.contains(location);
   }
   
   /**
@@ -244,7 +226,10 @@ public abstract class Unit extends GameObject {
    *          The collection of {@link MapLocation}s that are currently in the unit's field-of-view
    */
   public void updateFieldOfView(HashSet<MapLocation> fieldOfView) {
-    //TODO implement updating field-of-view in Unit
+    this.fieldOfView = new HashSet<MapLocation>(fieldOfView.size());
+    for(MapLocation location : fieldOfView) {
+      this.fieldOfView.add(new MapLocation(location.getX(), location.getY()));
+    }
   }
   
   //endregion

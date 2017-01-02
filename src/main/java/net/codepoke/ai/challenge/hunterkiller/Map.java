@@ -102,7 +102,7 @@ public class Map {
   /**
    * Contains this map's implementation of the distance measure of a location from 0,0.
    */
-  private GetDistance getDistance;
+  private GetManhattanDistance getDistance;
   
   /**
    * Contains this map's implementation of how to handle locations that are deemed visible from
@@ -131,7 +131,7 @@ public class Map {
     internalObjectIDCounter = -1;
     //Create the classes required for line-of-sight
     blocksLight = new BlocksLight(this);
-    getDistance = new GetDistance();
+    getDistance = new GetManhattanDistance();
     setVisible = new SetVisible();
     lineOfSight = new LineOfSight(blocksLight, setVisible, getDistance);
   }
@@ -967,11 +967,31 @@ public class Map {
   }
   
   @NoArgsConstructor
-  public class GetDistance implements GetDistanceFunction {
+  public class GetManhattanDistance implements GetDistanceFunction {
     
+    /**
+     * Note that this function returns the distance to (0,0), because
+     * {@link LineOfSight#LineOfSight(BlocksLightFunction, SetVisibleFunction, GetDistanceFunction)}
+     * requires that.
+     */
     @Override
     public int func(int x, int y) {
       return MapLocation.getManhattanDist(0, 0, x, y);
+    }
+    
+  }
+  
+  @NoArgsConstructor
+  public class GetEuclidianDistance implements GetDistanceFunction {
+    
+    /**
+     * Note that this function returns the distance to (0,0), because
+     * {@link LineOfSight#LineOfSight(BlocksLightFunction, SetVisibleFunction, GetDistanceFunction)}
+     * requires that.
+     */
+    @Override
+    public int func(int x, int y) {
+      return (int)MapLocation.getEuclideanDist(0, 0, x, y);
     }
     
   }

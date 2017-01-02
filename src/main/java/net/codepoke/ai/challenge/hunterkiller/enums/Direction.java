@@ -14,7 +14,7 @@ public enum Direction {
   /**
    * On this game's map structure, north is: decreasing Y, equal X.
    */
-  NORTH(90),
+  NORTH(270),
   /**
    * On this game's map structure, east is: equal Y, increasing X.
    */
@@ -22,7 +22,7 @@ public enum Direction {
   /**
    * On this game's map structure, south is: increasing Y, equal X.
    */
-  SOUTH(270),
+  SOUTH(90),
   /**
    * On this game's map structure, west is: equal Y, decreasing X.
    */

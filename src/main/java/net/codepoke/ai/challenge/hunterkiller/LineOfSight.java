@@ -17,6 +17,7 @@ import com.badlogic.gdx.math.Vector2;
 public class LineOfSight {
   
   private static final int NO_ANGLE_LIMIT = -1;
+  private static final int FULL_ANGLE_LIMIT = 180;
   
   private BlocksLightFunction _blocksLight;
   private GetDistanceFunction _getDistance;
@@ -188,7 +189,7 @@ public class LineOfSight {
       }
       
       // go through the tiles in the column now that we know which ones could possibly be visible
-      int wasOpaque = NO_ANGLE_LIMIT; // 0:false, 1:true, -1:not applicable
+      int wasOpaque = -1; // 0:false, 1:true, -1:not applicable
       for(int y = topY; y >= bottomY; y--) // use a signed comparison because y can wrap around when decremented
       {
         if(rangeLimit < 0 || _getDistance.func(x, y) <= rangeLimit) // skip the tile if it's out of visual range
@@ -199,7 +200,11 @@ public class LineOfSight {
           // case where the tile is clear and y == topY or y == bottomY. if y == topY then we have to make sure that
           // the top vector is above the bottom-right corner of the inner square. if y == bottomY then we have to make
           // sure that the bottom vector is below the top-left corner of the inner square
-          boolean isVisible = isOpaque || ((y != topY || top.greater(y * 4 - 1, x * 4 + 1)) && (y != bottomY || bottom.less(y * 4 + 1, x * 4 - 1)));
+          
+          //CODEPOKE adjustment for full symmetry
+          //boolean isVisible = isOpaque || ((y != topY || top.greater(y * 4 - 1, x * 4 + 1)) && (y != bottomY || bottom.less(y * 4 + 1, x * 4 - 1)));
+          boolean isVisible = ((y != topY || top.greaterOrEqual(y, x)) && (y != bottomY || bottom.lessOrEqual(y, x)));
+          
           // NOTE: if you want the algorithm to be either fully or mostly symmetrical, replace the line above with the
           // following line (and uncomment the Slope.LessOrEqual method). the line ensures that a clear tile is visible
           // only if there's an unobstructed line to its centre. if you want it to be fully symmetrical, also remove
@@ -207,7 +212,7 @@ public class LineOfSight {
           // bool isVisible = isOpaque || ((y != topY || top.GreaterOrEqual(y, x)) && (y != bottomY || bottom.LessOrEqual(y, x)));
           
           if(isVisible)
-            setVisible(x, y, octant, mapOrigin);
+            setVisible(x, y, octant, mapOrigin, facingAngle, halfAngleLimit);
           
           // if we found a transition from clear to opaque or vice versa, adjust the top and bottom vectors
           if(x != rangeLimit) // but don't bother adjusting them if this is the last column anyway
@@ -221,8 +226,9 @@ public class LineOfSight {
                 // we only have to check the tile above
                 int nx = x * 2, ny = y * 2 + 1; // top centre by default
                 // NOTE: if you're using full symmetry and want more expansive walls (recommended), comment out the next line
-                if(blocksLight(x, y + 1, octant, mapOrigin, facingAngle, halfAngleLimit))
-                  nx--; // top left if the corner is not bevelled
+                //CODEPOKE adjustment for full symmetry
+                //if(blocksLight(x, y + 1, octant, mapOrigin, facingAngle, halfAngleLimit))
+                //nx--; // top left if the corner is not bevelled
                 if(top.greater(ny, nx)) // we have to maintain the invariant that top > bottom, so the new sector
                 {                       // created by adjusting the bottom is only valid if that's the case
                   // if we're at the bottom of the column, then just adjust the current sector rather than recursing
@@ -250,8 +256,9 @@ public class LineOfSight {
                 // are clear. we know the tile below is clear because that's the current tile, so just check to the right
                 int nx = x * 2, ny = y * 2 + 1; // the bottom of the opaque tile (oy*2-1) equals the top of this tile (y*2+1)
                 // NOTE: if you're using full symmetry and want more expansive walls (recommended), comment out the next line
-                if(blocksLight(x + 1, y + 1, octant, mapOrigin, facingAngle, halfAngleLimit))
-                  nx++; // check the right of the opaque tile (y+1), not this one
+                //CODEPOKE adjustment for full symmetry
+                //if(blocksLight(x + 1, y + 1, octant, mapOrigin, facingAngle, halfAngleLimit))
+                //nx++; // check the right of the opaque tile (y+1), not this one
                 // we have to maintain the invariant that top > bottom. if not, the sector is empty and we're done
                 if(bottom.greaterOrEqual(ny, nx))
                   return;
@@ -312,20 +319,16 @@ public class LineOfSight {
         break;
     }
     
-    //CODEPOKE Calculate whether we go OoB on angle
-    if(halfAngleLimit != NO_ANGLE_LIMIT) {
-      //Get the angle between the coordinates we are checking and the Unit's location on the map
-      float angle = tmpAngleCalc.set(nx - mapOrigin.getX(), ny - mapOrigin.getY()).angle();
-      
-      if(angle >= halfAngleLimit && angle < 360 - halfAngleLimit)
-        return true;
+    //CODEPOKE Check angle limit
+    if(isAngleOutOfBounds(nx, ny, mapOrigin, facingAngle, halfAngleLimit)) {
+      return true;
     }
     
     return _blocksLight.func(nx, ny);
   }
   
-  private void setVisible(int x, int y, int octant, MapLocation origin) {
-    int nx = origin.getX(), ny = origin.getY();
+  private void setVisible(int x, int y, int octant, MapLocation mapOrigin, float facingAngle, float halfAngleLimit) {
+    int nx = mapOrigin.getX(), ny = mapOrigin.getY();
     switch(octant) {
       case 0:
         nx += x;
@@ -360,7 +363,37 @@ public class LineOfSight {
         ny += y;
         break;
     }
+    
+    //CODEPOKE Check angle limit
+    if(isAngleOutOfBounds(nx, ny, mapOrigin, facingAngle, halfAngleLimit)) {
+      return;
+    }
+    
     _setVisible.func(nx, ny);
+  }
+  
+  //CODEPOKE Calculate whether we go OoB on angle
+  private boolean isAngleOutOfBounds(int x, int y, MapLocation mapOrigin, float facingAngle, float halfAngleLimit) {
+    //If there is no angle limit set, return
+    if(halfAngleLimit == NO_ANGLE_LIMIT) {
+      System.err.println("WARNING: no angle set");
+      return false;
+    }
+    //If half of the Unit's limit is 180, they have full 360-vision, so nothing is out of bounds;
+    if(halfAngleLimit == FULL_ANGLE_LIMIT) {
+      return false;
+    }
+    
+    //Get the angle between the coordinates we are checking and the Unit's location on the map
+    float angle = tmpAngleCalc.set(x - mapOrigin.getX(), y - mapOrigin.getY()).angle();
+    //Get the difference between the angle and the Unit's facing angle
+    float delta = Math.abs(facingAngle - angle);
+    
+    //DEBUG
+    //System.out.println(String.format("Origin %s | Location %s | Angle %+4.2f | Facing %+4.2f | Half-Limit %+4.2f | Delta %+4.2f", mapOrigin, new MapLocation(x, y), angle, facingAngle, halfAngleLimit, delta));
+    
+    //Check if the difference is within our limit
+    return delta > halfAngleLimit && delta < 360 - halfAngleLimit;
   }
   
   // represents the slope Y/X as a rational number
@@ -379,11 +412,11 @@ public class LineOfSight {
       return Y * x >= X * y;
     } // this >= y/x
     
-    public boolean less(int y, int x) {
-      return Y * x < X * y;
-    } // this < y/x
+    //public boolean less(int y, int x) { return Y * x < X * y; } // this < y/x
     
-    //public boolean lessOrEqual(int y, int x) { return Y*x <= X*y; } // this <= y/x
+    public boolean lessOrEqual(int y, int x) {
+      return Y * x <= X * y;
+    } // this <= y/x
     
     public int X, Y;
   }
