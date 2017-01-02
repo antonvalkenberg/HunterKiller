@@ -38,9 +38,10 @@ public class HunterKillerState implements State {
   private int currentRound;
   
   /**
-   * The ID of the player that is the active player in this state.
+   * The index in the Map's playerID collection of the player that is the active player in this
+   * state.
    */
-  private int activePlayerID;
+  private int activePlayerIDIndex;
   
   /**
    * The players in the game.
@@ -65,12 +66,12 @@ public class HunterKillerState implements State {
    *          The players in the game.
    * @param currentRound
    *          The current round of the game.
-   * @param currentPlayerID
-   *          The ID of the player that is currently active.
+   * @param currentPlayerIDIndex
+   *          The index in the Map's playerID collection of the player that is currently active.
    */
-  public HunterKillerState(Map map, Player[] players, int currentRound, int currentPlayerID) {
+  public HunterKillerState(Map map, Player[] players, int currentRound, int currentPlayerIDIndex) {
     this.currentRound = currentRound;
-    this.activePlayerID = currentPlayerID;
+    this.activePlayerIDIndex = currentPlayerIDIndex;
     //Get a deep copy of the map
     this.map = map.copy();
     //Make a deep copy of the players array
@@ -133,9 +134,9 @@ public class HunterKillerState implements State {
    */
   public void endPlayerTurn() {
     //Select the next player (next ID)
-    activePlayerID = ++activePlayerID % players.length;
+    activePlayerIDIndex = ++activePlayerIDIndex % players.length;
     //Check if we've reached a new round
-    if(activePlayerID == 0) {
+    if(activePlayerIDIndex == 0) {
       //Reduce open-timers for Doors and special-attack cooldowns for Units.
       map.timer();
       //Increase round count
@@ -162,12 +163,12 @@ public class HunterKillerState implements State {
   
   @Override
   public State copy() {
-    return new HunterKillerState(map, players, currentRound, activePlayerID);
+    return new HunterKillerState(map, players, currentRound, activePlayerIDIndex);
   }
   
   @Override
   public int getCurrentPlayer() {
-    return activePlayerID;
+    return map.getPlayerID(activePlayerIDIndex);
   }
   
   @Override

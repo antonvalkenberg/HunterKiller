@@ -13,9 +13,10 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 @AllArgsConstructor
 public enum PremadeMap {
   //@formatter:off
-  TEST("Test",   "[[[\n"
-               + "[B_\n"
-               + "[__\n", 3, 3, Direction.SOUTH);
+  TEST("Test",   "B_S_\n"
+               + "_[D[\n"
+               + "_D__\n"
+               + "_[D[\n", 4, 4, Direction.SOUTH);
   //@formatter:on
   
   /**

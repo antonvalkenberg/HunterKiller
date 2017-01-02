@@ -32,7 +32,7 @@ public class HunterKillerRules implements GameRules<HunterKillerState, HunterKil
   @Override
   public Result handle(HunterKillerState state, HunterKillerAction action) {
     //Check to make sure only the active player can perform an action
-    if(action.getActingPlayerID() != state.getActivePlayerID()) {
+    if(action.getActingPlayerID() != state.getCurrentPlayer()) {
       return new Result(false, false, null, "Invalid action", "Player performing the action is not the active player.");
     }
     //Check to make sure the round numbers match

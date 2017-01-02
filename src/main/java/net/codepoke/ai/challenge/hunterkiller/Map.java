@@ -21,6 +21,7 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
+import com.badlogic.gdx.utils.IntArray;
 
 /**
  * The map on which HunterKiller is played. The map is internally represented as a 2-dimensional
@@ -81,7 +82,7 @@ public class Map {
   /**
    * Array containing the IDs of the players in the game.
    */
-  private int[] internalPlayerIDs;
+  private IntArray internalPlayerIDs;
   
   /**
    * A counter that records the latest ID given out to a game object.
@@ -595,8 +596,19 @@ public class Map {
    * 
    * @param playerIDs
    */
-  public void setPlayerIDs(int[] playerIDs) {
-    internalPlayerIDs = playerIDs.clone();
+  public void setPlayerIDs(IntArray playerIDs) {
+    internalPlayerIDs = new IntArray(true, playerIDs.size);
+    internalPlayerIDs.addAll(playerIDs);
+  }
+  
+  /**
+   * Returns the player ID that corresponds to the provided index.
+   * 
+   * @param playerIDIndex
+   *          The index of the ID to get.
+   */
+  public int getPlayerID(int playerIDIndex) {
+    return internalPlayerIDs.get(playerIDIndex);
   }
   
   /**
@@ -637,7 +649,7 @@ public class Map {
         int currentPosition = toPosition(x, y);
         GameObject[] objects = mapContent[currentPosition];
         String featureLevel = objects[INTERNAL_MAP_FEATURE_INDEX] != null ? objects[INTERNAL_MAP_FEATURE_INDEX].toString() : " ";
-        String unitLevel = objects[INTERNAL_MAP_UNIT_INDEX] != null ? objects[INTERNAL_MAP_UNIT_INDEX].toString() : " ";
+        String unitLevel = objects[INTERNAL_MAP_UNIT_INDEX] != null ? objects[INTERNAL_MAP_UNIT_INDEX].toString() : ".";
         //Add feature level first, unit level on other side
         lineBuilder.insert(x, featureLevel);
         lineBuilder.insert(x + TOSTRING_LAYER_SEPARATOR.length(), unitLevel);

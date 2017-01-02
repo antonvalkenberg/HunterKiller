@@ -17,6 +17,7 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
+import net.codepoke.ai.challenge.hunterkiller.players.TestPlayer;
 import com.badlogic.gdx.utils.IntArray;
 
 /**
@@ -118,16 +119,23 @@ public class HunterKillerStateFactory implements Generator<HunterKillerState> {
     //Construct the map
     Map map = constructMap(premade, playerIDs);
     
+    //Randomise the IDs
+    playerIDs.shuffle();
     //Load the players
     Player[] players = new Player[playerNames.length];
+    IntArray mapPlayerIDs = new IntArray(true, playerNames.length);
     for(int i = 0; i < players.length; i++) {
       //TODO Assign and load player classes to a random playerID
+      int id = playerIDs.pop();
+      Player player = new TestPlayer(id, playerNames[i]);
+      //Assign bases and units on the map to the player
+      map.assignObjectsToPlayer(player);
+      mapPlayerIDs.add(id);
+      players[i] = player;
     }
     
-    //Assign bases and units on the map to players
-    for(Player player : players) {
-      map.assignObjectsToPlayer(player);
-    }
+    //Set the player IDs in the map
+    map.setPlayerIDs(mapPlayerIDs);
     
     //Create the initial state
     return new HunterKillerState(map, players, 1, 0);
@@ -194,7 +202,7 @@ public class HunterKillerStateFactory implements Generator<HunterKillerState> {
     
     @Override
     public void create(char data, int x, int y, Sections section) {
-    	
+      
       //Create the map location and position
       MapLocation location = new MapLocation(x, y);
       int mapPosition = map.toPosition(x, y);
@@ -204,8 +212,8 @@ public class HunterKillerStateFactory implements Generator<HunterKillerState> {
       //  The MapFeature objects are mostly straightforward (except Base, see below).
       //  The Unit objects + Base object are slightly more complicated, because the section index affects them:
       //    - If the section index appears in our player-ID collection, actual Units/Bases need to be created.
-      //    - Otherwise they should be ignored and replaced by Floor-tiles.
-      boolean replaceByFloor = !playerIDs.contains(sectionIndex);
+      //    - Otherwise they should be ignored.
+      boolean ignoreUnitAndBase = !playerIDs.contains(sectionIndex);
       
       //Check what type to create
       TileType tile = TileType.valueOf(data);
@@ -231,18 +239,22 @@ public class HunterKillerStateFactory implements Generator<HunterKillerState> {
         case MEDIC:
         case SOLDIER:
         case BASE:
-          if(replaceByFloor)
-            map.place(mapPosition, new Floor(map.requestNewGameObjectID(), location));
-          else if(tile == TileType.INFECTED) {
+          //Always place a Floor under a Unit
+          Floor tempFloor = new Floor(map.requestNewGameObjectID(), location);
+          map.place(mapPosition, tempFloor);
+          
+          if(!ignoreUnitAndBase && tile == TileType.INFECTED) {
             map.place(mapPosition, new Infected(map.requestNewGameObjectID(), sectionIndex, location, Unit.DEFAULT_ORIENTATION));
           }
-          else if(tile == TileType.MEDIC) {
+          else if(!ignoreUnitAndBase && tile == TileType.MEDIC) {
             map.place(mapPosition, new Medic(map.requestNewGameObjectID(), sectionIndex, location, Unit.DEFAULT_ORIENTATION));
           }
-          else if(tile == TileType.SOLDIER) {
+          else if(!ignoreUnitAndBase && tile == TileType.SOLDIER) {
             map.place(mapPosition, new Soldier(map.requestNewGameObjectID(), sectionIndex, location, Unit.DEFAULT_ORIENTATION));
           }
-          else {
+          else if(!ignoreUnitAndBase) {
+            //Remove the Floor
+            map.remove(mapPosition, tempFloor);
             //For Bases, we also need to determine the location of where they spawn Units.
             //This location is always adjacent to the base, in a predefined direction.
             //Initialise the spawn location with the location for the base defined in the FourPatch (section index 0).

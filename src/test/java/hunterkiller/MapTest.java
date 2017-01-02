@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import net.codepoke.ai.challenge.hunterkiller.FourPatch;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerStateFactory;
 import net.codepoke.ai.challenge.hunterkiller.Map;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
@@ -175,6 +176,13 @@ public class MapTest {
     assertEquals(1, topLeftSpawnPosition);
     int bottomRightSpawnPosition = Map.toPosition(((Base)content[16][index]).getSpawnLocation(), createdMap.getMapWidth());
     assertEquals(22, bottomRightSpawnPosition);
+  }
+  
+  @Test
+  public void testInitialState() {
+    //Create an initial state
+    HunterKillerState initialState = new HunterKillerStateFactory().generateInitialState(new String[] { "playerA", "playerB" }, "");
+    String s = "";
   }
   
   //endregion
