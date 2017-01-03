@@ -23,8 +23,6 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
 
-import com.badlogic.gdx.utils.IntArray;
-
 /**
  * The map on which HunterKiller is played. The map is internally represented as a 2-dimensional
  * array. The first dimension contains all locations on the map (width * height) mapped to a
@@ -80,11 +78,6 @@ public class Map {
 	 */
 	@Getter
 	private GameObject[][] mapContent;
-
-	/**
-	 * Array containing the IDs of the players in the game.
-	 */
-	private IntArray internalPlayerIDs;
 
 	/**
 	 * A counter that records the latest ID given out to a game object.
@@ -595,26 +588,6 @@ public class Map {
 	}
 
 	/**
-	 * Set the collection of IDs of the players that are participating in the game.
-	 * 
-	 * @param playerIDs
-	 */
-	public void setPlayerIDs(IntArray playerIDs) {
-		internalPlayerIDs = new IntArray(true, playerIDs.size);
-		internalPlayerIDs.addAll(playerIDs);
-	}
-
-	/**
-	 * Returns the player ID that corresponds to the provided index.
-	 * 
-	 * @param playerIDIndex
-	 *            The index of the ID to get.
-	 */
-	public int getPlayerID(int playerIDIndex) {
-		return internalPlayerIDs.get(playerIDIndex);
-	}
-
-	/**
 	 * Creates a deep copy of this map.
 	 * 
 	 * @return
@@ -625,7 +598,6 @@ public class Map {
 		// Deep copy the map content
 		GameObject[][] content = copyMapContent();
 		// Set some things
-		newMap.setPlayerIDs(this.internalPlayerIDs);
 		newMap.setObjectIDCounter(this.internalObjectIDCounter);
 		newMap.setMapContent(content);
 		// Return the created map

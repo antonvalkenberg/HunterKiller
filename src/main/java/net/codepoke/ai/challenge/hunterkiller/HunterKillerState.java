@@ -2,10 +2,11 @@ package net.codepoke.ai.challenge.hunterkiller;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import net.codepoke.ai.AIUtility;
 import net.codepoke.ai.challenge.hunterkiller.orders.NullMove;
 import net.codepoke.ai.states.HiddenState;
 import net.codepoke.ai.states.SequentialState;
+
+import com.badlogic.gdx.utils.IntArray;
 
 /**
  * Class representing the state of the HunterKiller game. In this state one {@link Player} is the
@@ -52,6 +53,11 @@ public class HunterKillerState
 	private Player[] players;
 
 	/**
+	 * Array containing the IDs of the players in the game.
+	 */
+	private IntArray internalPlayerIDs;
+
+	/**
 	 * The map that the game is being played on.
 	 */
 	private Map map;
@@ -67,16 +73,20 @@ public class HunterKillerState
 	 *            The {@link Map} that is being played on.
 	 * @param players
 	 *            The players in the game.
+	 * @param internalPlayerIDs
+	 *            The IDs of the Players for internal use. Note: these will range from [0;#players], instead of their
+	 *            personal ID indicating in which section number they spawn/control.
 	 * @param currentRound
 	 *            The current round of the game.
 	 * @param currentPlayerIDIndex
-	 *            The index in the Map's playerID collection of the player that is currently active.
+	 *            The index in the internal playerID collection of the player that is currently active.
 	 */
-	public HunterKillerState(Map map, Player[] players, int currentRound, int currentPlayerIDIndex) {
+	public HunterKillerState(Map map, Player[] players, IntArray internalPlayerIDs, int currentRound, int currentPlayerIDIndex) {
 		this.currentRound = currentRound;
 		this.activePlayerIDIndex = currentPlayerIDIndex;
-		this.map = map;
 		this.players = players;
+		this.internalPlayerIDs = internalPlayerIDs;
+		this.map = map;
 	}
 
 	/**
@@ -135,6 +145,16 @@ public class HunterKillerState
 	}
 
 	/**
+	 * Set the collection of IDs of the players that are participating in the game.
+	 * 
+	 * @param playerIDs
+	 */
+	public void setPlayerIDs(IntArray playerIDs) {
+		internalPlayerIDs = new IntArray(true, playerIDs.size);
+		internalPlayerIDs.addAll(playerIDs);
+	}
+
+	/**
 	 * Determines whether or not this state represents a completed game.
 	 * 
 	 * @return
@@ -163,7 +183,7 @@ public class HunterKillerState
 		// If the next round-threshold has been reached, award players with new resources
 		if (currentRound % RESOURCE_AWARD_FREQUENCY == 0) {
 			for (Player player : players) {
-				player.resource += RESOURCE_AWARD_AMOUNT;
+				player.setResource(player.resource + RESOURCE_AWARD_AMOUNT);
 			}
 		}
 	}
@@ -187,7 +207,7 @@ public class HunterKillerState
 
 	@Override
 	public int getCurrentPlayer() {
-		return map.getPlayerID(activePlayerIDIndex);
+		return internalPlayerIDs.get(activePlayerIDIndex);
 	}
 
 	@Override
@@ -197,7 +217,8 @@ public class HunterKillerState
 
 	@Override
 	public int[] getPlayerTurnOrder() {
-		return AIUtility.defaultTurnOrder(players.length);
+		return internalPlayerIDs.items;
+		// return AIUtility.defaultTurnOrder(players.length);
 	}
 
 	@Override

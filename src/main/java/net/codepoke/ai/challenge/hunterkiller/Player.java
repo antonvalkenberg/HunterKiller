@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.codepoke.ai.GameRules.Result.Ranking;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
@@ -45,6 +46,7 @@ public class Player
 	/**
 	 * The player's current resources.
 	 */
+	@Setter
 	protected int resource;
 
 	/**
@@ -77,6 +79,7 @@ public class Player
 	public Player(int id, String name) {
 		this.ID = id;
 		this.name = name;
+		this.resource = PLAYER_STARTING_RESOURCE;
 		// Create a new list to store the squad into
 		squad = new ArrayList<Unit>();
 	}
@@ -97,6 +100,8 @@ public class Player
 		for (Unit unit : this.squad) {
 			newPlayer.addUnitToSquad(unit.copy());
 		}
+		// Set the resources
+		newPlayer.setResource(this.resource);
 
 		return newPlayer;
 	}

@@ -122,23 +122,23 @@ public class HunterKillerStateFactory
 
 		// Randomise the IDs
 		playerIDs.shuffle();
+		// Because we used section indexes as IDs, create a new array that contains the player IDs for internal use
+		IntArray internalPlayerIDs = new IntArray(true, playerNames.length);
 		// Load the players
 		Player[] players = new Player[playerNames.length];
-		IntArray mapPlayerIDs = new IntArray(true, playerNames.length);
 		for (int i = 0; i < players.length; i++) {
 			int id = playerIDs.pop();
 			Player player = new Player(id, playerNames[i]);
 			// Assign bases and units on the map to the player
 			map.assignObjectsToPlayer(player);
-			mapPlayerIDs.add(id);
+			// Set the ID that will be used internally
+			internalPlayerIDs.add(id);
+			// Add the player
 			players[i] = player;
 		}
 
-		// Set the player IDs in the map
-		map.setPlayerIDs(mapPlayerIDs);
-
 		// Create the initial state
-		return new HunterKillerState(map, players, 1, 0);
+		return new HunterKillerState(map, players, internalPlayerIDs, 1, 0);
 	}
 
 	// endregion

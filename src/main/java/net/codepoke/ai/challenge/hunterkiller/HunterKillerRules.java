@@ -183,7 +183,7 @@ public class HunterKillerRules
 			// Check if the spawn location is available
 			if (map.isTraversable(spawnlocation)) {
 				// Charge the costs
-				player.resource -= spawnCosts;
+				player.setResource(player.resource - spawnCosts);
 				// Create a new Unit of the correct type
 				Unit unit;
 				switch (spawnType) {

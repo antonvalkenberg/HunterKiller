@@ -8,6 +8,7 @@ import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerStateFactory;
 import net.codepoke.ai.challenge.hunterkiller.Map;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
+import net.codepoke.ai.challenge.hunterkiller.Player;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
@@ -190,7 +191,16 @@ public class MapTest {
 	public void testInitialState() {
 		// Create an initial state
 		HunterKillerState initialState = new HunterKillerStateFactory().generateInitialState(new String[] { "playerA", "playerB" }, "");
-		String s = "";
+
+		// Check that the initialState starts in round 1
+		assertEquals(1, initialState.getCurrentRound());
+		// Check that the current player has the starting amount of resource
+		assertEquals(Player.PLAYER_STARTING_RESOURCE, initialState.getPlayer(initialState.getCurrentPlayer())
+																	.getResource());
+		// Make sure the initial state is not done
+		assertFalse(initialState.isDone());
+
+		// TODO More initial state tests
 	}
 
 	// endregion
