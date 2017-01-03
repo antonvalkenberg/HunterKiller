@@ -1,6 +1,5 @@
 package net.codepoke.ai.challenge.hunterkiller.orders;
 
-import net.codepoke.ai.GameRules.State;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 
@@ -11,15 +10,16 @@ import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
-public class NullMove extends HunterKillerAction {
-  
-  /**
-   * Constructor.
-   * 
-   * @param state
-   */
-  public NullMove(HunterKillerState state) {
-    super(state);
-  }
-  
+public class NullMove
+		extends HunterKillerAction {
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param state
+	 */
+	public NullMove(HunterKillerState state) {
+		super(state);
+	}
+
 }
