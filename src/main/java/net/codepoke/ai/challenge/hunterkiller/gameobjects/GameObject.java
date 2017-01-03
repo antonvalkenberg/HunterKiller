@@ -96,13 +96,18 @@ public abstract class GameObject {
 	// endregion
 
 	/**
-	 * Creates a copy of this GameObject
+	 * Creates a copy of this GameObject with a new ID.
 	 * 
 	 * @param id
 	 *            A unique identifier for this object
 	 * @return A GameObject that is a copy of this object
 	 */
 	public abstract GameObject copy(int id);
+
+	/**
+	 * Creates a copy of this GameObject.
+	 */
+	public abstract GameObject copy();
 
 	/**
 	 * Returns a string representation of this GameObject.

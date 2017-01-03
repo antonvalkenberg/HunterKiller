@@ -75,6 +75,19 @@ public class HunterKillerState
 	public HunterKillerState(Map map, Player[] players, int currentRound, int currentPlayerIDIndex) {
 		this.currentRound = currentRound;
 		this.activePlayerIDIndex = currentPlayerIDIndex;
+		this.map = map;
+		this.players = players;
+	}
+
+	/**
+	 * Copy constructor.
+	 * 
+	 * @param otherState
+	 *            The state to copy.
+	 */
+	public HunterKillerState(HunterKillerState otherState) {
+		this.currentRound = otherState.currentRound;
+		this.activePlayerIDIndex = otherState.activePlayerIDIndex;
 		// Get a deep copy of the map
 		this.map = map.copy();
 		// Make a deep copy of the players array
@@ -164,9 +177,12 @@ public class HunterKillerState
 		return hashCode();
 	}
 
+	/**
+	 * Creates a deep copy of this state through the copy constructor.
+	 */
 	@Override
 	public HunterKillerState copy() {
-		return new HunterKillerState(map, players, currentRound, activePlayerIDIndex);
+		return new HunterKillerState(this);
 	}
 
 	@Override

@@ -131,6 +131,11 @@ public class Door
 	}
 
 	@Override
+	public Door copy() {
+		return this.copy(this.getID());
+	}
+
+	@Override
 	public String toString() {
 		return isOpen() ? "" + TileType.DOOR_OPEN.txt : "" + TileType.DOOR_CLOSED.txt;
 	}

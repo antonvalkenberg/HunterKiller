@@ -117,6 +117,11 @@ public class Soldier
 							this.getSpecialAttackCooldown(), this.getSpawnCost(), this.getScoreWorth());
 	}
 
+	@Override
+	public Soldier copy() {
+		return this.copy(this.getID());
+	}
+
 	/**
 	 * Start the cooldown of the soldier's special attack.
 	 */

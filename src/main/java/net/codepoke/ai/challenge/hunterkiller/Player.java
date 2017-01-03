@@ -18,7 +18,7 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
  *
  */
 @Getter
-public abstract class Player
+public class Player
 		implements Comparable<Player> {
 
 	// region Constants
@@ -79,6 +79,26 @@ public abstract class Player
 		this.name = name;
 		// Create a new list to store the squad into
 		squad = new ArrayList<Unit>();
+	}
+
+	// endregion
+
+	// region Public methods
+
+	/**
+	 * Returns a deep copy of this player.
+	 */
+	public Player copy() {
+		Player newPlayer = new Player(this.getID(), this.getName());
+
+		// Copy the Base
+		newPlayer.assignBase(this.base.copy());
+		// Copy all the Units
+		for (Unit unit : this.squad) {
+			newPlayer.addUnitToSquad(unit.copy());
+		}
+
+		return newPlayer;
 	}
 
 	// endregion
@@ -155,26 +175,6 @@ public abstract class Player
 	protected void removeUnitFromSquad(Unit unit) {
 		squad.remove(unit);
 	}
-
-	// endregion
-
-	// region Abstract methods
-
-	/**
-	 * Returns a {@link HunterKillerAction} to enact upon the current game state.
-	 * 
-	 * @param state
-	 *            The current game state.
-	 * @return
-	 */
-	public abstract HunterKillerAction act(HunterKillerState state);
-
-	/**
-	 * Returns a deep copy of this player.
-	 * 
-	 * @return
-	 */
-	public abstract Player copy();
 
 	// endregion
 

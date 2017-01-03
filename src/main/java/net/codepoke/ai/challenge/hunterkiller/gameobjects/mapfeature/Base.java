@@ -115,6 +115,11 @@ public class Base
 	}
 
 	@Override
+	public Base copy() {
+		return this.copy(this.getID());
+	}
+
+	@Override
 	public String toString() {
 		return "" + TileType.BASE.txt;
 	}

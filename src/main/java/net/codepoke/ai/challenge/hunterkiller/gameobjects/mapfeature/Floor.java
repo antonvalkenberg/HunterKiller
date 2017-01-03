@@ -53,6 +53,11 @@ public class Floor
 	}
 
 	@Override
+	public Floor copy() {
+		return this.copy(this.getID());
+	}
+
+	@Override
 	public String toString() {
 		return "" + TileType.FLOOR.txt;
 	}

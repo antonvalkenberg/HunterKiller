@@ -18,7 +18,6 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
-import net.codepoke.ai.challenge.hunterkiller.players.TestPlayer;
 
 import com.badlogic.gdx.utils.IntArray;
 
@@ -127,9 +126,8 @@ public class HunterKillerStateFactory
 		Player[] players = new Player[playerNames.length];
 		IntArray mapPlayerIDs = new IntArray(true, playerNames.length);
 		for (int i = 0; i < players.length; i++) {
-			// TODO Assign and load player classes to a random playerID
 			int id = playerIDs.pop();
-			Player player = new TestPlayer(id, playerNames[i]);
+			Player player = new Player(id, playerNames[i]);
 			// Assign bases and units on the map to the player
 			map.assignObjectsToPlayer(player);
 			mapPlayerIDs.add(id);

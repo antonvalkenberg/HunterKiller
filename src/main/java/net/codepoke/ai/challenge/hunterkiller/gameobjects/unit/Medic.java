@@ -113,6 +113,11 @@ public class Medic
 							this.getSpecialAttackCooldown(), this.getSpawnCost(), this.getScoreWorth());
 	}
 
+	@Override
+	public Medic copy() {
+		return this.copy(this.getID());
+	}
+
 	/**
 	 * Start the cooldown of the medic's special attack.
 	 */

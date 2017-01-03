@@ -53,6 +53,11 @@ public class Wall
 	}
 
 	@Override
+	public Wall copy() {
+		return this.copy(this.getID());
+	}
+
+	@Override
 	public String toString() {
 		return "" + TileType.WALL.txt;
 	}

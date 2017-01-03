@@ -53,6 +53,11 @@ public class Space
 	}
 
 	@Override
+	public Space copy() {
+		return this.copy(this.getID());
+	}
+
+	@Override
 	public String toString() {
 		return "" + TileType.SPACE.txt;
 	}

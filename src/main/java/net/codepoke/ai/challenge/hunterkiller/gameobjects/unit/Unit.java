@@ -203,6 +203,8 @@ public abstract class Unit
 
 	public abstract void startCooldown();
 
+	public abstract Unit copy();
+
 	/**
 	 * Reduces the cooldown for this unit's special attack.
 	 */

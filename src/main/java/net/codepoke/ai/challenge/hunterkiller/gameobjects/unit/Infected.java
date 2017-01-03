@@ -109,6 +109,11 @@ public class Infected
 							this.getSpecialAttackCooldown(), this.getSpawnCost(), this.getScoreWorth());
 	}
 
+	@Override
+	public Infected copy() {
+		return this.copy(this.getID());
+	}
+
 	/**
 	 * Start the cooldown of the infected's special attack.
 	 */
