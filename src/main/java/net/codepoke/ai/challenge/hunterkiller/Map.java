@@ -655,7 +655,7 @@ public class Map {
 				String unitLevel = objects[INTERNAL_MAP_UNIT_INDEX] != null ? objects[INTERNAL_MAP_UNIT_INDEX].toString() : ".";
 				// Add feature level first, unit level on other side
 				lineBuilder.insert(x, featureLevel);
-				lineBuilder.insert(x + TOSTRING_LAYER_SEPARATOR.length(), unitLevel);
+				lineBuilder.append(unitLevel);
 			}
 			// Done with the line, append it
 			builder.append(lineBuilder.toString() + "\n");
