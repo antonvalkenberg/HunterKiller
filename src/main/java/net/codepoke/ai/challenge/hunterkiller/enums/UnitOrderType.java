@@ -1,8 +1,8 @@
 package net.codepoke.ai.challenge.hunterkiller.enums;
 
 /**
- * Enumeration of all types of
- * {@link net.codepoke.ai.challenge.hunterkiller.orders.HunterKillerOrder HunterKillerOrder}s
+ * Enumeration of all types of {@link net.codepoke.ai.challenge.hunterkiller.orders.HunterKillerOrder HunterKillerOrder}
+ * s
  * available to a {@link net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit Unit}. These
  * currently include:
  * <ul>
@@ -32,6 +32,13 @@ package net.codepoke.ai.challenge.hunterkiller.enums;
  *
  */
 public enum UnitOrderType {
-  //If adding a type, don't forget to add it to the documentation list above!
-  MOVE_NORTH, MOVE_EAST, MOVE_SOUTH, MOVE_WEST, ROTATE_WEST, ROTATE_EAST, ATTACK, ATTACK_SPECIAL;
+	// If adding a type, don't forget to add it to the documentation list above!
+	MOVE_NORTH,
+	MOVE_EAST,
+	MOVE_SOUTH,
+	MOVE_WEST,
+	ROTATE_WEST,
+	ROTATE_EAST,
+	ATTACK,
+	ATTACK_SPECIAL;
 }
