@@ -3,7 +3,9 @@ package net.codepoke.ai.challenge.hunterkiller;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.codepoke.ai.GameRules.Result.Ranking;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
@@ -19,6 +21,7 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
  *
  */
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Player
 		implements Comparable<Player> {
 
@@ -42,6 +45,11 @@ public class Player
 	 * The player's unique identifier.
 	 */
 	private int ID;
+
+	/**
+	 * The player's section on the map. This is used in map creation and can be safely ignored.
+	 */
+	private int mapSection = -1;
 
 	/**
 	 * The player's current resources.
@@ -75,10 +83,13 @@ public class Player
 	 *            The player's unique identifier.
 	 * @param name
 	 *            The player's name.
+	 * @param mapSection
+	 *            The section assigned to this player during map construction.
 	 */
-	public Player(int id, String name) {
+	public Player(int id, String name, int mapSection) {
 		this.ID = id;
 		this.name = name;
+		this.mapSection = mapSection;
 		this.resource = PLAYER_STARTING_RESOURCE;
 		// Create a new list to store the squad into
 		squad = new ArrayList<Unit>();
@@ -92,7 +103,7 @@ public class Player
 	 * Returns a deep copy of this player.
 	 */
 	public Player copy() {
-		Player newPlayer = new Player(this.getID(), this.getName());
+		Player newPlayer = new Player(this.getID(), this.getName(), this.getMapSection());
 
 		// Copy the Base
 		newPlayer.assignBase(this.base.copy());

@@ -20,6 +20,7 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 
 import com.badlogic.gdx.utils.IntArray;
+import com.badlogic.gdx.utils.IntIntMap;
 
 /**
  * Class representing a {@link Generator} for a {@link Map}. Contains methods to generate a map from
@@ -38,15 +39,14 @@ public class HunterKillerStateFactory
 	 * 
 	 * @param premade
 	 *            The type of map to construct.
-	 * @param playerIDs
-	 *            The IDs of the players in the game. Note that these correspond to a section-index in
-	 *            the grid from {@link FourPatch.DataCreation#create(char, int, int, int)}.
+	 * @param players
+	 *            The players in the game.
 	 * @return The constructed {@link Map} object.
 	 */
-	public static Map constructMap(PremadeMap premade, IntArray playerIDs) {
+	public static Map constructMap(PremadeMap premade, Player[] players) {
 		// Create a FourPatch
 		FourPatch patch = new FourPatch(new HunterKillerMapCreation(), premade.mapData, premade.quadrantAWidth, premade.quadrantAHeight);
-		return constructFromFourPatch(patch, playerIDs, premade.spawnDirection);
+		return constructFromFourPatch(patch, players, premade.spawnDirection);
 	}
 
 	/**
@@ -54,19 +54,19 @@ public class HunterKillerStateFactory
 	 * 
 	 * @param patch
 	 *            The {@link FourPatch} that will be used to construct the map.
-	 * @param playerIDs
-	 *            The IDs of the players in the game. See {@link #constructMap(PremadeMap, IntArray)}.
+	 * @param players
+	 *            The players in the game.
 	 * @param patchBaseSpawnDirection
 	 *            The {@link Direction} that the base in the patch uses to spawn it's units.
 	 * 
 	 * @return The constructed {@link Map} object.
 	 */
-	public static Map constructFromFourPatch(FourPatch patch, IntArray playerIDs, Direction patchBaseSpawnDirection) {
+	public static Map constructFromFourPatch(FourPatch patch, Player[] players, Direction patchBaseSpawnDirection) {
 		// Create a new Map
 		Map map = new Map(patch.getGridWidth(), patch.getGridHeight());
 
 		// Set up the HunterKillerMapCreation
-		HunterKillerMapCreation.setup(playerIDs, map, patchBaseSpawnDirection);
+		HunterKillerMapCreation.setup(players, map, patchBaseSpawnDirection);
 
 		// Call map construction through FourPatch
 		patch.createGrid();
@@ -92,53 +92,50 @@ public class HunterKillerStateFactory
 	public HunterKillerState generateInitialState(String[] playerNames, String options) {
 		// Select a random premade map to create
 		Random r = new Random();
-		PremadeMap premade = PremadeMap.values()[r.nextInt(PremadeMap.values().length)];
+		// PremadeMap premade = PremadeMap.values()[r.nextInt(PremadeMap.values().length)];
+		PremadeMap premade = PremadeMap.TEST;
 
 		// Check that either 2, 3 or 4 players are provided, other amounts are not supported
 		if (playerNames.length < 2 || playerNames.length > 4) {
 			// TODO throw an error.
 		}
 
-		// Define player IDs according to grid sections, this varies by the amount of players
-		IntArray playerIDs;
+		// Select the map section we will be using for the players
+		IntArray playerSections;
 		switch (playerNames.length) {
 		case 4:
 			// All four 'corners' are used for players
-			playerIDs = new IntArray(new int[] { 0, 2, 6, 8 });
+			playerSections = new IntArray(new int[] { 0, 2, 6, 8 });
 			break;
 		case 3:
 			// In the case of 3 players, use a random one of the 2 semi-mirrored corners (index 2 and 6)
-			playerIDs = new IntArray(new int[] { 0, r.nextBoolean() ? 2 : 6, 8 });
+			playerSections = new IntArray(new int[] { 0, r.nextBoolean() ? 2 : 6, 8 });
 			break;
 		case 2:
 		default:
 			// Only the two opposite corners
-			playerIDs = new IntArray(new int[] { 0, 8 });
+			playerSections = new IntArray(new int[] { 0, 8 });
 			break;
 		}
+		// Now randomise the sections, so on re-creation the same player does not end up in the same section each time.
+		playerSections.shuffle();
 
-		// Construct the map
-		Map map = constructMap(premade, playerIDs);
-
-		// Randomise the IDs
-		playerIDs.shuffle();
-		// Because we used section indexes as IDs, create a new array that contains the player IDs for internal use
-		IntArray internalPlayerIDs = new IntArray(true, playerNames.length);
 		// Load the players
 		Player[] players = new Player[playerNames.length];
 		for (int i = 0; i < players.length; i++) {
-			int id = playerIDs.pop();
-			Player player = new Player(id, playerNames[i]);
-			// Assign bases and units on the map to the player
+			players[i] = new Player(i, playerNames[i], playerSections.get(i));
+		}
+
+		// Construct the map
+		Map map = constructMap(premade, players);
+
+		// Make sure the map assigns the objects to the players
+		for (Player player : players) {
 			map.assignObjectsToPlayer(player);
-			// Set the ID that will be used internally
-			internalPlayerIDs.add(id);
-			// Add the player
-			players[i] = player;
 		}
 
 		// Create the initial state
-		return new HunterKillerState(map, players, internalPlayerIDs, 1, 0);
+		return new HunterKillerState(map, players, 1, 0);
 	}
 
 	// endregion
@@ -161,7 +158,7 @@ public class HunterKillerStateFactory
 		/**
 		 * The IDs of the players in the game.
 		 */
-		private static IntArray playerIDs;
+		private static IntIntMap sectionPlayerIDMap;
 		/**
 		 * Reference to the map that the objects will be created on.
 		 */
@@ -186,19 +183,27 @@ public class HunterKillerStateFactory
 		 * @param spawn
 		 *            The direction the base on the patch should spawn it's unit in.
 		 */
-		public static void setup(IntArray players, Map newMap, Direction spawn) {
-			playerIDs = players;
+		public static void setup(Player[] players, Map newMap, Direction spawn) {
 			map = newMap;
 			patchBaseSpawnDirection = spawn;
+			// Create the player-section map
+			sectionPlayerIDMap = new IntIntMap(players.length);
+			for (Player player : players) {
+				if (!sectionPlayerIDMap.containsKey(player.getMapSection())) {
+					sectionPlayerIDMap.put(player.getMapSection(), player.getID());
+				} else {
+					// TODO throw an error! a map section was assigned to more than one Player
+				}
+			}
 		}
 
 		/**
 		 * Reset the temporary variables.
 		 */
 		public static void reset() {
-			playerIDs = null;
 			map = null;
 			patchBaseSpawnDirection = null;
+			sectionPlayerIDMap.clear();
 		}
 
 		@Override
@@ -212,9 +217,9 @@ public class HunterKillerStateFactory
 			// Some documentation about what happens in the following switch-case:
 			// The MapFeature objects are mostly straightforward (except Base, see below).
 			// The Unit objects + Base object are slightly more complicated, because the section index affects them:
-			// - If the section index appears in our player-ID collection, actual Units/Bases need to be created.
+			// - If the section index appears in our section-playerID map, actual Units/Bases need to be created.
 			// - Otherwise they should be ignored.
-			boolean ignoreUnitAndBase = !playerIDs.contains(sectionIndex);
+			boolean ignoreUnitAndBase = !sectionPlayerIDMap.containsKey(sectionIndex);
 
 			// Check what type to create
 			TileType tile = TileType.valueOf(data);
@@ -244,12 +249,17 @@ public class HunterKillerStateFactory
 				Floor tempFloor = new Floor(map.requestNewGameObjectID(), location);
 				map.place(mapPosition, tempFloor);
 
+				// Determine to which player-ID the Unit/Base will be assigned
+				// (the default value is not important, because if there is no playerID for this section, no Units will
+				// be created).
+				int playerID = sectionPlayerIDMap.get(sectionIndex, -1);
+
 				if (!ignoreUnitAndBase && tile == TileType.INFECTED) {
-					map.place(mapPosition, new Infected(map.requestNewGameObjectID(), sectionIndex, location, Unit.DEFAULT_ORIENTATION));
+					map.place(mapPosition, new Infected(map.requestNewGameObjectID(), playerID, location, Unit.DEFAULT_ORIENTATION));
 				} else if (!ignoreUnitAndBase && tile == TileType.MEDIC) {
-					map.place(mapPosition, new Medic(map.requestNewGameObjectID(), sectionIndex, location, Unit.DEFAULT_ORIENTATION));
+					map.place(mapPosition, new Medic(map.requestNewGameObjectID(), playerID, location, Unit.DEFAULT_ORIENTATION));
 				} else if (!ignoreUnitAndBase && tile == TileType.SOLDIER) {
-					map.place(mapPosition, new Soldier(map.requestNewGameObjectID(), sectionIndex, location, Unit.DEFAULT_ORIENTATION));
+					map.place(mapPosition, new Soldier(map.requestNewGameObjectID(), playerID, location, Unit.DEFAULT_ORIENTATION));
 				} else if (!ignoreUnitAndBase) {
 					// Remove the Floor
 					map.remove(mapPosition, tempFloor);
@@ -285,7 +295,7 @@ public class HunterKillerStateFactory
 					}
 
 					// Now that we have defined our spawn location, we can create the Base
-					map.place(mapPosition, new Base(map.requestNewGameObjectID(), sectionIndex, location, spawnLocation));
+					map.place(mapPosition, new Base(map.requestNewGameObjectID(), playerID, location, spawnLocation));
 				}
 				break;
 			default:

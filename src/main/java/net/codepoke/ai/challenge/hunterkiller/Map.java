@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.codepoke.ai.challenge.hunterkiller.LineOfSight.BlocksLightFunction;
@@ -88,27 +89,15 @@ public class Map {
 	 * The line-of-sight implementation that is used on this map.
 	 */
 	@Getter
-	private LineOfSight lineOfSight;
-
-	/**
-	 * Contains this map's implementation of whether or not a location blocks line-of-sight.
-	 */
-	private BlocksLight blocksLight;
-
-	/**
-	 * Contains this map's implementation of the distance measure of a location from 0,0.
-	 */
-	private GetManhattanDistance getDistance;
-
-	/**
-	 * Contains this map's implementation of how to handle locations that are deemed visible from
-	 * another location.
-	 */
-	private SetVisible setVisible;
+	private transient LineOfSight lineOfSight;
 
 	// endregion
 
 	// region Constructor
+
+	public Map() {
+		lineOfSight = new LineOfSight(new BlocksLight(), new SetVisible(), new GetManhattanDistance());
+	}
 
 	/**
 	 * Constructs a new empty map with specified width and height.
@@ -126,10 +115,7 @@ public class Map {
 		// Reset the Object ID counter
 		internalObjectIDCounter = -1;
 		// Create the classes required for line-of-sight
-		blocksLight = new BlocksLight(this);
-		getDistance = new GetManhattanDistance();
-		setVisible = new SetVisible();
-		lineOfSight = new LineOfSight(blocksLight, setVisible, getDistance);
+		lineOfSight = new LineOfSight(new BlocksLight(), new SetVisible(), new GetManhattanDistance());
 	}
 
 	// endregion
@@ -500,11 +486,11 @@ public class Map {
 	 */
 	public HashSet<MapLocation> getFieldOfView(Unit unit) {
 		// Reset any previously computed locations
-		setVisible.resetLocations();
+		lineOfSight.resetVisibleLocations();
 		// Ask the line-of-sight implementation to compute the field-of-view
 		lineOfSight.compute(unit.getLocation(), unit.getFieldOfViewRange(), unit.getOrientation(), unit.getFieldOfViewAngle());
 		// Return the list of computed locations
-		return setVisible.getVisibleLocations();
+		return lineOfSight.getVisibleLocations();
 	}
 
 	/**
@@ -925,14 +911,9 @@ public class Map {
 
 	// region Inner classes
 
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	public class BlocksLight
 			implements BlocksLightFunction {
-
-		private Map map;
-
-		public BlocksLight(Map map) {
-			this.map = map;
-		}
 
 		@Override
 		public boolean func(int x, int y) {
@@ -940,12 +921,12 @@ public class Map {
 			if (!isXonMap(x) || !isYonMap(y))
 				return true;
 			// Check the feature at the specified position
-			return ((MapFeature) map.getMapContent()[map.toPosition(x, y)][Map.INTERNAL_MAP_FEATURE_INDEX]).isBlockingLOS();
+			return ((MapFeature) getMapContent()[toPosition(x, y)][Map.INTERNAL_MAP_FEATURE_INDEX]).isBlockingLOS();
 		}
 
 	}
 
-	@NoArgsConstructor
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	public class GetManhattanDistance
 			implements GetDistanceFunction {
 
@@ -960,7 +941,7 @@ public class Map {
 
 	}
 
-	@NoArgsConstructor
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	public class GetEuclidianDistance
 			implements GetDistanceFunction {
 
@@ -978,14 +959,9 @@ public class Map {
 	public class SetVisible
 			implements SetVisibleFunction {
 
-		@Getter
 		private HashSet<MapLocation> visibleLocations;
 
 		public SetVisible() {
-			this.visibleLocations = new HashSet<MapLocation>();
-		}
-
-		public void resetLocations() {
 			this.visibleLocations = new HashSet<MapLocation>();
 		}
 
@@ -996,6 +972,13 @@ public class Map {
 				this.visibleLocations.add(new MapLocation(x, y));
 		}
 
+		public void resetLocations() {
+			this.visibleLocations = new HashSet<MapLocation>();
+		}
+
+		public HashSet<MapLocation> getVisibleLocations() {
+			return visibleLocations;
+		}
 	}
 
 	// endregion

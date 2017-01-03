@@ -1,5 +1,7 @@
 package net.codepoke.ai.challenge.hunterkiller.gameobjects.unit;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
@@ -10,6 +12,7 @@ import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Infected
 		extends Unit {
 

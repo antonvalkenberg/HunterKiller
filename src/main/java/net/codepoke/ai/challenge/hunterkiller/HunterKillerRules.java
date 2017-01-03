@@ -28,6 +28,8 @@ import com.badlogic.gdx.utils.Array;
 public class HunterKillerRules
 		implements GameRules<HunterKillerState, HunterKillerAction> {
 
+	public static final int MAX_GAME_ROUNDS = 500;
+
 	/**
 	 * Handles the specified action. Also ends the player's turn and checks for a completed game
 	 * state.
@@ -49,7 +51,7 @@ public class HunterKillerRules
 		state.endPlayerTurn();
 
 		// Check if the game has ended
-		if (state.isDone()) {
+		if (state.isDone() || state.getCurrentRound() >= MAX_GAME_ROUNDS) {
 			// Sort the players by score
 			Array<Player> players = new Array<Player>(state.getPlayers());
 			players.sort();

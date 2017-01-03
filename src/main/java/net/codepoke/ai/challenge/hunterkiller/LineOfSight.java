@@ -1,5 +1,9 @@
 package net.codepoke.ai.challenge.hunterkiller;
 
+import java.util.HashSet;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 
 import com.badlogic.gdx.math.Vector2;
@@ -15,6 +19,7 @@ import com.badlogic.gdx.math.Vector2;
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  * 
  */
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class LineOfSight {
 
 	private static final int NO_ANGLE_LIMIT = -1;
@@ -465,6 +470,14 @@ public class LineOfSight {
 		return delta > halfAngleLimit && delta < 360 - halfAngleLimit;
 	}
 
+	public void resetVisibleLocations() {
+		_setVisible.resetLocations();
+	}
+
+	public HashSet<MapLocation> getVisibleLocations() {
+		return _setVisible.getVisibleLocations();
+	}
+
 	// represents the slope Y/X as a rational number
 	private class Slope {
 
@@ -505,6 +518,10 @@ public class LineOfSight {
 	public interface SetVisibleFunction {
 
 		public void func(int x, int y);
+
+		public void resetLocations();
+
+		public HashSet<MapLocation> getVisibleLocations();
 	}
 
 	// endregion

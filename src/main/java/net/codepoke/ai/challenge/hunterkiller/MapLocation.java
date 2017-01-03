@@ -1,7 +1,9 @@
 package net.codepoke.ai.challenge.hunterkiller;
 
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 
 /**
@@ -13,6 +15,7 @@ import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
  */
 @Getter
 @EqualsAndHashCode
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MapLocation {
 
 	// region Properties

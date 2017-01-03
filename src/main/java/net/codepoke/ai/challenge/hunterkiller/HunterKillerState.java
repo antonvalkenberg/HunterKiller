@@ -1,12 +1,13 @@
 package net.codepoke.ai.challenge.hunterkiller;
 
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import net.codepoke.ai.AIUtility;
 import net.codepoke.ai.challenge.hunterkiller.orders.NullMove;
 import net.codepoke.ai.states.HiddenState;
 import net.codepoke.ai.states.SequentialState;
-
-import com.badlogic.gdx.utils.IntArray;
 
 /**
  * Class representing the state of the HunterKiller game. In this state one {@link Player} is the
@@ -18,6 +19,7 @@ import com.badlogic.gdx.utils.IntArray;
  */
 @Getter
 @EqualsAndHashCode
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class HunterKillerState
 		implements HiddenState, SequentialState {
 
@@ -42,20 +44,14 @@ public class HunterKillerState
 	private int currentRound;
 
 	/**
-	 * The index in the Map's playerID collection of the player that is the active player in this
-	 * state.
+	 * The ID of the player that is the active player in this state.
 	 */
-	private int activePlayerIDIndex;
+	private int activePlayerID;
 
 	/**
 	 * The players in the game.
 	 */
 	private Player[] players;
-
-	/**
-	 * Array containing the IDs of the players in the game.
-	 */
-	private IntArray internalPlayerIDs;
 
 	/**
 	 * The map that the game is being played on.
@@ -73,19 +69,15 @@ public class HunterKillerState
 	 *            The {@link Map} that is being played on.
 	 * @param players
 	 *            The players in the game.
-	 * @param internalPlayerIDs
-	 *            The IDs of the Players for internal use. Note: these will range from [0;#players], instead of their
-	 *            personal ID indicating in which section number they spawn/control.
 	 * @param currentRound
 	 *            The current round of the game.
-	 * @param currentPlayerIDIndex
-	 *            The index in the internal playerID collection of the player that is currently active.
+	 * @param currentPlayerID
+	 *            The ID of the player that is currently active.
 	 */
-	public HunterKillerState(Map map, Player[] players, IntArray internalPlayerIDs, int currentRound, int currentPlayerIDIndex) {
+	public HunterKillerState(Map map, Player[] players, int currentRound, int currentPlayerID) {
 		this.currentRound = currentRound;
-		this.activePlayerIDIndex = currentPlayerIDIndex;
+		this.activePlayerID = currentPlayerID;
 		this.players = players;
-		this.internalPlayerIDs = internalPlayerIDs;
 		this.map = map;
 	}
 
@@ -97,13 +89,14 @@ public class HunterKillerState
 	 */
 	public HunterKillerState(HunterKillerState otherState) {
 		this.currentRound = otherState.currentRound;
-		this.activePlayerIDIndex = otherState.activePlayerIDIndex;
+		this.activePlayerID = otherState.activePlayerID;
 		// Get a deep copy of the map
-		this.map = map.copy();
+		this.map = otherState.map.copy();
 		// Make a deep copy of the players array
-		this.players = new Player[players.length];
+		this.players = new Player[otherState.getNumberOfPlayers()];
 		for (int i = 0; i < players.length; i++) {
-			this.players[i] = players[i].copy();
+			this.players[i] = otherState.getPlayer(i)
+										.copy();
 		}
 	}
 
@@ -134,7 +127,6 @@ public class HunterKillerState
 	 * 
 	 * @param playerID
 	 *            The ID of the player to return.
-	 * @return
 	 */
 	public Player getPlayer(int playerID) {
 		for (int i = 0; i < players.length; i++) {
@@ -145,23 +137,11 @@ public class HunterKillerState
 	}
 
 	/**
-	 * Set the collection of IDs of the players that are participating in the game.
-	 * 
-	 * @param playerIDs
-	 */
-	public void setPlayerIDs(IntArray playerIDs) {
-		internalPlayerIDs = new IntArray(true, playerIDs.size);
-		internalPlayerIDs.addAll(playerIDs);
-	}
-
-	/**
 	 * Determines whether or not this state represents a completed game.
-	 * 
-	 * @return
 	 */
 	public boolean isDone() {
 		// A game is completed once only 1 base remains
-		return map.getCurrentBaseCount() == 1;
+		return map.getCurrentBaseCount() == 1 || currentRound >= HunterKillerRules.MAX_GAME_ROUNDS;
 	}
 
 	/**
@@ -170,9 +150,9 @@ public class HunterKillerState
 	 */
 	public void endPlayerTurn() {
 		// Select the next player (next ID)
-		activePlayerIDIndex = ++activePlayerIDIndex % players.length;
+		activePlayerID = ++activePlayerID % players.length;
 		// Check if we've reached a new round
-		if (activePlayerIDIndex == 0) {
+		if (activePlayerID == 0) {
 			// Reduce open-timers for Doors and special-attack cooldowns for Units.
 			map.timer();
 			// Increase round count
@@ -207,7 +187,7 @@ public class HunterKillerState
 
 	@Override
 	public int getCurrentPlayer() {
-		return internalPlayerIDs.get(activePlayerIDIndex);
+		return activePlayerID;
 	}
 
 	@Override
@@ -217,8 +197,7 @@ public class HunterKillerState
 
 	@Override
 	public int[] getPlayerTurnOrder() {
-		return internalPlayerIDs.items;
-		// return AIUtility.defaultTurnOrder(players.length);
+		return AIUtility.defaultTurnOrder(players.length);
 	}
 
 	@Override
