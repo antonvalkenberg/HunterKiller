@@ -115,9 +115,11 @@ public class Soldier
 
 	@Override
 	public Soldier copy(int id) {
-		return new Soldier(id, this.getSquadPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(), this.getOrientation(),
-							this.getFieldOfViewRange(), this.getFieldOfViewAngle(), this.getAttackRange(), this.getAttackDamage(),
-							this.getSpecialAttackCooldown(), this.getSpawnCost(), this.getScoreWorth());
+		Soldier newS = new Soldier(id, this.getSquadPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(),
+									this.getOrientation(), this.getFieldOfViewRange(), this.getFieldOfViewAngle(), this.getAttackRange(),
+									this.getAttackDamage(), this.getSpecialAttackCooldown(), this.getSpawnCost(), this.getScoreWorth());
+		newS.updateFieldOfView(this.getFieldOfView());
+		return newS;
 	}
 
 	@Override

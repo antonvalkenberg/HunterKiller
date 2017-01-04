@@ -111,9 +111,11 @@ public class Medic
 
 	@Override
 	public Medic copy(int id) {
-		return new Medic(id, this.getSquadPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(), this.getOrientation(),
-							this.getFieldOfViewRange(), this.getFieldOfViewAngle(), this.getAttackRange(), this.getAttackDamage(),
-							this.getSpecialAttackCooldown(), this.getSpawnCost(), this.getScoreWorth());
+		Medic newM = new Medic(id, this.getSquadPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(),
+								this.getOrientation(), this.getFieldOfViewRange(), this.getFieldOfViewAngle(), this.getAttackRange(),
+								this.getAttackDamage(), this.getSpecialAttackCooldown(), this.getSpawnCost(), this.getScoreWorth());
+		newM.updateFieldOfView(this.getFieldOfView());
+		return newM;
 	}
 
 	@Override

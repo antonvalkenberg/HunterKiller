@@ -107,9 +107,12 @@ public class Infected
 
 	@Override
 	public Infected copy(int id) {
-		return new Infected(id, this.getSquadPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(), this.getOrientation(),
-							this.getFieldOfViewRange(), this.getFieldOfViewAngle(), this.getAttackRange(), this.getAttackDamage(),
-							this.getSpecialAttackCooldown(), this.getSpawnCost(), this.getScoreWorth());
+		Infected newI = new Infected(id, this.getSquadPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(),
+										this.getOrientation(), this.getFieldOfViewRange(), this.getFieldOfViewAngle(),
+										this.getAttackRange(), this.getAttackDamage(), this.getSpecialAttackCooldown(),
+										this.getSpawnCost(), this.getScoreWorth());
+		newI.updateFieldOfView(this.getFieldOfView());
+		return newI;
 	}
 
 	@Override
