@@ -1,6 +1,7 @@
 package net.codepoke.ai.challenge.hunterkiller;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import lombok.AccessLevel;
@@ -115,6 +116,25 @@ public class Player
 		newPlayer.setResource(this.resource);
 
 		return newPlayer;
+	}
+
+	/**
+	 * Returns the combined Field-of-View of the player. This Field-of-View is made up of the union of all it's Unit's
+	 * Field-of-View, and it's Base.
+	 */
+	public HashSet<MapLocation> getCombinedFieldOfView() {
+		// Start with the Base's field of view
+		// TODO define Base's field of view
+		HashSet<MapLocation> fieldOfViewSet = new HashSet<MapLocation>();
+		// Go through our squad
+		for (Unit unit : squad) {
+			// Check if the unit isn't dead
+			if (unit.getHpCurrent() > 0) {
+				fieldOfViewSet.addAll(unit.getFieldOfView());
+			}
+		}
+		// Return the collection
+		return fieldOfViewSet;
 	}
 
 	// endregion
