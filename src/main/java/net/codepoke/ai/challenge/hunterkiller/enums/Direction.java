@@ -115,6 +115,23 @@ public enum Direction {
 	}
 
 	/**
+	 * Returns the direction given a one letter string (N,E,S or W); returns SOUTH by default (as this is the most
+	 * common valid usage (base spawning)).
+	 */
+	public static Direction parse(String direction) {
+		if (direction.equalsIgnoreCase("N"))
+			return Direction.NORTH;
+		else if (direction.equalsIgnoreCase("E"))
+			return Direction.EAST;
+		else if (direction.equalsIgnoreCase("S"))
+			return Direction.SOUTH;
+		else if (direction.equalsIgnoreCase("W"))
+			return Direction.WEST;
+		else
+			return Direction.SOUTH;
+	}
+
+	/**
 	 * Enumeration of the rotations used in HunterKiller. Currently only east and west are supported.
 	 * 
 	 * @author Anton Valkenberg (anton.valkenberg@gmail.com)

@@ -12,7 +12,7 @@ import lombok.AllArgsConstructor;
 public enum TileType {
 	SPACE('.'),
 	FLOOR('_'),
-	WALL('['),
+	WALL('█'),
 	DOOR_CLOSED('D'),
 	DOOR_OPEN('O'),
 	SOLDIER('S'),
@@ -36,7 +36,7 @@ public enum TileType {
 			return DOOR_OPEN;
 		case 'D':
 			return DOOR_CLOSED;
-		case '[':
+		case '█':
 			return WALL;
 		case '_':
 			return FLOOR;

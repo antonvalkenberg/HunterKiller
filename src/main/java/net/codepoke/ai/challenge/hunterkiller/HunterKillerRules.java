@@ -28,7 +28,7 @@ import com.badlogic.gdx.utils.Array;
 public class HunterKillerRules
 		implements GameRules<HunterKillerState, HunterKillerAction> {
 
-	public static final int MAX_GAME_ROUNDS = 500;
+	public static final int MAX_GAME_ROUNDS = 20;
 
 	/**
 	 * Handles the specified action. Also ends the player's turn and checks for a completed game

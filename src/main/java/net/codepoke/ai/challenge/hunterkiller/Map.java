@@ -735,19 +735,12 @@ public class Map {
 							state.getPlayer(unit.getSquadPlayerID())
 									.removeUnitFromSquad(unit);
 						}
-					} else {
-						// Means that the object is still alive, so check if it's a Unit
-						if (object instanceof Unit) {
-							Unit unit = (Unit) object;
-							// Get the field-of-view collection for the unit
-							HashSet<MapLocation> fieldOfView = getFieldOfView(unit);
-							// Tell the unit to update it's field-of-view
-							unit.updateFieldOfView(fieldOfView);
-						}
 					}
 				}
 			}
 		}
+		// Update the Field-of-View for all remaining Units
+		updateFieldOfView();
 	}
 
 	/**
@@ -905,6 +898,22 @@ public class Map {
 		if (mapContent[position][INTERNAL_MAP_UNIT_INDEX] != null)
 			mapContent[position][INTERNAL_MAP_UNIT_INDEX].reduceHP(damage);
 		return true;
+	}
+
+	/**
+	 * Updates the Field-of-View for all Units on the map.
+	 */
+	protected void updateFieldOfView() {
+		// Check the map for Units
+		for (int i = 0; i < mapWidth * mapHeight; i++) {
+			if (mapContent[i][INTERNAL_MAP_UNIT_INDEX] != null && mapContent[i][INTERNAL_MAP_UNIT_INDEX] instanceof Unit) {
+				Unit unit = (Unit) mapContent[i][INTERNAL_MAP_UNIT_INDEX];
+				// Get the field-of-view collection for the unit
+				HashSet<MapLocation> fieldOfView = getFieldOfView(unit);
+				// Tell the unit to update it's field-of-view
+				unit.updateFieldOfView(fieldOfView);
+			}
+		}
 	}
 
 	// endregion

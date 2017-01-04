@@ -35,6 +35,11 @@ package net.codepoke.ai.challenge.hunterkiller;
 public class FourPatch {
 
 	/**
+	 * Defines this System's newline separator.
+	 */
+	public static final String NEWLINE_SEPARATOR = System.lineSeparator();
+
+	/**
 	 * The different sections of the final map.
 	 * The data given to the fourpatch is split up into 4 quadrants: A, B, C, D.
 	 * 
@@ -200,7 +205,7 @@ public class FourPatch {
 	 */
 	private char[][] parseData(String dataString) {
 		// Split the data into rows
-		String[] rows = dataString.split("\n");
+		String[] rows = dataString.split(NEWLINE_SEPARATOR);
 		// Check if anything was found
 		if (rows.length <= 0)
 			return new char[0][0];

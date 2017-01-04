@@ -1,13 +1,14 @@
 package net.codepoke.ai.challenge.hunterkiller;
 
+import java.io.File;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 import lombok.NoArgsConstructor;
 import net.codepoke.ai.Generator;
 import net.codepoke.ai.challenge.hunterkiller.FourPatch.DataCreation;
 import net.codepoke.ai.challenge.hunterkiller.FourPatch.Sections;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
-import net.codepoke.ai.challenge.hunterkiller.enums.PremadeMap;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Door;
@@ -19,6 +20,9 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 
+import org.apache.commons.io.IOUtils;
+
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.IntIntMap;
 
@@ -32,6 +36,41 @@ import com.badlogic.gdx.utils.IntIntMap;
 public class HunterKillerStateFactory
 		implements Generator<HunterKillerState> {
 
+	private static final Random r = new Random();
+
+	public static Array<MapSetup> MAP_ROTATION = new Array<MapSetup>();
+
+	static {
+		// Load in all maps defined in the folder /maps/
+		File maps = new File("maps\\");
+		Pattern p = Pattern.compile("^\\d");
+
+		for (File mapFile : maps.listFiles()) {
+			try {
+				String rawMapData = IOUtils.toString(mapFile.toURI());
+
+				String[] mapLines = rawMapData.split(FourPatch.NEWLINE_SEPARATOR);
+				if (p.matcher(mapLines[0])
+						.find()) {
+					// First line is the size/orientation
+					String[] options = mapLines[0].split(" ");
+					int qWidth = Integer.parseInt(options[0]);
+					int qHeight = Integer.parseInt(options[1]);
+					Direction spawnDirection = Direction.parse(options[2]);
+
+					rawMapData = rawMapData.substring(rawMapData.indexOf(mapLines[1]));
+					MAP_ROTATION.add(new MapSetup(mapFile.getName(), rawMapData, qWidth, qHeight, spawnDirection));
+				} else {
+					// Assume the whole map needs to be copied and we can use defaults.
+					MAP_ROTATION.add(new MapSetup(mapFile.getName(), rawMapData));
+				}
+			} catch (Exception e) {
+				System.err.println("Error during parsing of file: " + mapFile.getName());
+				e.printStackTrace();
+			}
+		}
+	}
+
 	// region Public methods
 
 	/**
@@ -43,7 +82,7 @@ public class HunterKillerStateFactory
 	 *            The players in the game.
 	 * @return The constructed {@link Map} object.
 	 */
-	public static Map constructMap(PremadeMap premade, Player[] players) {
+	public static Map constructMap(MapSetup premade, Player[] players) {
 		// Create a FourPatch
 		FourPatch patch = new FourPatch(new HunterKillerMapCreation(), premade.mapData, premade.quadrantAWidth, premade.quadrantAHeight);
 		return constructFromFourPatch(patch, players, premade.spawnDirection);
@@ -75,26 +114,12 @@ public class HunterKillerStateFactory
 		return map;
 	}
 
-	// endregion
-
-	// region Overridden methods
-
 	/**
-	 * Generates an initial state of the game from a collection of players that will participate and a
-	 * String defining some options for the game. This method makes the following assumptions:
-	 * <ul>
-	 * <li>{@code playerNames} contains the class names of the {@link Player}s to load, located in: {@code /players}</li>
-	 * <li>Currently supported player amounts are: {@code 2, 3, 4}.</li>
-	 * <li>Currently supported options are: {@code none}.</li>
-	 * </ul>
+	 * Generate an initial {@link HunterKillerState} from a specific {@link MapSetup}.
+	 * 
+	 * {@link HunterKillerStateFactory#generateInitialState(String[], String)}.
 	 */
-	@Override
-	public HunterKillerState generateInitialState(String[] playerNames, String options) {
-		// Select a random premade map to create
-		Random r = new Random();
-		// PremadeMap premade = PremadeMap.values()[r.nextInt(PremadeMap.values().length)];
-		PremadeMap premade = PremadeMap.TEST;
-
+	public static HunterKillerState generateInitialStateFromPremade(MapSetup premade, String[] playerNames, String options) {
 		// Check that either 2, 3 or 4 players are provided, other amounts are not supported
 		if (playerNames.length < 2 || playerNames.length > 4) {
 			// TODO throw an error.
@@ -134,8 +159,32 @@ public class HunterKillerStateFactory
 			map.assignObjectsToPlayer(player);
 		}
 
+		// Set the initial field of view for the Units that were created on the map
+		map.updateFieldOfView();
+
 		// Create the initial state
 		return new HunterKillerState(map, players, 1, 0);
+	}
+
+	// endregion
+
+	// region Overridden methods
+
+	/**
+	 * Generates an initial state of the game from a collection of players that will participate and a
+	 * String defining some options for the game. This method makes the following assumptions:
+	 * <ul>
+	 * <li>{@code playerNames} contains the names of the players in the game.</li>
+	 * <li>Currently supported player amounts are: {@code 2, 3, 4}.</li>
+	 * <li>Currently supported options are: {@code none}.</li>
+	 * </ul>
+	 */
+	@Override
+	public HunterKillerState generateInitialState(String[] playerNames, String options) {
+		// Select a random premade map to create
+		MapSetup premade = MAP_ROTATION.random();
+		// Generate the initial state from this premade map
+		return generateInitialStateFromPremade(premade, playerNames, options);
 	}
 
 	// endregion
