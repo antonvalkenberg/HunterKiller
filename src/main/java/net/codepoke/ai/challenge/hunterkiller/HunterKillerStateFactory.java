@@ -120,6 +120,9 @@ public class HunterKillerStateFactory
 	 * {@link HunterKillerStateFactory#generateInitialState(String[], String)}.
 	 */
 	public static HunterKillerState generateInitialStateFromPremade(MapSetup premade, String[] playerNames, String options) {
+		// Make sure the options string is not null
+		if (options == null)
+			options = "";
 		// Check that either 2, 3 or 4 players are provided, other amounts are not supported
 		if (playerNames.length < 2 || playerNames.length > 4) {
 			// TODO throw an error.
@@ -142,8 +145,12 @@ public class HunterKillerStateFactory
 			playerSections = new IntArray(new int[] { 0, 8 });
 			break;
 		}
-		// Now randomise the sections, so on re-creation the same player does not end up in the same section each time.
-		playerSections.shuffle();
+
+		// Check if we need to randomise the sections, so on re-creation the same player does not end up in the same
+		// section each time.
+		if (!options.contains("nonRandomSections")) {
+			playerSections.shuffle();
+		}
 
 		// Load the players
 		Player[] players = new Player[playerNames.length];
@@ -176,11 +183,19 @@ public class HunterKillerStateFactory
 	 * <ul>
 	 * <li>{@code playerNames} contains the names of the players in the game.</li>
 	 * <li>Currently supported player amounts are: {@code 2, 3, 4}.</li>
-	 * <li>Currently supported options are: {@code none}.</li>
+	 * <li>Currently supported options are:
+	 * <ul>
+	 * <li>{@code nonRandomSections} Indicates that the players should be placed in sections of the map according to the
+	 * order supplied in {@code playerNames}.</li>
+	 * </ul>
+	 * </li>
 	 * </ul>
 	 */
 	@Override
 	public HunterKillerState generateInitialState(String[] playerNames, String options) {
+		// Make sure the options string is not null
+		if (options == null)
+			options = "";
 		// Select a random premade map to create
 		MapSetup premade = MAP_ROTATION.random();
 		// Generate the initial state from this premade map

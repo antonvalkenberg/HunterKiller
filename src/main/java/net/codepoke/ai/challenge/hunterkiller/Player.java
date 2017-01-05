@@ -58,6 +58,8 @@ public class Player
 	@Setter
 	protected int resource;
 
+	// TODO: Fix this to have only IDs (for Base and Units)!!
+
 	/**
 	 * The {@link Base} that is assigned to this player.
 	 */

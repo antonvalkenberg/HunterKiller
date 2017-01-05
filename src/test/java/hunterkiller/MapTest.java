@@ -124,7 +124,7 @@ public class MapTest {
 
 	@Test
 	public void testMapFeatureCreation() {
-		String mapPatch = String.format("._█%sDBO", FourPatch.NEWLINE_SEPARATOR);
+		String mapPatch = String.format("._█%nDBO");
 		// Create a FourPatch to test
 		FourPatch testPatch = new FourPatch(new HunterKillerStateFactory.HunterKillerMapCreation(), mapPatch, 3, 2);
 		// Setup the players

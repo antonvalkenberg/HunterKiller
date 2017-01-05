@@ -9,7 +9,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashSet;
 
 import net.codepoke.ai.GameRules.Result;
-import net.codepoke.ai.challenge.hunterkiller.FourPatch;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerRules;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
@@ -18,6 +17,7 @@ import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.MapSetup;
 import net.codepoke.ai.challenge.hunterkiller.Player;
 import net.codepoke.ai.challenge.hunterkiller.enums.BaseOrderType;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 import net.codepoke.ai.challenge.hunterkiller.orders.BaseOrder;
@@ -29,7 +29,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * This class tests the Base
+ * This class tests orders for a Base. Current tests:
+ * <ul>
+ * <li>Correct spawn (infected)</li>
+ * <li>Faulty spawn due to insufficient funds</li>
+ * <li>Faulty spawn due to occupied location</li>
+ * </ul>
  * 
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
@@ -38,7 +43,9 @@ public class BaseOrderTest {
 
 	// region Constants
 
-	private static final MapSetup testMap = new MapSetup(String.format("B__%s___", FourPatch.NEWLINE_SEPARATOR));
+	private static final MapSetup testMap = new MapSetup(String.format("B__%n___"));
+
+	private static final MapSetup failMap = new MapSetup(String.format("B__%nS__"));
 
 	// endregion
 
@@ -48,37 +55,27 @@ public class BaseOrderTest {
 
 	private HunterKillerRules gameRules = new HunterKillerRules();
 
+	private String[] playerNames = new String[] { "A", "B" };
+
 	// endregion
 
 	// region Setup methods
 
-	/**
-	 * @throws java.lang.Exception
-	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 	}
 
-	/**
-	 * @throws java.lang.Exception
-	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 	}
 
-	/**
-	 * @throws java.lang.Exception
-	 */
 	@Before
 	public void setUp() throws Exception {
-		// Re-create the inital state we are testing with
-		String[] playerNames = new String[] { "A", "B" };
-		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMap, playerNames, "");
+		// Re-create the initial state we are testing with
+		// Note that we indicate here that we don't want the players to be placed in random sections.
+		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMap, playerNames, "nonRandomSections");
 	}
 
-	/**
-	 * @throws java.lang.Exception
-	 */
 	@After
 	public void tearDown() throws Exception {
 	}
@@ -87,8 +84,12 @@ public class BaseOrderTest {
 
 	// region Test methods
 
+	/**
+	 * Test that a unit is correctly spawned at the spawn location, that the player is taxed for the cost and that the
+	 * new unit affects the player's field of view.
+	 */
 	@Test
-	public void testSpawnInfected() {
+	public void testSpawn() {
 		// Set some values of things before the order
 		Player activePlayer = state.getPlayer(state.getActivePlayerID());
 		int beforePlayerResource = activePlayer.getResource();
@@ -96,8 +97,6 @@ public class BaseOrderTest {
 												.size();
 		MapLocation spawnLocation = activePlayer.getBase()
 												.getSpawnLocation();
-		int beforeFOVLocations = activePlayer.getCombinedFieldOfView()
-												.size();
 
 		// Create a base-order to spawn an infected for the active player
 		HunterKillerAction spawnInfectedAction = new HunterKillerAction(state);
@@ -141,15 +140,62 @@ public class BaseOrderTest {
 		}
 	}
 
+	/**
+	 * Test that a spawn order fails if the player does not have enough resources.
+	 */
 	@Test
-	public void testSpawnMedic() {
-		// TODO Test spawning of Medic
+	public void testSpawnResourceFail() {
+		// Set some values of things before the order
+		Player activePlayer = state.getPlayer(state.getActivePlayerID());
+		MapLocation spawnLocation = activePlayer.getBase()
+												.getSpawnLocation();
+
+		// Create a base-order to spawn an infected for the active player
+		HunterKillerAction spawnInfectedAction = new HunterKillerAction(state);
+		BaseOrder order = new BaseOrder(activePlayer.getBase(), BaseOrderType.SPAWN_INFECTED, 0);
+		spawnInfectedAction.addOrder(order);
+
+		// Now set the player's resource to an amount that is not enough to spawn an infected unit
+		activePlayer.setResource(0);
+
+		// Make the game logic execute the action
+		Result result = gameRules.handle(state, spawnInfectedAction);
+
+		// Check that there is a failure message
+		assertTrue(result.getExplanation()
+							.length() > 0);
+
+		// Check that no unit is at the spawn location
+		assertTrue(state.getMap()
+						.getUnitAtLocation(spawnLocation) == null);
 	}
 
+	/**
+	 * Test that a spawn order fails if the spawn location is currently occupied by a Unit.
+	 */
 	@Test
-	public void testSpawnSoldier() {
-		// TODO Test spawning of Soldier
-	}
+	public void testSpawnLocationOccupied() {
+		// Re-create the State with the map that is setup to fail.
+		state = HunterKillerStateFactory.generateInitialStateFromPremade(failMap, playerNames, "");
 
+		// Set some values of things before the order
+		Player activePlayer = state.getPlayer(state.getActivePlayerID());
+		Base base = activePlayer.getBase();
+
+		// Create a base-order to spawn an infected for the active player
+		HunterKillerAction spawnInfectedAction = new HunterKillerAction(state);
+		BaseOrder order = new BaseOrder(base, BaseOrderType.SPAWN_INFECTED, 0);
+		spawnInfectedAction.addOrder(order);
+
+		// Make the game logic execute the action
+		Result result = gameRules.handle(state, spawnInfectedAction);
+
+		// Check that there is a failure message
+		assertTrue(result.getExplanation()
+							.length() > 0);
+		// Check that nothing has actually been spawned
+		assertTrue(state.getMap()
+						.getUnitAtLocation(base.getSpawnLocation()) == null);
+	}
 	// endregion
 }

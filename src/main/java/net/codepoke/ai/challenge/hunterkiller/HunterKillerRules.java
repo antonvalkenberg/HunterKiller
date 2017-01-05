@@ -128,19 +128,18 @@ public class HunterKillerRules
 						failCount++;
 					break;
 				default:
-					failures.append(String.format("WARNING: Unsupported UnitOrderType.%s", FourPatch.NEWLINE_SEPARATOR));
+					failures.append(String.format("WARNING: Unsupported UnitOrderType.%n"));
 					failCount++;
 					break;
 				}
 			} else {
-				failures.append(String.format("WARNING: Unsupported OrderType.%s", FourPatch.NEWLINE_SEPARATOR));
+				failures.append(String.format("WARNING: Unsupported OrderType.%n"));
 				failCount++;
 			}
 		}
 		// Return the action as accepted, but add a count of how many orders failed, if any did.
-		return new Result(true, false, null, "Action accepted", failCount > 0 ? String.format(	"%d orders ignored, Reasons:%s%s",
+		return new Result(true, false, null, "Action accepted", failCount > 0 ? String.format(	"%d orders ignored, Reasons:%n%s",
 																								failCount,
-																								FourPatch.NEWLINE_SEPARATOR,
 																								failures.toString()) : "");
 	}
 
@@ -167,8 +166,7 @@ public class HunterKillerRules
 																	.getLocation(), spawnlocation);
 		// Make sure we got a direction
 		if (spawnDirection == null) {
-			failures.append(String.format(	"Spawn Failure: Spawn location is not on a cardinal direction relative to the base.%s",
-											FourPatch.NEWLINE_SEPARATOR));
+			failures.append(String.format("Spawn Failure: Spawn location is not on a cardinal direction relative to the base.%n"));
 			return false;
 		}
 		// Get the correct costs
@@ -184,7 +182,7 @@ public class HunterKillerRules
 			spawnCosts = Soldier.SOLDIER_SPAWN_COST;
 			break;
 		default:
-			failures.append(String.format("Spawn Failure: Unsupported BaseOrderType.%s", FourPatch.NEWLINE_SEPARATOR));
+			failures.append(String.format("Spawn Failure: Unsupported BaseOrderType.%n"));
 			return false;
 		}
 		// Check if the player has enough resources
@@ -206,7 +204,7 @@ public class HunterKillerRules
 					unit = new Soldier(map.requestNewGameObjectID(), player.getID(), spawnlocation, spawnDirection);
 					break;
 				default:
-					failures.append(String.format("Spawn Failure: Unsupported BaseOrderType.%s", FourPatch.NEWLINE_SEPARATOR));
+					failures.append(String.format("Spawn Failure: Unsupported BaseOrderType.%n"));
 					return false;
 				}
 				// Place the unit on the map
@@ -215,11 +213,11 @@ public class HunterKillerRules
 				if (spawnSuccess)
 					player.addUnitToSquad(unit);
 			} else {
-				// Silently fail this order
+				failures.append(String.format("Spawn Failure: Spawn location is not traversable, potential causes: location is off grid, MapFeature at location is not walkable or s Unit is present at location.%n"));
 				return false;
 			}
 		} else {
-			// Silently fail this order
+			failures.append(String.format("Spawn Failure: Insufficient resources.%n"));
 			return false;
 		}
 		// Return
@@ -244,11 +242,11 @@ public class HunterKillerRules
 		GameObject object = map.getObject(unitID);
 		// Check if an object was found, and that object is a Unit.
 		if (object == null) {
-			failures.append(String.format("Rotate Failure: No Unit found with specified ID (%d).%s", unitID, FourPatch.NEWLINE_SEPARATOR));
+			failures.append(String.format("Rotate Failure: No Unit found with specified ID (%d).%n", unitID));
 			return false;
 		}
 		if (!(object instanceof Unit)) {
-			failures.append(String.format("Rotate Failure: Cannot rotate non-Unit object.%s", FourPatch.NEWLINE_SEPARATOR));
+			failures.append(String.format("Rotate Failure: Cannot rotate non-Unit object.%n"));
 			return false;
 		}
 		// Rotate the unit in the specified direction
@@ -275,18 +273,21 @@ public class HunterKillerRules
 		GameObject object = map.getObject(moveOrder.getObjectID());
 		// Check if an object was found, and that object is a Unit.
 		if (object == null) {
-			failures.append(String.format(	"Movement Failure: No Unit found with specified ID (%d).%s",
-											moveOrder.getObjectID(),
-											FourPatch.NEWLINE_SEPARATOR));
+			failures.append(String.format("Movement Failure: No Unit found with specified ID (%d).%n", moveOrder.getObjectID()));
 			return false;
 		}
 		if (!(object instanceof Unit)) {
-			failures.append(String.format("Movement Failure: Cannot move non-Unit object.%s", FourPatch.NEWLINE_SEPARATOR));
+			failures.append(String.format("Movement Failure: Cannot move non-Unit object.%n"));
+			return false;
+		}
+		// Check if a target for the move has been set
+		if (moveOrder.getTargetLocation() == null) {
+			failures.append(String.format("Movement Failure: No target location set.%n"));
 			return false;
 		}
 		// Check if the ordered move is possible
 		if (!map.isMovePossible(map.getObjectLocation(moveOrder.getObjectID()), moveOrder)) {
-			failures.append(String.format("Movement Failure: Illegal move supplied.%s", FourPatch.NEWLINE_SEPARATOR));
+			failures.append(String.format("Movement Failure: Illegal move supplied.%n"));
 			return false;
 		}
 		// Execute the move
@@ -314,25 +315,23 @@ public class HunterKillerRules
 		GameObject object = map.getObject(attackOrder.getObjectID());
 		// Check if an object was found, and that object is a Unit
 		if (object == null) {
-			failures.append(String.format(	"Attack Failure: No Unit found with specified ID (%d).%s",
-											attackOrder.getObjectID(),
-											FourPatch.NEWLINE_SEPARATOR));
+			failures.append(String.format("Attack Failure: No Unit found with specified ID (%d).%n", attackOrder.getObjectID()));
 			return false;
 		}
 		if (!(object instanceof Unit)) {
-			failures.append(String.format("Attack Failure: Cannot attack with non-Unit object.%s", FourPatch.NEWLINE_SEPARATOR));
+			failures.append(String.format("Attack Failure: Cannot attack with non-Unit object.%n"));
 			return false;
 		}
 		Unit unit = (Unit) object;
 		MapLocation targetLocation = attackOrder.getTargetLocation();
 		// Check if the target location is in the Unit's field of view
 		if (!unit.isInFieldOfView(targetLocation)) {
-			failures.append(String.format("Attack Failure: Target location not in Line-of-Sight.%s", FourPatch.NEWLINE_SEPARATOR));
+			failures.append(String.format("Attack Failure: Target location not in Line-of-Sight.%n"));
 			return false;
 		}
 		// Check if the target location is within the Unit's attack range
 		if (unit.getAttackRange() < MapLocation.getManhattanDist(unit.getLocation(), targetLocation)) {
-			failures.append(String.format("Attack Failure: Target location outside of attack range.%s", FourPatch.NEWLINE_SEPARATOR));
+			failures.append(String.format("Attack Failure: Target location outside of attack range.%n"));
 			return false;
 		}
 		// Tell the map that the target location is being attacked for X damage
@@ -380,36 +379,33 @@ public class HunterKillerRules
 		GameObject object = map.getObject(attackOrder.getObjectID());
 		// Check if an object was found, and that object is a Unit.
 		if (object == null) {
-			failures.append(String.format(	"Special Attack Failure: No Unit found with specified ID (%d).%s",
-											attackOrder.getObjectID(),
-											FourPatch.NEWLINE_SEPARATOR));
+			failures.append(String.format("Special Attack Failure: No Unit found with specified ID (%d).%n", attackOrder.getObjectID()));
 			return false;
 		}
 		if (!(object instanceof Unit)) {
-			failures.append(String.format("Special Attack Failure: Cannot attack with non-Unit object.%s", FourPatch.NEWLINE_SEPARATOR));
+			failures.append(String.format("Special Attack Failure: Cannot attack with non-Unit object.%n"));
 			return false;
 		}
 		Unit unit = (Unit) object;
 		// Check if the Unit's special attack has cooled down
 		if (unit.getSpecialAttackCooldown() > 0) {
-			failures.append(String.format("Special Attack Failure: Ability is still on cooldown.%s", FourPatch.NEWLINE_SEPARATOR));
+			failures.append(String.format("Special Attack Failure: Ability is still on cooldown.%n"));
 			return false;
 		}
 		// Check if the target location is in the Unit's field of view.
 		if (!unit.isInFieldOfView(attackOrder.getTargetLocation())) {
-			failures.append(String.format("Special Attack Failure: Target location not in Line-of-Sight.%s", FourPatch.NEWLINE_SEPARATOR));
+			failures.append(String.format("Special Attack Failure: Target location not in Line-of-Sight.%n"));
 			return false;
 		}
 		// Check if the target location is within the Unit's attack range
 		if (unit.getAttackRange() < MapLocation.getManhattanDist(unit.getLocation(), attackOrder.getTargetLocation())) {
-			failures.append(String.format("Special Attack Failure: Target location outside of attack range.%s", FourPatch.NEWLINE_SEPARATOR));
+			failures.append(String.format("Special Attack Failure: Target location outside of attack range.%n"));
 			return false;
 		}
 		// Execute the special action, this is different per Unit type
 		if (object instanceof Infected) {
 			// The special attack of an infected can't actually be ordered, since it triggers on kill
-			failures.append(String.format(	"Special Attack Failure: An Infected's special attack cannot be ordered.%s",
-											FourPatch.NEWLINE_SEPARATOR));
+			failures.append(String.format("Special Attack Failure: An Infected's special attack cannot be ordered.%n"));
 			return false;
 		} else if (object instanceof Medic) {
 			// The special attack of a medic heals a unit for an amount

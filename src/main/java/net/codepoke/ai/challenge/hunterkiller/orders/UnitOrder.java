@@ -3,6 +3,7 @@ package net.codepoke.ai.challenge.hunterkiller.orders;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitOrderType;
@@ -30,6 +31,7 @@ public class UnitOrder
 	/**
 	 * The target location of this order.
 	 */
+	@Setter
 	private MapLocation targetLocation;
 
 	// endregion

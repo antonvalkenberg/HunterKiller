@@ -283,13 +283,17 @@ public class Map {
 		// Switch on the type of move described in the UnitOrder
 		switch (move.getOrderType()) {
 		case MOVE_NORTH:
-			return isMovePossible(fromLocation, Direction.NORTH);
+			return isMovePossible(fromLocation, Direction.NORTH) && move.getTargetLocation()
+																		.equals(getLocationInDirection(fromLocation, Direction.NORTH, 1));
 		case MOVE_EAST:
-			return isMovePossible(fromLocation, Direction.EAST);
+			return isMovePossible(fromLocation, Direction.EAST) && move.getTargetLocation()
+																		.equals(getLocationInDirection(fromLocation, Direction.EAST, 1));
 		case MOVE_SOUTH:
-			return isMovePossible(fromLocation, Direction.SOUTH);
+			return isMovePossible(fromLocation, Direction.SOUTH) && move.getTargetLocation()
+																		.equals(getLocationInDirection(fromLocation, Direction.SOUTH, 1));
 		case MOVE_WEST:
-			return isMovePossible(fromLocation, Direction.WEST);
+			return isMovePossible(fromLocation, Direction.WEST) && move.getTargetLocation()
+																		.equals(getLocationInDirection(fromLocation, Direction.WEST, 1));
 		default:
 			// Rest of the UnitActionTypes are not moves, so they should return false
 			return false;
@@ -540,8 +544,22 @@ public class Map {
 	 * @return
 	 */
 	public Unit getUnitAtLocation(MapLocation location) {
-		if (mapContent[toPosition(location)][INTERNAL_MAP_UNIT_INDEX] != null) {
+		if (isOnMap(location) && mapContent[toPosition(location)][INTERNAL_MAP_UNIT_INDEX] != null) {
 			return (Unit) mapContent[toPosition(location)][INTERNAL_MAP_UNIT_INDEX];
+		}
+		return null;
+	}
+
+	/**
+	 * Returns the map feature at the specified location on the map, or null if the location does not exist on this map.
+	 * 
+	 * @param location
+	 *            The location to find a map feature at.
+	 * @return
+	 */
+	public MapFeature getFeatureAtLocation(MapLocation location) {
+		if (isOnMap(location)) {
+			return (MapFeature) mapContent[toPosition(location)][INTERNAL_MAP_FEATURE_INDEX];
 		}
 		return null;
 	}
