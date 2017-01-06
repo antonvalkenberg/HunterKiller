@@ -176,10 +176,13 @@ public class BaseOrderTest {
 	@Test
 	public void testSpawnLocationOccupied() {
 		// Re-create the State with the map that is setup to fail.
-		state = HunterKillerStateFactory.generateInitialStateFromPremade(failMap, playerNames, "");
+		state = HunterKillerStateFactory.generateInitialStateFromPremade(failMap, playerNames, "nonRandomSections");
 
 		// Set some values of things before the order
 		Player activePlayer = state.getPlayer(state.getActivePlayerID());
+		int pre_PlayerSquadSize = activePlayer.getSquad()
+												.size();
+		int pre_PlayerResources = activePlayer.getResource();
 		Base base = activePlayer.getBase();
 
 		// Create a base-order to spawn an infected for the active player
@@ -190,12 +193,16 @@ public class BaseOrderTest {
 		// Make the game logic execute the action
 		Result result = gameRules.handle(state, spawnInfectedAction);
 
+		// Refresh player object
+		activePlayer = state.getPlayer(activePlayer.getID());
+
 		// Check that there is a failure message
 		assertTrue(result.getExplanation()
 							.length() > 0);
 		// Check that nothing has actually been spawned
-		assertTrue(state.getMap()
-						.getUnitAtLocation(base.getSpawnLocation()) == null);
+		assertEquals(pre_PlayerSquadSize, activePlayer.getSquad()
+														.size());
+		assertEquals(pre_PlayerResources, activePlayer.getResource());
 	}
 	// endregion
 }

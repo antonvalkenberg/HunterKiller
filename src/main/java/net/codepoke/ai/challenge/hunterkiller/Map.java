@@ -459,19 +459,19 @@ public class Map {
 		List<MapLocation> area = getNeighbours(location);
 		// Get the corner positions (North-East, South-East, South-West, North-West)
 		// North-East is increasing X, decreasing Y.
-		MapLocation northEast = new MapLocation(location.getX() + 1, location.getY() - mapWidth);
+		MapLocation northEast = new MapLocation(location.getX() + 1, location.getY() - 1);
 		if (isOnMap(northEast))
 			area.add(northEast);
 		// South-East is increasing X, increasing Y.
-		MapLocation southEast = new MapLocation(location.getX() + 1, location.getY() + mapWidth);
+		MapLocation southEast = new MapLocation(location.getX() + 1, location.getY() + 1);
 		if (isOnMap(southEast))
 			area.add(southEast);
 		// South-West is decreasing X, increasing Y.
-		MapLocation southWest = new MapLocation(location.getX() - 1, location.getY() + mapWidth);
+		MapLocation southWest = new MapLocation(location.getX() - 1, location.getY() + 1);
 		if (isOnMap(southWest))
 			area.add(southWest);
 		// North-West is decreasing X, decreasing Y.
-		MapLocation northWest = new MapLocation(location.getX() - 1, location.getY() - mapWidth);
+		MapLocation northWest = new MapLocation(location.getX() - 1, location.getY() - 1);
 		if (isOnMap(northWest))
 			area.add(northWest);
 		// If the centre was also requested, add it

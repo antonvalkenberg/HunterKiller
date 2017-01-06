@@ -71,7 +71,7 @@ public class Soldier
 	 */
 	public Soldier(int id, int spawningPlayerID, MapLocation mapLocation, Direction facing) {
 		this(id, spawningPlayerID, mapLocation, SOLDIER_MAX_HP, SOLDIER_MAX_HP, facing, SOLDIER_FOV_RANGE, SOLDIER_FOV_ANGLE,
-				SOLDIER_ATTACK_RANGE, SOLDIER_ATTACK_DAMAGE, SOLDIER_COOLDOWN, SOLDIER_SPAWN_COST, SOLDIER_SCORE);
+				SOLDIER_ATTACK_RANGE, SOLDIER_ATTACK_DAMAGE, 0, SOLDIER_SPAWN_COST, SOLDIER_SCORE);
 	}
 
 	/**

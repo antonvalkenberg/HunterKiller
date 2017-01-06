@@ -63,7 +63,7 @@ public class Infected
 	 */
 	public Infected(int id, int spawningPlayerID, MapLocation mapLocation, Direction facing) {
 		this(id, spawningPlayerID, mapLocation, INFECTED_MAX_HP, INFECTED_MAX_HP, facing, INFECTED_FOV_RANGE, INFECTED_FOV_ANGLE,
-				INFECTED_ATTACK_RANGE, INFECTED_ATTACK_DAMAGE, INFECTED_COOLDOWN, INFECTED_SPAWN_COST, INFECTED_SCORE);
+				INFECTED_ATTACK_RANGE, INFECTED_ATTACK_DAMAGE, 0, INFECTED_SPAWN_COST, INFECTED_SCORE);
 	}
 
 	/**

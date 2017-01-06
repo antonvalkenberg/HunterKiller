@@ -124,7 +124,7 @@ public class HunterKillerRules
 					break;
 				case ATTACK_SPECIAL:
 					// Try to execute the ordered attack
-					if (!attackSpecial(map, unitOrder, failures))
+					if (!attackSpecial(map, actingPlayer, unitOrder, failures))
 						failCount++;
 					break;
 				default:
@@ -324,9 +324,10 @@ public class HunterKillerRules
 		}
 		Unit unit = (Unit) object;
 		MapLocation targetLocation = attackOrder.getTargetLocation();
-		// Check if the target location is in the Unit's field of view
-		if (!unit.isInFieldOfView(targetLocation)) {
-			failures.append(String.format("Attack Failure: Target location not in Line-of-Sight.%n"));
+		// Check if the target location is in the Player's combined field of view
+		if (!player.getCombinedFieldOfView()
+					.contains(targetLocation)) {
+			failures.append(String.format("Attack Failure: Target location is not in your Field-of-View.%n"));
 			return false;
 		}
 		// Check if the target location is within the Unit's attack range
@@ -353,8 +354,11 @@ public class HunterKillerRules
 				Infected spawn = new Infected(map.requestNewGameObjectID(), player.getID(), targetLocation, unit.getOrientation());
 				attackSuccess = map.place(map.toPosition(targetLocation), spawn);
 				// Add the newly spawned unit to the player's squad
-				if (attackSuccess)
+				if (attackSuccess) {
 					player.addUnitToSquad(spawn);
+					// If we executed the special action, start the cooldown
+					unit.startCooldown();
+				}
 			}
 		}
 		// Return
@@ -365,15 +369,9 @@ public class HunterKillerRules
 	 * Perform a special attack on a location. The effect of these attacks differ based on the type of {@link Unit}
 	 * performing the attack.
 	 * 
-	 * @param map
-	 *            The map the attack is being performed on.
-	 * @param attackOrder
-	 *            The order.
-	 * @param failures
-	 *            The StringBuilder to append any failures to.
-	 * @return Whether or not the attack was successfully executed.
+	 * {@link HunterKillerRules#attackLocation(Map, Player, UnitOrder, StringBuilder)}
 	 */
-	private boolean attackSpecial(Map map, UnitOrder attackOrder, StringBuilder failures) {
+	private boolean attackSpecial(Map map, Player player, UnitOrder attackOrder, StringBuilder failures) {
 		boolean attackSuccess = false;
 		// Check if there is a object on the map with the specified ID.
 		GameObject object = map.getObject(attackOrder.getObjectID());
@@ -387,14 +385,16 @@ public class HunterKillerRules
 			return false;
 		}
 		Unit unit = (Unit) object;
+		MapLocation targetLocation = attackOrder.getTargetLocation();
 		// Check if the Unit's special attack has cooled down
 		if (unit.getSpecialAttackCooldown() > 0) {
 			failures.append(String.format("Special Attack Failure: Ability is still on cooldown.%n"));
 			return false;
 		}
-		// Check if the target location is in the Unit's field of view.
-		if (!unit.isInFieldOfView(attackOrder.getTargetLocation())) {
-			failures.append(String.format("Special Attack Failure: Target location not in Line-of-Sight.%n"));
+		// Check if the target location is in the Players's combined field of view.
+		if (!player.getCombinedFieldOfView()
+					.contains(targetLocation)) {
+			failures.append(String.format("Special Attack Failure: Target location is not in your Field-of-View.%n"));
 			return false;
 		}
 		// Check if the target location is within the Unit's attack range

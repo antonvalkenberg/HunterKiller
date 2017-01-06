@@ -1,6 +1,3 @@
-/**
- * 
- */
 package hunterkiller.orders;
 
 import static org.junit.Assert.assertEquals;
@@ -20,6 +17,8 @@ import net.codepoke.ai.challenge.hunterkiller.Player;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitOrderType;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Door;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
@@ -33,7 +32,15 @@ import org.junit.Test;
 /**
  * Tests orders for Units. Current tests:
  * <ul>
- * 
+ * <li>Rotation of a Unit</li>
+ * <li>Move of a Unit</li>
+ * <li>Move of a Unit through/into a Door</li>
+ * <li>Invalid move of a Unit</li>
+ * <li>Basic Soldier Attack</li>
+ * <li>Special Soldier Attack</li>
+ * <li>Special Medic Attack</li>
+ * <li>Failure when ordering a Special Attack of an Infected</li>
+ * <li>Trigger of Infected Special Attack when a Unit is killed by an Infected</li>
  * </ul>
  * 
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
@@ -47,7 +54,15 @@ public class UnitOrderTest {
 
 	private static final MapSetup testMapDoor = new MapSetup(String.format("B___%n_S__%n█D██%n█__█"));
 
-	private static final MapSetup failMapMoveBlocked = new MapSetup(String.format("B_S%n__S"));
+	private static final MapSetup testMapBlocked = new MapSetup(String.format("B_S%n__S"));
+
+	private static final MapSetup testMapAttack = new MapSetup(String.format("BS"));
+
+	private static final MapSetup testMapSpecialSoldier = new MapSetup(String.format("B__%n__S"));
+
+	private static final MapSetup testMapSpecialMedic = new MapSetup(String.format("BS_M%n____"));
+
+	private static final MapSetup testMapSpecialInfected = new MapSetup(String.format("BI"));
 
 	// endregion
 
@@ -89,7 +104,7 @@ public class UnitOrderTest {
 	// region Rotation
 
 	/**
-	 * Tests a UnitOrder of the rotation category. This method tests the following things:
+	 * Tests a UnitOrder involving the rotation of a Unit. This method tests the following things:
 	 * <ul>
 	 * <li>If the UnitOrder does not generate any failures.</li>
 	 * <li>If the Unit's orientation changes.</li>
@@ -159,7 +174,7 @@ public class UnitOrderTest {
 	// region Movement
 
 	/**
-	 * Tests a UnitOrder of the movement category. This method tests the following things:
+	 * Tests a basic move order. This method tests the following things:
 	 * <ul>
 	 * <li>If the UnitOrder does not generate any failures.</li>
 	 * <li>If the Unit reached the location.</li>
@@ -227,7 +242,7 @@ public class UnitOrderTest {
 	}
 
 	/**
-	 * Tests a UnitOrder of the movement category, in which a unit moves into a door, which should open the door.
+	 * Tests a UnitOrder where a unit moves into a door, which should open the door.
 	 * This method tests the following:
 	 * <ul>
 	 * <li>If the UnitOrder does not generate any failures.</li>
@@ -313,7 +328,7 @@ public class UnitOrderTest {
 	}
 
 	/**
-	 * Tests a UnitOrder of the movement category, that fails because the target location blocked by another Unit.
+	 * Tests a UnitOrder that fails because the target location blocked by another Unit.
 	 * This method tests the following things:
 	 * <ul>
 	 * <li>The UnitOrder generated a failure.</li>
@@ -323,7 +338,7 @@ public class UnitOrderTest {
 	@Test
 	public void testFailMovementBlocked() {
 		// Re-create the map using the door setup
-		state = HunterKillerStateFactory.generateInitialStateFromPremade(failMapMoveBlocked, playerNames, "nonRandomSections");
+		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMapBlocked, playerNames, "nonRandomSections");
 		Player activePlayer = state.getPlayer(state.getActivePlayerID());
 		Unit unit = activePlayer.getSquad()
 								.get(0);
@@ -357,30 +372,35 @@ public class UnitOrderTest {
 	// region Attacks
 
 	/**
-	 * Tests a UnitOrder of the attack category. This methods tests the following things:
+	 * Tests a UnitOrder that represents a basic attack of a Soldier. This method tests the following things:
 	 * <ul>
 	 * <li>If the UnitOrder does not generate any failures.</li>
 	 * <li>If the Unit on the target location lost health.</li>
-	 * <li>If the right amount of health was lost.</li>
+	 * <li>If the correct amount of health was lost.</li>
 	 * </ul>
 	 */
 	@Test
 	public void testAttack() {
-		MapLocation targetLocation = new MapLocation(3, 3);
+		// Re-create the map using the smaller maps for attacking
+		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMapAttack, playerNames, "nonRandomSections");
+		MapLocation targetLocation = new MapLocation(2, 1);
 		Player activePlayer = state.getPlayer(state.getActivePlayerID());
 		Unit unit = activePlayer.getSquad()
 								.get(0);
+		state.getMap()
+				.getUnitAtLocation(new MapLocation(1, 0))
+				.setOrientation(Direction.EAST);
+		unit.updateFieldOfView(state.getMap()
+									.getFieldOfView(unit));
 		int pre_TargetUnitHealth = state.getMap()
 										.getUnitAtLocation(targetLocation)
 										.getHpCurrent();
 
 		// Situation before attack:
-		// B _ S _ _ _
-		// _ _ _ _ _ _
-		// _ _ _ _ _ _
-		// _ _ _ S _ B
+		// B S _ _
+		// _ _ S B
 
-		// Create an order to attack location (3,3)
+		// Create an order to attack the target location
 		HunterKillerAction attackAction = new HunterKillerAction(state);
 		UnitOrder order = new UnitOrder(unit, UnitOrderType.ATTACK, 0, targetLocation);
 		attackAction.addOrder(order);
@@ -403,6 +423,250 @@ public class UnitOrderTest {
 	// endregion
 
 	// region Special Attacks
+
+	/**
+	 * Tests a UnitOrder that orders the special attack of a Soldier (3x3 grenade). This method tests the following
+	 * things:
+	 * <ul>
+	 * <li>If the UnitOrder does not generate any failures.</li>
+	 * <li>If all GameObjects in the area-of-effect that can be damaged lose the correct amount of health.</li>
+	 * <li>If all GameObjects in the area-of-effect that cannot be damaged have their health remain the same.</li>
+	 * <li>If the Soldier's cooldown is started.</li>
+	 * </ul>
+	 */
+	@Test
+	public void testSpecialAttackSoldier() {
+		// Re-create the map using the maps for the soldier's special attack
+		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMapSpecialSoldier, playerNames, "nonRandomSections");
+		MapLocation targetLocation = new MapLocation(4, 2);
+		Player activePlayer = state.getPlayer(state.getActivePlayerID());
+		Unit unit = activePlayer.getSquad()
+								.get(0);
+		state.getMap()
+				.getUnitAtLocation(new MapLocation(2, 1))
+				.setOrientation(Direction.EAST);
+		unit.updateFieldOfView(state.getMap()
+									.getFieldOfView(unit));
+		MapLocation targetUnitLocation = new MapLocation(3, 2);
+		int pre_TargetUnitHealth = state.getMap()
+										.getUnitAtLocation(targetUnitLocation)
+										.getHpCurrent();
+		MapLocation targetBaseLocation = new MapLocation(5, 3);
+		int pre_TargetBaseHealth = state.getMap()
+										.getFeatureAtLocation(targetBaseLocation)
+										.getHpCurrent();
+		int pre_TargetFloorHealth = state.getMap()
+											.getFeatureAtLocation(targetLocation)
+											.getHpCurrent();
+
+		// Situation before attack:
+		// B _ _ _ _ _
+		// _ _ S _ _ _
+		// _ _ _ S _ _
+		// _ _ _ _ _ B
+
+		// Create an order to attack the target location
+		HunterKillerAction specialAttackAction = new HunterKillerAction(state);
+		UnitOrder order = new UnitOrder(unit, UnitOrderType.ATTACK_SPECIAL, 0, targetLocation);
+		specialAttackAction.addOrder(order);
+
+		// Make the game logic execute the action
+		Result result = gameRules.handle(state, specialAttackAction);
+
+		// Make sure the order did not fail
+		assertEquals(0, result.getExplanation()
+								.length());
+
+		// Update the status of the objects
+		unit = state.getMap()
+					.getUnitAtLocation(new MapLocation(2, 1));
+		int post_TargetUnitHealth = state.getMap()
+											.getUnitAtLocation(targetUnitLocation)
+											.getHpCurrent();
+		int post_TargetBaseHealth = state.getMap()
+											.getFeatureAtLocation(targetBaseLocation)
+											.getHpCurrent();
+		int post_TargetFloorHealth = state.getMap()
+											.getFeatureAtLocation(targetLocation)
+											.getHpCurrent();
+
+		// Make sure health was lost, and the correct amount
+		assertTrue(post_TargetUnitHealth < pre_TargetUnitHealth);
+		assertEquals(Soldier.SOLDIER_SPECIAL_DAMAGE, pre_TargetUnitHealth - post_TargetUnitHealth);
+		assertTrue(post_TargetBaseHealth < pre_TargetBaseHealth);
+		assertEquals(Soldier.SOLDIER_SPECIAL_DAMAGE, pre_TargetBaseHealth - post_TargetBaseHealth);
+
+		// Make sure health remains the same for indestructable objects
+		assertEquals(pre_TargetFloorHealth, post_TargetFloorHealth);
+
+		// Make sure the unit that attack has it's special on cooldown
+		assertTrue(unit.getSpecialAttackCooldown() > 0);
+	}
+
+	/**
+	 * Tests a UnitOrder that orders the special attack of a Medic (heal). This method tests the following things:
+	 * <ul>
+	 * <li>If the UnitOrder does not generate any failures.</li>
+	 * <li>If The Unit on the targeted location gained the correct amount of health.</li>
+	 * <li>If the Medic's cooldown is started.</li>
+	 * </ul>
+	 */
+	@Test
+	public void testSpecialAttackMedic() {
+		// Re-create the map using the maps for the soldier's special attack
+		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMapSpecialMedic, playerNames, "nonRandomSections");
+		MapLocation targetLocation = new MapLocation(1, 0);
+
+		// Get the Medic we want to give the order to
+		Unit unit = state.getMap()
+							.getUnitAtLocation(new MapLocation(3, 0));
+		Unit affectedUnit = state.getMap()
+									.getUnitAtLocation(targetLocation);
+
+		// Set the Soldier's health to a lower amount, so we can see the effect of the heal
+		affectedUnit.reduceHP(affectedUnit.getHpCurrent() - 1);
+		int pre_TargetUnitHealth = affectedUnit.getHpCurrent();
+
+		// Situation before attack:
+		// B S _ M _ _ _ _
+		// _ _ _ _ _ _ _ _
+		// _ _ _ _ _ _ _ _
+		// _ _ _ _ M _ S B
+
+		// Create an order to attack the target location
+		HunterKillerAction specialAttackAction = new HunterKillerAction(state);
+		UnitOrder order = new UnitOrder(unit, UnitOrderType.ATTACK_SPECIAL, 0, targetLocation);
+		specialAttackAction.addOrder(order);
+
+		// Make the game logic execute the action
+		Result result = gameRules.handle(state, specialAttackAction);
+
+		// Make sure the order did not fail
+		assertEquals(0, result.getExplanation()
+								.length());
+
+		// Update the status of the objects
+		affectedUnit = state.getMap()
+							.getUnitAtLocation(targetLocation);
+		int post_TargetUnitHealth = affectedUnit.getHpCurrent();
+
+		// Make sure health was gained, and the correct amount
+		assertTrue(post_TargetUnitHealth > pre_TargetUnitHealth);
+		assertEquals(Medic.MEDIC_SPECIAL_HEAL, post_TargetUnitHealth - pre_TargetUnitHealth);
+
+		// Make sure the unit that attack has it's special on cooldown
+		assertTrue(unit.getSpecialAttackCooldown() > 0);
+	}
+
+	/**
+	 * Tests a UnitOrder that orders the special attack of an Infected (spawn Infected). This order should fail, because
+	 * an Infected's special attack cannot be ordered (or at least, it doesn't do anything when ordered), because it
+	 * triggers automatically when an Infected kills a Unit. This method tests the following things:
+	 * <ul>
+	 * <li>That the UnitOrder is ignored by the system (creates a fail message)</li>
+	 * <li>That the Unit at the targetLocation remains controlled by the same Player</li>
+	 * </ul>
+	 */
+	@Test
+	public void testSpecialAttackInfected() {
+		// Re-create the map using the maps for the soldier's special attack
+		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMapSpecialInfected, playerNames, "nonRandomSections");
+		MapLocation targetLocation = new MapLocation(2, 1);
+
+		// Get the Infected we want to give the order to
+		Unit unit = state.getMap()
+							.getUnitAtLocation(new MapLocation(1, 0));
+		// Make sure it's facing the direction so that it's owner has the target in it's field-of-view
+		unit.setOrientation(Direction.EAST);
+		// Save the other player's ID
+		int pre_TargetUnitPlayerID = state.getMap()
+											.getUnitAtLocation(targetLocation)
+											.getSquadPlayerID();
+
+		// Situation before attack:
+		// B I _ _
+		// _ _ I B
+
+		// Create an order to attack the target location
+		HunterKillerAction specialAttackAction = new HunterKillerAction(state);
+		UnitOrder order = new UnitOrder(unit, UnitOrderType.ATTACK_SPECIAL, 0, targetLocation);
+		specialAttackAction.addOrder(order);
+
+		// Make the game logic execute the action
+		Result result = gameRules.handle(state, specialAttackAction);
+
+		// Make sure the order was failed (ignored)
+		assertTrue(result.getExplanation()
+							.length() > 0);
+
+		// Make sure the targeted Infected is still owned/controlled by the same player as before
+		int post_TargetUnitPlayerID = state.getMap()
+											.getUnitAtLocation(targetLocation)
+											.getSquadPlayerID();
+		assertTrue(pre_TargetUnitPlayerID == post_TargetUnitPlayerID);
+	}
+
+	/**
+	 * Tests that the triggered ability of an Infected, that goes off when it kills a Unit, is handled correctly. This
+	 * method tests the following things:
+	 * <ul>
+	 * <li>That an Infected is spawned on the location of the killed Unit</li>
+	 * <li>That the spawned Infected is assigned to the correct Player</li>
+	 * <li>That the Infected's cooldown is started</li>
+	 * </ul>
+	 */
+	@Test
+	public void testInfectedTrigger() {
+		// Re-create the map using the maps for the soldier's special attack
+		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMapSpecialInfected, playerNames, "nonRandomSections");
+		MapLocation targetLocation = new MapLocation(2, 1);
+
+		// Get the acting player
+		Player actingPlayer = state.getPlayer(state.getActivePlayerID());
+		// Get the Infected we want to give the order to
+		Unit unit = state.getMap()
+							.getUnitAtLocation(new MapLocation(1, 0));
+		// Move the unit south, since it has an attack range of only 1
+		state.getMap()
+				.move(new MapLocation(1, 1), unit);
+
+		// Get the unit at the target location
+		Unit pre_TargetUnit = state.getMap()
+									.getUnitAtLocation(targetLocation);
+		int pre_TargetUnitID = pre_TargetUnit.getID();
+		// Reduce it's health so that an Infected's attack will kill it
+		pre_TargetUnit.reduceHP(pre_TargetUnit.getHpCurrent() - Infected.INFECTED_ATTACK_DAMAGE);
+
+		// Situation before attack:
+		// B _ _ _
+		// _ I I B
+
+		// Create an order to attack the target location
+		HunterKillerAction attackAction = new HunterKillerAction(state);
+		UnitOrder order = new UnitOrder(unit, UnitOrderType.ATTACK, 0, targetLocation);
+		attackAction.addOrder(order);
+
+		// Make the game logic execute the action
+		Result result = gameRules.handle(state, attackAction);
+
+		// Make sure the order did not fail
+		assertEquals(0, result.getExplanation()
+								.length());
+
+		// Update the status of the objects
+		actingPlayer = state.getPlayer(actingPlayer.getID());
+		unit = state.getMap()
+					.getUnitAtLocation(new MapLocation(1, 1));
+		Unit post_TargetUnit = state.getMap()
+									.getUnitAtLocation(targetLocation);
+
+		// Make sure the Unit at the target location has a different ID
+		assertTrue(pre_TargetUnitID != post_TargetUnit.getID());
+		// Make sure the Unit at the target location belongs to the same player
+		assertEquals(actingPlayer.getID(), post_TargetUnit.getSquadPlayerID());
+		// Make sure the Infected's cooldown has started
+		assertTrue(unit.getSpecialAttackCooldown() > 0);
+	}
 
 	// endregion
 

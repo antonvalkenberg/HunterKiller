@@ -67,7 +67,7 @@ public class Medic
 	 */
 	public Medic(int id, int spawningPlayerID, MapLocation mapLocation, Direction facing) {
 		this(id, spawningPlayerID, mapLocation, MEDIC_MAX_HP, MEDIC_MAX_HP, facing, MEDIC_FOV_RANGE, MEDIC_FOV_ANGLE, MEDIC_ATTACK_RANGE,
-				MEDIC_ATTACK_DAMAGE, MEDIC_COOLDOWN, MEDIC_SPAWN_COST, MEDIC_SCORE);
+				MEDIC_ATTACK_DAMAGE, 0, MEDIC_SPAWN_COST, MEDIC_SCORE);
 	}
 
 	/**
