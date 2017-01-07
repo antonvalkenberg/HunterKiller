@@ -8,6 +8,7 @@ import net.codepoke.ai.challenge.hunterkiller.enums.BaseOrderType;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction.Rotation;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.MapFeature;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
@@ -158,12 +159,11 @@ public class HunterKillerRules
 	 */
 	private boolean spawnUnit(Map map, Player player, BaseOrderType spawnType, StringBuilder failures) {
 		boolean spawnSuccess = false;
-		MapLocation spawnlocation = player.getBase()
-											.getSpawnLocation();
+		Base base = (Base) map.getObject(player.getBaseID());
+		MapLocation spawnlocation = base.getSpawnLocation();
 		// The direction a unit faces when they spawn will be in line with the direction the spawn location is relative
 		// to the base.
-		Direction spawnDirection = MapLocation.getDirectionTo(player.getBase()
-																	.getLocation(), spawnlocation);
+		Direction spawnDirection = MapLocation.getDirectionTo(base.getLocation(), spawnlocation);
 		// Make sure we got a direction
 		if (spawnDirection == null) {
 			failures.append(String.format("Spawn Failure: Spawn location is not on a cardinal direction relative to the base.%n"));
@@ -211,7 +211,7 @@ public class HunterKillerRules
 				spawnSuccess = map.place(map.toPosition(spawnlocation), unit);
 				// Add the unit to the Player's squad if successfully spawned
 				if (spawnSuccess)
-					player.addUnitToSquad(unit);
+					player.addUnitToSquad(unit.getID());
 			} else {
 				failures.append(String.format("Spawn Failure: Spawn location is not traversable, potential causes: location is off grid, MapFeature at location is not walkable or s Unit is present at location.%n"));
 				return false;
@@ -311,6 +311,7 @@ public class HunterKillerRules
 	 */
 	private boolean attackLocation(Map map, Player player, UnitOrder attackOrder, StringBuilder failures) {
 		boolean attackSuccess = false;
+
 		// Check if there is a object on the map with the specified ID
 		GameObject object = map.getObject(attackOrder.getObjectID());
 		// Check if an object was found, and that object is a Unit
@@ -322,10 +323,11 @@ public class HunterKillerRules
 			failures.append(String.format("Attack Failure: Cannot attack with non-Unit object.%n"));
 			return false;
 		}
+
 		Unit unit = (Unit) object;
 		MapLocation targetLocation = attackOrder.getTargetLocation();
 		// Check if the target location is in the Player's combined field of view
-		if (!player.getCombinedFieldOfView()
+		if (!player.getCombinedFieldOfView(map)
 					.contains(targetLocation)) {
 			failures.append(String.format("Attack Failure: Target location is not in your Field-of-View.%n"));
 			return false;
@@ -335,8 +337,10 @@ public class HunterKillerRules
 			failures.append(String.format("Attack Failure: Target location outside of attack range.%n"));
 			return false;
 		}
+
 		// Tell the map that the target location is being attacked for X damage
 		attackSuccess = map.attackLocation(targetLocation, unit.getAttackDamage());
+
 		// Check if we need to trigger an Infected's special attack.
 		// Several conditions need to hold: (in order of most likely to break out of the statement)
 		// - An Infected was the source of the attack
@@ -344,23 +348,31 @@ public class HunterKillerRules
 		// - The unit is now dead
 		// - The Infected's special attack is not on cooldown
 		// - The attack succeeded
-		if (unit instanceof Infected && map.getUnitAtLocation(targetLocation) != null && map.getUnitAtLocation(targetLocation)
-																							.getHpCurrent() <= 0
-			&& unit.getSpecialAttackCooldown() == 0 && attackSuccess) {
+		Unit targetUnit = map.getUnitAtLocation(targetLocation);
+		if (unit instanceof Infected && targetUnit != null && targetUnit.getHpCurrent() <= 0 && unit.getSpecialAttackCooldown() == 0
+			&& attackSuccess) {
 			// Remove the dead unit
 			attackSuccess = map.remove(map.toPosition(targetLocation), map.getUnitAtLocation(targetLocation));
 			if (attackSuccess) {
+				// Award points to the player
+				awardPointsForUnitDeath(player, targetUnit);
 				// Spawn a new Infected, on the same team as the Infected that performed this attack
 				Infected spawn = new Infected(map.requestNewGameObjectID(), player.getID(), targetLocation, unit.getOrientation());
 				attackSuccess = map.place(map.toPosition(targetLocation), spawn);
 				// Add the newly spawned unit to the player's squad
 				if (attackSuccess) {
-					player.addUnitToSquad(spawn);
+					player.addUnitToSquad(spawn.getID());
 					// If we executed the special action, start the cooldown
 					unit.startCooldown();
 				}
 			}
 		}
+		// Otherwise, check if there was a Unit on the targeted location, and if it is currently dead
+		else if (targetUnit != null && targetUnit.getHpCurrent() <= 0) {
+			// Award points to the player
+			awardPointsForUnitDeath(player, targetUnit);
+		}
+
 		// Return
 		return attackSuccess;
 	}
@@ -392,7 +404,7 @@ public class HunterKillerRules
 			return false;
 		}
 		// Check if the target location is in the Players's combined field of view.
-		if (!player.getCombinedFieldOfView()
+		if (!player.getCombinedFieldOfView(map)
 					.contains(targetLocation)) {
 			failures.append(String.format("Special Attack Failure: Target location is not in your Field-of-View.%n"));
 			return false;
@@ -429,6 +441,24 @@ public class HunterKillerRules
 		((Unit) object).startCooldown();
 		// Return
 		return attackSuccess;
+	}
+
+	/**
+	 * Awards a player an amount of points equal to the score it should receive for the type of Unit that was killed.
+	 * 
+	 * @param player
+	 *            The player who's order lead to the Unit dying.
+	 * @param killedUnit
+	 *            The Unit that died.
+	 */
+	private void awardPointsForUnitDeath(Player player, Unit killedUnit) {
+		if (killedUnit instanceof Soldier) {
+			player.awardScore(Soldier.SOLDIER_SCORE);
+		} else if (killedUnit instanceof Medic) {
+			player.awardScore(Medic.MEDIC_SCORE);
+		} else if (killedUnit instanceof Infected) {
+			player.awardScore(Infected.INFECTED_SCORE);
+		}
 	}
 
 }

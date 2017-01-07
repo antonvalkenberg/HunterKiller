@@ -93,14 +93,14 @@ public class BaseOrderTest {
 		// Set some values of things before the order
 		Player activePlayer = state.getPlayer(state.getActivePlayerID());
 		int beforePlayerResource = activePlayer.getResource();
-		int beforePlayerSquadSize = activePlayer.getSquad()
-												.size();
-		MapLocation spawnLocation = activePlayer.getBase()
-												.getSpawnLocation();
+		int beforePlayerSquadSize = activePlayer.getSquadIDs().size;
+		Base base = (Base) state.getMap()
+								.getObject(activePlayer.getBaseID());
+		MapLocation spawnLocation = base.getSpawnLocation();
 
 		// Create a base-order to spawn an infected for the active player
 		HunterKillerAction spawnInfectedAction = new HunterKillerAction(state);
-		BaseOrder order = new BaseOrder(activePlayer.getBase(), BaseOrderType.SPAWN_INFECTED, 0);
+		BaseOrder order = new BaseOrder(base, BaseOrderType.SPAWN_INFECTED, 0);
 		spawnInfectedAction.addOrder(order);
 
 		// Make the game logic execute the action
@@ -116,8 +116,7 @@ public class BaseOrderTest {
 		// Check that the player's resource was reduced
 		assertEquals(beforePlayerResource - Infected.INFECTED_SPAWN_COST, activePlayer.getResource());
 		// Check that the player has an extra squad member
-		assertEquals(beforePlayerSquadSize + 1, activePlayer.getSquad()
-															.size());
+		assertEquals(beforePlayerSquadSize + 1, activePlayer.getSquadIDs().size);
 
 		// Check that there is an infected on the map, in the correct location
 		assertTrue(state.getMap()
@@ -131,7 +130,7 @@ public class BaseOrderTest {
 		Unit spawnedUnit = state.getMap()
 								.getUnitAtLocation(spawnLocation);
 		// Get the current combined FoV for the player
-		HashSet<MapLocation> playerFoV = activePlayer.getCombinedFieldOfView();
+		HashSet<MapLocation> playerFoV = activePlayer.getCombinedFieldOfView(state.getMap());
 
 		// Check that each location that the new Infected can see, is also in the player's current combined FoV.
 		for (MapLocation location : state.getMap()
@@ -147,12 +146,13 @@ public class BaseOrderTest {
 	public void testSpawnResourceFail() {
 		// Set some values of things before the order
 		Player activePlayer = state.getPlayer(state.getActivePlayerID());
-		MapLocation spawnLocation = activePlayer.getBase()
-												.getSpawnLocation();
+		Base base = (Base) state.getMap()
+								.getObject(activePlayer.getBaseID());
+		MapLocation spawnLocation = base.getSpawnLocation();
 
 		// Create a base-order to spawn an infected for the active player
 		HunterKillerAction spawnInfectedAction = new HunterKillerAction(state);
-		BaseOrder order = new BaseOrder(activePlayer.getBase(), BaseOrderType.SPAWN_INFECTED, 0);
+		BaseOrder order = new BaseOrder(base, BaseOrderType.SPAWN_INFECTED, 0);
 		spawnInfectedAction.addOrder(order);
 
 		// Now set the player's resource to an amount that is not enough to spawn an infected unit
@@ -180,10 +180,10 @@ public class BaseOrderTest {
 
 		// Set some values of things before the order
 		Player activePlayer = state.getPlayer(state.getActivePlayerID());
-		int pre_PlayerSquadSize = activePlayer.getSquad()
-												.size();
+		int pre_PlayerSquadSize = activePlayer.getSquadIDs().size;
 		int pre_PlayerResources = activePlayer.getResource();
-		Base base = activePlayer.getBase();
+		Base base = (Base) state.getMap()
+								.getObject(activePlayer.getBaseID());
 
 		// Create a base-order to spawn an infected for the active player
 		HunterKillerAction spawnInfectedAction = new HunterKillerAction(state);
@@ -200,8 +200,7 @@ public class BaseOrderTest {
 		assertTrue(result.getExplanation()
 							.length() > 0);
 		// Check that nothing has actually been spawned
-		assertEquals(pre_PlayerSquadSize, activePlayer.getSquad()
-														.size());
+		assertEquals(pre_PlayerSquadSize, activePlayer.getSquadIDs().size);
 		assertEquals(pre_PlayerResources, activePlayer.getResource());
 	}
 	// endregion

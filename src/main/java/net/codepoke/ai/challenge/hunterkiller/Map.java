@@ -751,7 +751,7 @@ public class Map {
 						if (object instanceof Unit) {
 							Unit unit = (Unit) object;
 							state.getPlayer(unit.getSquadPlayerID())
-									.removeUnitFromSquad(unit);
+									.removeUnitFromSquad(unit.getID());
 						}
 					}
 				}
@@ -878,16 +878,11 @@ public class Map {
 				GameObject object = mapContent[i][j];
 				// Check if it's a base and belongs to this player
 				if (object instanceof Base && ((Base) object).getPlayerID() == player.getID()) {
-					player.assignBase((Base) object);
+					player.assignBase(object.getID());
 				}
 				// Check if it's a unit and belongs to this player
 				else if (object instanceof Unit && ((Unit) object).getSquadPlayerID() == player.getID()) {
-					if (object instanceof Infected)
-						player.addUnitToSquad((Infected) object);
-					else if (object instanceof Medic)
-						player.addUnitToSquad((Medic) object);
-					else if (object instanceof Soldier)
-						player.addUnitToSquad((Soldier) object);
+					player.addUnitToSquad(object.getID());
 				}
 			}
 		}

@@ -116,8 +116,9 @@ public class UnitOrderTest {
 	public void testRotation() {
 		Player activePlayer = state.getPlayer(state.getActivePlayerID());
 		// Select the unit
-		Unit unit = activePlayer.getSquad()
-								.get(0);
+		Unit unit = (Unit) state.getMap()
+								.getObject(activePlayer.getSquadIDs()
+														.get(0));
 
 		// Situation before rotation:
 		// B _ S _ _ _
@@ -144,9 +145,9 @@ public class UnitOrderTest {
 								.length());
 
 		// Refresh unit reference
-		unit = state.getPlayer(activePlayer.getID())
-					.getSquad()
-					.get(0);
+		unit = (Unit) state.getMap()
+							.getObject(activePlayer.getSquadIDs()
+													.get(0));
 		Direction post_UnitOrientation = unit.getOrientation();
 		HashSet<MapLocation> post_UnitFoV = unit.getFieldOfView();
 
@@ -163,7 +164,7 @@ public class UnitOrderTest {
 
 		// Check that the player's combined field-of-view now also contains these locations
 		HashSet<MapLocation> post_PlayerFoV = state.getPlayer(activePlayer.getID())
-													.getCombinedFieldOfView();
+													.getCombinedFieldOfView(state.getMap());
 		for (MapLocation location : post_UnitFoV) {
 			assertTrue(post_PlayerFoV.contains(location));
 		}
@@ -187,8 +188,9 @@ public class UnitOrderTest {
 	public void testMovement() {
 		Player activePlayer = state.getPlayer(state.getActivePlayerID());
 		// Select the unit
-		Unit unit = activePlayer.getSquad()
-								.get(0);
+		Unit unit = (Unit) state.getMap()
+								.getObject(activePlayer.getSquadIDs()
+														.get(0));
 
 		// Situation before movement:
 		// B _ S _ _ _
@@ -214,9 +216,9 @@ public class UnitOrderTest {
 		// _ _ S _ _ _
 		// _ _ _ _ _ _
 		// _ _ _ S _ B
-		unit = state.getPlayer(activePlayer.getID())
-					.getSquad()
-					.get(0);
+		unit = (Unit) state.getMap()
+							.getObject(activePlayer.getSquadIDs()
+													.get(0));
 		MapLocation post_UnitLocation = unit.getLocation();
 		HashSet<MapLocation> post_UnitFoV = unit.getFieldOfView();
 
@@ -235,7 +237,7 @@ public class UnitOrderTest {
 
 		// Check that the player's combined field-of-view now also contains these locations
 		HashSet<MapLocation> post_PlayerFoV = state.getPlayer(activePlayer.getID())
-													.getCombinedFieldOfView();
+													.getCombinedFieldOfView(state.getMap());
 		for (MapLocation location : post_UnitFoV) {
 			assertTrue(post_PlayerFoV.contains(location));
 		}
@@ -304,9 +306,9 @@ public class UnitOrderTest {
 		assertTrue(door.isOpen());
 		assertEquals(Door.DOOR_OPEN_ROUNDS, door.getOpenTimer());
 
-		unit = state.getPlayer(activePlayer.getID())
-					.getSquad()
-					.get(0);
+		unit = (Unit) state.getMap()
+							.getObject(activePlayer.getSquadIDs()
+													.get(0));
 		HashSet<MapLocation> post_UnitFoV = unit.getFieldOfView();
 		// Check that the unit's Field-of-View has changed
 		assertTrue(post_UnitFoV.size() == 8);
@@ -321,7 +323,7 @@ public class UnitOrderTest {
 
 		// Check that the player's combined Field-of-View contains the new locations
 		HashSet<MapLocation> post_PlayerFoV = state.getPlayer(activePlayer.getID())
-													.getCombinedFieldOfView();
+													.getCombinedFieldOfView(state.getMap());
 		for (MapLocation location : post_UnitFoV) {
 			assertTrue(post_PlayerFoV.contains(location));
 		}
@@ -340,8 +342,9 @@ public class UnitOrderTest {
 		// Re-create the map using the door setup
 		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMapBlocked, playerNames, "nonRandomSections");
 		Player activePlayer = state.getPlayer(state.getActivePlayerID());
-		Unit unit = activePlayer.getSquad()
-								.get(0);
+		Unit unit = (Unit) state.getMap()
+								.getObject(activePlayer.getSquadIDs()
+														.get(0));
 
 		// Situation before movement:
 		// B _ S _ _ _
@@ -385,8 +388,9 @@ public class UnitOrderTest {
 		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMapAttack, playerNames, "nonRandomSections");
 		MapLocation targetLocation = new MapLocation(2, 1);
 		Player activePlayer = state.getPlayer(state.getActivePlayerID());
-		Unit unit = activePlayer.getSquad()
-								.get(0);
+		Unit unit = (Unit) state.getMap()
+								.getObject(activePlayer.getSquadIDs()
+														.get(0));
 		state.getMap()
 				.getUnitAtLocation(new MapLocation(1, 0))
 				.setOrientation(Direction.EAST);
@@ -440,8 +444,9 @@ public class UnitOrderTest {
 		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMapSpecialSoldier, playerNames, "nonRandomSections");
 		MapLocation targetLocation = new MapLocation(4, 2);
 		Player activePlayer = state.getPlayer(state.getActivePlayerID());
-		Unit unit = activePlayer.getSquad()
-								.get(0);
+		Unit unit = (Unit) state.getMap()
+								.getObject(activePlayer.getSquadIDs()
+														.get(0));
 		state.getMap()
 				.getUnitAtLocation(new MapLocation(2, 1))
 				.setOrientation(Direction.EAST);

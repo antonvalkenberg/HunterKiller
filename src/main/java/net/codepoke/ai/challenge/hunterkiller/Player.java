@@ -12,6 +12,8 @@ import net.codepoke.ai.GameRules.Result.Ranking;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 
+import com.badlogic.gdx.utils.IntArray;
+
 /**
  * Abstract class representing a player in HunterKiller. A player has a {@link Base} from which they
  * can spawn {@link Unit}s, payed for with a currency that is acquired automatically over time. When
@@ -58,17 +60,15 @@ public class Player
 	@Setter
 	protected int resource;
 
-	// TODO: Fix this to have only IDs (for Base and Units)!!
+	/**
+	 * The ID of the {@link Base} that is assigned to this player.
+	 */
+	private int baseID;
 
 	/**
-	 * The {@link Base} that is assigned to this player.
+	 * Collection of IDs of {@link Unit}s that this player controls.
 	 */
-	private Base base;
-
-	/**
-	 * Collection of {@link Unit}s that this player controls.
-	 */
-	protected List<Unit> squad;
+	protected IntArray squadIDs;
 
 	/**
 	 * The score this player has accumulated during the game.
@@ -95,7 +95,7 @@ public class Player
 		this.mapSection = mapSection;
 		this.resource = PLAYER_STARTING_RESOURCE;
 		// Create a new list to store the squad into
-		squad = new ArrayList<Unit>();
+		squadIDs = new IntArray();
 	}
 
 	// endregion
@@ -108,11 +108,11 @@ public class Player
 	public Player copy() {
 		Player newPlayer = new Player(this.getID(), this.getName(), this.getMapSection());
 
-		// Copy the Base
-		newPlayer.assignBase(this.base.copy());
+		// Copy the Base's ID
+		newPlayer.assignBase(this.baseID);
 		// Copy all the Units
-		for (Unit unit : this.squad) {
-			newPlayer.addUnitToSquad(unit.copy());
+		for (int i = 0; i < squadIDs.size; i++) {
+			newPlayer.addUnitToSquad(squadIDs.get(i));
 		}
 		// Set the resources
 		newPlayer.setResource(this.resource);
@@ -121,15 +121,20 @@ public class Player
 	}
 
 	/**
-	 * Returns the combined Field-of-View of the player. This Field-of-View is made up of the union of all it's Unit's
-	 * Field-of-View, and it's Base.
+	 * Returns the combined Field-of-View of the player, in a given state. This Field-of-View is made up of the union of
+	 * all it's Unit's Field-of-View, and it's Base.
+	 * 
+	 * @param map
+	 *            The {@link Map} to get the field-of-view from.
 	 */
-	public HashSet<MapLocation> getCombinedFieldOfView() {
+	public HashSet<MapLocation> getCombinedFieldOfView(Map map) {
 		// Start with the Base's field of view
 		// TODO define Base's field of view
 		HashSet<MapLocation> fieldOfViewSet = new HashSet<MapLocation>();
 		// Go through our squad
-		for (Unit unit : squad) {
+		for (int i = 0; i < squadIDs.size; i++) {
+			// Get the Unit from the map
+			Unit unit = (Unit) map.getObject(squadIDs.get(i));
 			// Check if the unit isn't dead
 			if (unit.getHpCurrent() > 0) {
 				fieldOfViewSet.addAll(unit.getFieldOfView());
@@ -137,6 +142,30 @@ public class Player
 		}
 		// Return the collection
 		return fieldOfViewSet;
+	}
+
+	/**
+	 * Returns this player's {@link Base} on the provided {@link Map}.
+	 * 
+	 * @param map
+	 *            The map to get the base from.
+	 */
+	public Base getBase(Map map) {
+		return (Base) map.getObject(baseID);
+	}
+
+	/**
+	 * Returns a collection of {@link Unit}s that make up this player's squad on the provided {@link Map}.
+	 * 
+	 * @param map
+	 *            The map to get the units from.
+	 */
+	public List<Unit> getUnits(Map map) {
+		List<Unit> squad = new ArrayList<Unit>();
+		for (int i = 0; i < squadIDs.size; i++) {
+			squad.add((Unit) map.getObject(squadIDs.get(i)));
+		}
+		return squad;
 	}
 
 	// endregion
@@ -177,11 +206,11 @@ public class Player
 	/**
 	 * Assign a {@link Base} to this player.
 	 * 
-	 * @param base
-	 *            The base to assign.
+	 * @param baseID
+	 *            The ID of the base to assign.
 	 */
-	protected void assignBase(Base base) {
-		this.base = base;
+	protected void assignBase(int baseID) {
+		this.baseID = baseID;
 	}
 
 	/**
@@ -197,21 +226,21 @@ public class Player
 	/**
 	 * Adds a Unit to this Player's squad.
 	 * 
-	 * @param unit
-	 *            The unit to add.
+	 * @param unitID
+	 *            The ID of the unit to add.
 	 */
-	protected void addUnitToSquad(Unit unit) {
-		squad.add(unit);
+	protected void addUnitToSquad(int unitID) {
+		squadIDs.add(unitID);
 	}
 
 	/**
 	 * Removes a Unit from this Player's squad.
 	 * 
-	 * @param unit
-	 *            The unit to remove.
+	 * @param unitID
+	 *            The ID of the unit to remove.
 	 */
-	protected void removeUnitFromSquad(Unit unit) {
-		squad.remove(unit);
+	protected void removeUnitFromSquad(int unitID) {
+		squadIDs.removeValue(unitID);
 	}
 
 	// endregion
