@@ -478,6 +478,10 @@ public class LineOfSight {
 		return _setVisible.getVisibleLocations();
 	}
 
+	public GetDistanceFunction getDistanceType() {
+		return _getDistance;
+	}
+
 	// represents the slope Y/X as a rational number
 	private class Slope {
 

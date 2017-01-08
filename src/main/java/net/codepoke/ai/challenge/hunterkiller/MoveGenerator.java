@@ -1,9 +1,11 @@
 package net.codepoke.ai.challenge.hunterkiller;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import net.codepoke.ai.challenge.hunterkiller.enums.BaseOrderType;
+import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitOrderType;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
@@ -83,7 +85,54 @@ public class MoveGenerator {
 		// Create a list to write to
 		List<UnitOrder> orders = new ArrayList<UnitOrder>();
 
-		// TODO finish unit-order move generator
+		// Get the map we are currently on
+		Map map = state.getMap();
+		// And the unit's location
+		MapLocation unitLocation = unit.getLocation();
+
+		// Can always rotate east or west
+		orders.add(new UnitOrder(unit, UnitOrderType.ROTATE_EAST, DEFAULT_ACTION_INDEX));
+		orders.add(new UnitOrder(unit, UnitOrderType.ROTATE_WEST, DEFAULT_ACTION_INDEX));
+
+		// Check what movement options we have
+		if (map.isMovePossible(unitLocation, Direction.NORTH)) {
+			orders.add(new UnitOrder(unit, UnitOrderType.MOVE_NORTH, DEFAULT_ACTION_INDEX,
+										map.getLocationInDirection(unitLocation, Direction.NORTH, Unit.MOVEMENT_RANGE)));
+		}
+		if (map.isMovePossible(unitLocation, Direction.EAST)) {
+			orders.add(new UnitOrder(unit, UnitOrderType.MOVE_EAST, DEFAULT_ACTION_INDEX,
+										map.getLocationInDirection(unitLocation, Direction.EAST, Unit.MOVEMENT_RANGE)));
+		}
+		if (map.isMovePossible(unitLocation, Direction.SOUTH)) {
+			orders.add(new UnitOrder(unit, UnitOrderType.MOVE_SOUTH, DEFAULT_ACTION_INDEX,
+										map.getLocationInDirection(unitLocation, Direction.SOUTH, Unit.MOVEMENT_RANGE)));
+		}
+		if (map.isMovePossible(unitLocation, Direction.WEST)) {
+			orders.add(new UnitOrder(unit, UnitOrderType.MOVE_WEST, DEFAULT_ACTION_INDEX,
+										map.getLocationInDirection(unitLocation, Direction.WEST, Unit.MOVEMENT_RANGE)));
+		}
+
+		// TODO create attack orders for locations in player's FoV versus Unit's?
+		// Get the Player's field-of-view
+		// HashSet<MapLocation> playerFoV = state.getPlayer(unit.getSquadPlayerID()).getCombinedFieldOfView(map);
+		// Get the Unit's field-of-view
+		HashSet<MapLocation> unitFoV = unit.getFieldOfView();
+
+		// Get the unit's attack range
+		int attackRange = Unit.getAttackRange(unit);
+
+		for (MapLocation location : unitFoV) {
+			// Check if this location is within the unit's attack range
+			if (map.getDistance(unitLocation, location) <= attackRange) {
+				// Check if the special for this unit is available
+				if (unit.getSpecialAttackCooldown() <= 0) {
+					// Create a special attack order for this location
+					orders.add(new UnitOrder(unit, UnitOrderType.ATTACK_SPECIAL, DEFAULT_ACTION_INDEX, location));
+				}
+				// Create an attack order for this location
+				orders.add(new UnitOrder(unit, UnitOrderType.ATTACK, DEFAULT_ACTION_INDEX, location));
+			}
+		}
 
 		// Return the list of legal orders
 		return orders;

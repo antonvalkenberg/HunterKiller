@@ -581,6 +581,27 @@ public class Map {
 	}
 
 	/**
+	 * Returns the distance between two locations. This method uses the distance measure currently being used by the
+	 * Line-of-Sight implementation (see {@link Map#lineOfSight}). For Euclidean distances, it rounds up. Note that
+	 * {@link Integer#MAX_VALUE} is returned if the current distance measure is not recognised.
+	 * 
+	 * @param loc1
+	 *            The first location.
+	 * @param loc2
+	 *            The second location.
+	 */
+	public int getDistance(MapLocation loc1, MapLocation loc2) {
+		// Check what distance function we are using
+		GetDistanceFunction function = lineOfSight.getDistanceType();
+		if (function instanceof GetManhattanDistance) {
+			return MapLocation.getManhattanDist(loc1, loc2);
+		} else if (function instanceof GetEuclidianDistance) {
+			return (int) Math.ceil(MapLocation.getEuclideanDist(loc1, loc2));
+		}
+		return Integer.MAX_VALUE;
+	}
+
+	/**
 	 * Returns the next available ID for a new game object.
 	 * 
 	 * @return

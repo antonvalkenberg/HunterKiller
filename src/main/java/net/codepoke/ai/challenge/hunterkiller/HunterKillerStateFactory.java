@@ -125,7 +125,7 @@ public class HunterKillerStateFactory
 			options = "";
 		// Check that either 2, 3 or 4 players are provided, other amounts are not supported
 		if (playerNames.length < 2 || playerNames.length > 4) {
-			// TODO throw an error.
+			// TODO throw an error! unsupported player amount
 		}
 
 		// Select the map section we will be using for the players

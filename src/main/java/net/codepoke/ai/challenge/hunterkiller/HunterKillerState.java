@@ -160,8 +160,6 @@ public class HunterKillerState
 		}
 		// Do a tick on the map after each player's turn
 		map.tick(this);
-		// Update the combined line-of-sight for players
-		// TODO Update the combined line-of-sight for players
 		// If the next round-threshold has been reached, award players with new resources
 		if (currentRound % RESOURCE_AWARD_FREQUENCY == 0) {
 			for (Player player : players) {

@@ -120,7 +120,7 @@ public class HunterKillerRules
 					break;
 				case ATTACK:
 					// Try to execute the ordered attack
-					if (!attackLocation(map, actingPlayer, unitOrder, failures))
+					if (!attackLocation(state, actingPlayer, unitOrder, failures))
 						failCount++;
 					break;
 				case ATTACK_SPECIAL:
@@ -209,9 +209,11 @@ public class HunterKillerRules
 				}
 				// Place the unit on the map
 				spawnSuccess = map.place(map.toPosition(spawnlocation), unit);
-				// Add the unit to the Player's squad if successfully spawned
-				if (spawnSuccess)
+				// Add the unit to the Player's squad if successfully spawned and update it's Field-of-View
+				if (spawnSuccess) {
 					player.addUnitToSquad(unit.getID());
+					unit.updateFieldOfView(map.getFieldOfView(unit));
+				}
 			} else {
 				failures.append(String.format("Spawn Failure: Spawn location is not traversable, potential causes: location is off grid, MapFeature at location is not walkable or s Unit is present at location.%n"));
 				return false;
@@ -299,8 +301,8 @@ public class HunterKillerRules
 	/**
 	 * Attack a location. Any {@link Unit} or {@link MapFeature} at the location will be damaged.
 	 * 
-	 * @param map
-	 *            The map the attack is being performed on.
+	 * @param state
+	 *            The current state of the game.
 	 * @param player
 	 *            The player ordering this attack.
 	 * @param attackOrder
@@ -309,9 +311,10 @@ public class HunterKillerRules
 	 *            The StringBuilder to append any failures to.
 	 * @return Whether or not the attack was successfully executed.
 	 */
-	private boolean attackLocation(Map map, Player player, UnitOrder attackOrder, StringBuilder failures) {
+	private boolean attackLocation(HunterKillerState state, Player player, UnitOrder attackOrder, StringBuilder failures) {
 		boolean attackSuccess = false;
 
+		Map map = state.getMap();
 		// Check if there is a object on the map with the specified ID
 		GameObject object = map.getObject(attackOrder.getObjectID());
 		// Check if an object was found, and that object is a Unit
@@ -352,8 +355,12 @@ public class HunterKillerRules
 		if (unit instanceof Infected && targetUnit != null && targetUnit.getHpCurrent() <= 0 && unit.getSpecialAttackCooldown() == 0
 			&& attackSuccess) {
 			// Remove the dead unit
-			attackSuccess = map.remove(map.toPosition(targetLocation), map.getUnitAtLocation(targetLocation));
+			Unit deadUnit = map.getUnitAtLocation(targetLocation);
+			attackSuccess = map.remove(map.toPosition(targetLocation), deadUnit);
 			if (attackSuccess) {
+				// Remove the unit from it's owners squad
+				state.getPlayer(deadUnit.getSquadPlayerID())
+						.removeUnitFromSquad(deadUnit.getID());
 				// Award points to the player
 				awardPointsForUnitDeath(player, targetUnit);
 				// Spawn a new Infected, on the same team as the Infected that performed this attack
@@ -362,6 +369,7 @@ public class HunterKillerRules
 				// Add the newly spawned unit to the player's squad
 				if (attackSuccess) {
 					player.addUnitToSquad(spawn.getID());
+					unit.updateFieldOfView(map.getFieldOfView(unit));
 					// If we executed the special action, start the cooldown
 					unit.startCooldown();
 				}

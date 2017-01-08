@@ -62,6 +62,10 @@ public abstract class Unit
 	 * Default score that a Unit is worth.
 	 */
 	public static final int DEFAULT_SCORE = 25;
+	/**
+	 * The movement range for a Unit.
+	 */
+	public static final int MOVEMENT_RANGE = 1;
 
 	// endregion
 
@@ -240,6 +244,23 @@ public abstract class Unit
 		for (MapLocation location : fieldOfView) {
 			this.fieldOfView.add(new MapLocation(location.getX(), location.getY()));
 		}
+	}
+
+	/**
+	 * Returns the attack range for a Unit.
+	 * 
+	 * @param unit
+	 *            The Unit.
+	 */
+	public static int getAttackRange(Unit unit) {
+		int attackRange = -1;
+		if (unit instanceof Soldier)
+			attackRange = Soldier.SOLDIER_ATTACK_RANGE;
+		else if (unit instanceof Medic)
+			attackRange = Medic.MEDIC_ATTACK_RANGE;
+		else if (unit instanceof Infected)
+			attackRange = Infected.INFECTED_ATTACK_RANGE;
+		return attackRange;
 	}
 
 	// endregion
