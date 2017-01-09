@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.codepoke.ai.challenge.hunterkiller.Constants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitOrderType;
@@ -33,6 +34,23 @@ public class UnitOrder
 	 */
 	@Setter
 	private MapLocation targetLocation;
+
+	// endregion
+
+	// region Public methods
+
+	/**
+	 * Returns an order to rotate a Unit.
+	 * 
+	 * @param unit
+	 *            The unit to rotate.
+	 * @param clockwise
+	 *            Whether or not to rotate the unit clockwise.
+	 */
+	public static UnitOrder rotate(Unit unit, boolean clockwise) {
+		UnitOrderType type = clockwise ? UnitOrderType.ROTATE_CLOCKWISE : UnitOrderType.ROTATE_COUNTER_CLOCKWISE;
+		return new UnitOrder(unit, type, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX);
+	}
 
 	// endregion
 

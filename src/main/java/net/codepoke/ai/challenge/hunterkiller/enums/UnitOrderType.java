@@ -16,8 +16,8 @@ package net.codepoke.ai.challenge.hunterkiller.enums;
  * </li>
  * <li>Rotation
  * <ul>
- * <li>Rotate left (West)</li>
- * <li>Rotate right (East)</li>
+ * <li>Rotate clockwise</li>
+ * <li>Rotate counter-clockwise</li>
  * </ul>
  * </li>
  * <li>Attacking
@@ -37,8 +37,8 @@ public enum UnitOrderType {
 	MOVE_EAST,
 	MOVE_SOUTH,
 	MOVE_WEST,
-	ROTATE_WEST,
-	ROTATE_EAST,
+	ROTATE_CLOCKWISE,
+	ROTATE_COUNTER_CLOCKWISE,
 	ATTACK,
 	ATTACK_SPECIAL;
 }

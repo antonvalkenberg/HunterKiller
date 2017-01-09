@@ -2,6 +2,7 @@ package net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import net.codepoke.ai.challenge.hunterkiller.Constants;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 
@@ -15,23 +16,6 @@ import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 public class Floor
 		extends MapFeature {
 
-	// region Constants
-
-	/**
-	 * Floors are indestructible.
-	 */
-	public static final boolean FLOOR_DESTRUCTIBLE = false;
-	/**
-	 * Floors do not block Line of Sight.
-	 */
-	public static final boolean FLOOR_BLOCKS_LOS = false;
-	/**
-	 * Floors can be moved over.
-	 */
-	public static final boolean FLOOR_WALKABLE = true;
-
-	// endregion
-
 	// region Constructor
 
 	/**
@@ -43,7 +27,7 @@ public class Floor
 	 *            The Floor's location on the Map.
 	 */
 	public Floor(int id, MapLocation mapLocation) {
-		super(id, mapLocation, FLOOR_DESTRUCTIBLE, FLOOR_BLOCKS_LOS, FLOOR_WALKABLE);
+		super(id, mapLocation, Constants.FLOOR_DESTRUCTIBLE, Constants.FLOOR_BLOCKS_LOS, Constants.FLOOR_WALKABLE);
 	}
 
 	// endregion

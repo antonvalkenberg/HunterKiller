@@ -38,28 +38,6 @@ import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
  */
 public class Map {
 
-	// region Constants
-
-	/**
-	 * Amount of layers in our internal map representation. Currently we have 2: MapFeatures and
-	 * Units.
-	 */
-	public static final int INTERNAL_MAP_LAYERS = 2;
-	/**
-	 * The index of the {@link MapFeature} layer in our internal map representation.
-	 */
-	public static final int INTERNAL_MAP_FEATURE_INDEX = 0;
-	/**
-	 * The index of the {@link Unit} layer in our internal map representation.
-	 */
-	public static final int INTERNAL_MAP_UNIT_INDEX = 1;
-	/**
-	 * Defines the separator used to create space between the different layers in the toString method.
-	 */
-	private static final String TOSTRING_LAYER_SEPARATOR = " | ";
-
-	// endregion
-
 	// region Properties
 
 	/**
@@ -111,7 +89,7 @@ public class Map {
 		mapWidth = width;
 		mapHeight = height;
 		// Map will have (width * height) positions
-		mapContent = new GameObject[width * height][INTERNAL_MAP_LAYERS];
+		mapContent = new GameObject[width * height][Constants.MAP_INTERNAL_LAYERS];
 		// Reset the Object ID counter
 		internalObjectIDCounter = -1;
 		// Create the classes required for line-of-sight
@@ -253,10 +231,9 @@ public class Map {
 		boolean validX = isXonMap(location.getX());
 		boolean validY = isYonMap(location.getY());
 		// A tile can be walked on/over if there is no Unit in the way, and the MapFeature on that location is walkable
-		boolean unitPresent = mapContent[locationPosition][INTERNAL_MAP_UNIT_INDEX] != null;
-		boolean isFeature = mapContent[locationPosition][INTERNAL_MAP_FEATURE_INDEX] != null
-							&& mapContent[locationPosition][INTERNAL_MAP_FEATURE_INDEX] instanceof MapFeature;
-		boolean featureWalkable = isFeature && ((MapFeature) mapContent[locationPosition][INTERNAL_MAP_FEATURE_INDEX]).isWalkable();
+		boolean unitPresent = mapContent[locationPosition][Constants.MAP_INTERNAL_UNIT_INDEX] != null;
+		boolean featureWalkable = mapContent[locationPosition][Constants.MAP_INTERNAL_FEATURE_INDEX] != null
+									&& ((MapFeature) mapContent[locationPosition][Constants.MAP_INTERNAL_FEATURE_INDEX]).isWalkable();
 		boolean walkable = !unitPresent && featureWalkable;
 		// Traversable if all three are ok
 		return validX && validY && walkable;
@@ -274,10 +251,10 @@ public class Map {
 	 */
 	public boolean isMovePossible(MapLocation fromLocation, UnitOrder move) {
 		// Check that there is a unit on the origin location
-		if (mapContent[toPosition(fromLocation)][INTERNAL_MAP_UNIT_INDEX] == null)
+		if (mapContent[toPosition(fromLocation)][Constants.MAP_INTERNAL_UNIT_INDEX] == null)
 			return false;
 		// Check that the unit that is trying to move is actually at the location they are trying to move from
-		if (move.getObjectID() != ((Unit) mapContent[toPosition(fromLocation)][INTERNAL_MAP_UNIT_INDEX]).getID())
+		if (move.getObjectID() != ((Unit) mapContent[toPosition(fromLocation)][Constants.MAP_INTERNAL_UNIT_INDEX]).getID())
 			return false;
 
 		// Switch on the type of move described in the UnitOrder
@@ -343,8 +320,8 @@ public class Map {
 		if (success)
 			success = place(targetPosition, object);
 		// If the move was successful and the target location was a closed Door, open it
-		if (success && mapContent[targetPosition][INTERNAL_MAP_FEATURE_INDEX] instanceof Door) {
-			Door door = (Door) mapContent[targetPosition][INTERNAL_MAP_FEATURE_INDEX];
+		if (success && mapContent[targetPosition][Constants.MAP_INTERNAL_FEATURE_INDEX] instanceof Door) {
+			Door door = (Door) mapContent[targetPosition][Constants.MAP_INTERNAL_FEATURE_INDEX];
 			if (!door.isOpen())
 				door.open();
 		}
@@ -507,7 +484,7 @@ public class Map {
 	public GameObject getObject(int objectID) {
 		// Check the map content
 		for (int i = 0; i < mapWidth * mapHeight; i++) {
-			for (int j = 0; j < INTERNAL_MAP_LAYERS; j++) {
+			for (int j = 0; j < Constants.MAP_INTERNAL_LAYERS; j++) {
 				if (mapContent[i][j] != null && mapContent[i][j].getID() == objectID) {
 					return mapContent[i][j];
 				}
@@ -527,7 +504,7 @@ public class Map {
 	public MapLocation getObjectLocation(int objectID) {
 		// Check the map content
 		for (int i = 0; i < mapWidth * mapHeight; i++) {
-			for (int j = 0; j < INTERNAL_MAP_LAYERS; j++) {
+			for (int j = 0; j < Constants.MAP_INTERNAL_LAYERS; j++) {
 				if (mapContent[i][j] != null && mapContent[i][j].getID() == objectID) {
 					return toLocation(i);
 				}
@@ -544,8 +521,8 @@ public class Map {
 	 * @return
 	 */
 	public Unit getUnitAtLocation(MapLocation location) {
-		if (isOnMap(location) && mapContent[toPosition(location)][INTERNAL_MAP_UNIT_INDEX] != null) {
-			return (Unit) mapContent[toPosition(location)][INTERNAL_MAP_UNIT_INDEX];
+		if (isOnMap(location) && mapContent[toPosition(location)][Constants.MAP_INTERNAL_UNIT_INDEX] != null) {
+			return (Unit) mapContent[toPosition(location)][Constants.MAP_INTERNAL_UNIT_INDEX];
 		}
 		return null;
 	}
@@ -559,7 +536,7 @@ public class Map {
 	 */
 	public MapFeature getFeatureAtLocation(MapLocation location) {
 		if (isOnMap(location)) {
-			return (MapFeature) mapContent[toPosition(location)][INTERNAL_MAP_FEATURE_INDEX];
+			return (MapFeature) mapContent[toPosition(location)][Constants.MAP_INTERNAL_FEATURE_INDEX];
 		}
 		return null;
 	}
@@ -574,7 +551,7 @@ public class Map {
 		// Bases are MapFeatures
 		int count = 0;
 		for (int i = 0; i < mapWidth * mapHeight; i++) {
-			if (mapContent[i][INTERNAL_MAP_FEATURE_INDEX] instanceof Base)
+			if (mapContent[i][Constants.MAP_INTERNAL_FEATURE_INDEX] instanceof Base)
 				count++;
 		}
 		return count;
@@ -644,12 +621,14 @@ public class Map {
 			// This will be one line of the printed map
 			StringBuilder lineBuilder = new StringBuilder();
 			// Separate the two layers with ' | '
-			lineBuilder.append(TOSTRING_LAYER_SEPARATOR);
+			lineBuilder.append(Constants.MAP_TOSTRING_LAYER_SEPARATOR);
 			for (int x = 0; x < mapWidth; x++) {
 				int currentPosition = toPosition(x, y);
 				GameObject[] objects = mapContent[currentPosition];
-				String featureLevel = objects[INTERNAL_MAP_FEATURE_INDEX] != null ? objects[INTERNAL_MAP_FEATURE_INDEX].toString() : " ";
-				String unitLevel = objects[INTERNAL_MAP_UNIT_INDEX] != null ? objects[INTERNAL_MAP_UNIT_INDEX].toString() : ".";
+				String featureLevel = objects[Constants.MAP_INTERNAL_FEATURE_INDEX] != null	? objects[Constants.MAP_INTERNAL_FEATURE_INDEX].toString()
+																							: " ";
+				String unitLevel = objects[Constants.MAP_INTERNAL_UNIT_INDEX] != null	? objects[Constants.MAP_INTERNAL_UNIT_INDEX].toString()
+																						: ".";
 				// Add feature level first, unit level on other side
 				lineBuilder.insert(x, featureLevel);
 				lineBuilder.append(unitLevel);
@@ -698,9 +677,9 @@ public class Map {
 		// Check which layer the object needs to be at
 		int layer = -1;
 		if (object instanceof MapFeature)
-			layer = INTERNAL_MAP_FEATURE_INDEX;
+			layer = Constants.MAP_INTERNAL_FEATURE_INDEX;
 		else if (object instanceof Unit)
-			layer = INTERNAL_MAP_UNIT_INDEX;
+			layer = Constants.MAP_INTERNAL_UNIT_INDEX;
 		else {
 			System.err.println("WARNING: Unable to place object on map, unknown type");
 			return false;
@@ -729,9 +708,9 @@ public class Map {
 		// Check which layer the object should be at
 		int layer = -1;
 		if (object instanceof MapFeature)
-			layer = INTERNAL_MAP_FEATURE_INDEX;
+			layer = Constants.MAP_INTERNAL_FEATURE_INDEX;
 		else if (object instanceof Unit)
-			layer = INTERNAL_MAP_UNIT_INDEX;
+			layer = Constants.MAP_INTERNAL_UNIT_INDEX;
 		else {
 			System.err.println("WARNING: Unable to remove object from map, unknown type");
 			return false;
@@ -761,7 +740,7 @@ public class Map {
 	protected void tick(HunterKillerState state) {
 		// Check the map content for 'dead' objects
 		for (int i = 0; i < mapWidth * mapHeight; i++) {
-			for (int j = 0; j < INTERNAL_MAP_LAYERS; j++) {
+			for (int j = 0; j < Constants.MAP_INTERNAL_LAYERS; j++) {
 				GameObject object = mapContent[i][j];
 				// Check if there is anything there
 				if (object != null) {
@@ -771,7 +750,7 @@ public class Map {
 						// If the object is a Unit, tell it's Player to remove it from it's squad
 						if (object instanceof Unit) {
 							Unit unit = (Unit) object;
-							state.getPlayer(unit.getSquadPlayerID())
+							state.getPlayer(unit.getControllingPlayerID())
 									.removeUnitFromSquad(unit.getID());
 						}
 					}
@@ -788,7 +767,7 @@ public class Map {
 	 */
 	protected void timer() {
 		for (int i = 0; i < mapWidth * mapHeight; i++) {
-			for (int j = 0; j < INTERNAL_MAP_LAYERS; j++) {
+			for (int j = 0; j < Constants.MAP_INTERNAL_LAYERS; j++) {
 				GameObject object = mapContent[i][j];
 				// Check if there is anything there
 				if (object != null) {
@@ -837,9 +816,9 @@ public class Map {
 	protected GameObject[][] copyMapContent() {
 		int positions = this.mapWidth * this.mapHeight;
 		// Create a new content array
-		GameObject[][] newContent = new GameObject[positions][INTERNAL_MAP_LAYERS];
+		GameObject[][] newContent = new GameObject[positions][Constants.MAP_INTERNAL_LAYERS];
 		for (int i = 0; i < positions; i++) {
-			for (int j = 0; j < INTERNAL_MAP_LAYERS; j++) {
+			for (int j = 0; j < Constants.MAP_INTERNAL_LAYERS; j++) {
 				GameObject object = this.mapContent[i][j];
 				// Check if we are dealing with a MapFeature
 				if (object != null && object instanceof MapFeature) {
@@ -895,14 +874,14 @@ public class Map {
 	protected void assignObjectsToPlayer(Player player) {
 		// Check the map content for Bases or Units
 		for (int i = 0; i < mapWidth * mapHeight; i++) {
-			for (int j = 0; j < INTERNAL_MAP_LAYERS; j++) {
+			for (int j = 0; j < Constants.MAP_INTERNAL_LAYERS; j++) {
 				GameObject object = mapContent[i][j];
 				// Check if it's a base and belongs to this player
-				if (object instanceof Base && ((Base) object).getPlayerID() == player.getID()) {
+				if (object instanceof Base && ((Base) object).getControllingPlayerID() == player.getID()) {
 					player.assignBase(object.getID());
 				}
 				// Check if it's a unit and belongs to this player
-				else if (object instanceof Unit && ((Unit) object).getSquadPlayerID() == player.getID()) {
+				else if (object instanceof Unit && ((Unit) object).getControllingPlayerID() == player.getID()) {
 					player.addUnitToSquad(object.getID());
 				}
 			}
@@ -924,13 +903,13 @@ public class Map {
 			return false;
 		int position = toPosition(location);
 		// Get the map feature on this position
-		MapFeature feature = (MapFeature) mapContent[position][INTERNAL_MAP_FEATURE_INDEX];
+		MapFeature feature = (MapFeature) mapContent[position][Constants.MAP_INTERNAL_FEATURE_INDEX];
 		// If the feature is destructible, reduce it's HP by the damage
 		if (feature.isDestructible())
 			feature.reduceHP(damage);
 		// Check if there is a Unit on this position
-		if (mapContent[position][INTERNAL_MAP_UNIT_INDEX] != null)
-			mapContent[position][INTERNAL_MAP_UNIT_INDEX].reduceHP(damage);
+		if (mapContent[position][Constants.MAP_INTERNAL_UNIT_INDEX] != null)
+			mapContent[position][Constants.MAP_INTERNAL_UNIT_INDEX].reduceHP(damage);
 		return true;
 	}
 
@@ -940,8 +919,9 @@ public class Map {
 	protected void updateFieldOfView() {
 		// Check the map for Units
 		for (int i = 0; i < mapWidth * mapHeight; i++) {
-			if (mapContent[i][INTERNAL_MAP_UNIT_INDEX] != null && mapContent[i][INTERNAL_MAP_UNIT_INDEX] instanceof Unit) {
-				Unit unit = (Unit) mapContent[i][INTERNAL_MAP_UNIT_INDEX];
+			if (mapContent[i][Constants.MAP_INTERNAL_UNIT_INDEX] != null
+				&& mapContent[i][Constants.MAP_INTERNAL_UNIT_INDEX] instanceof Unit) {
+				Unit unit = (Unit) mapContent[i][Constants.MAP_INTERNAL_UNIT_INDEX];
 				// Get the field-of-view collection for the unit
 				HashSet<MapLocation> fieldOfView = getFieldOfView(unit);
 				// Tell the unit to update it's field-of-view
@@ -964,7 +944,7 @@ public class Map {
 			if (!isXonMap(x) || !isYonMap(y))
 				return true;
 			// Check the feature at the specified position
-			return ((MapFeature) getMapContent()[toPosition(x, y)][Map.INTERNAL_MAP_FEATURE_INDEX]).isBlockingLOS();
+			return ((MapFeature) getMapContent()[toPosition(x, y)][Constants.MAP_INTERNAL_FEATURE_INDEX]).isBlockingLOS();
 		}
 
 	}

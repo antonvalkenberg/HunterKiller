@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import net.codepoke.ai.challenge.hunterkiller.Constants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 
@@ -19,19 +20,6 @@ import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class GameObject {
 
-	// region Constants
-
-	/**
-	 * The default location if the object has not been placed yet.
-	 */
-	public static final MapLocation NOT_PLACED = new MapLocation(-1, -1);
-	/**
-	 * The default amount of health points an object has.
-	 */
-	public static final int DEFAULT_HP = 1;
-
-	// endregion
-
 	// region Properties
 
 	/**
@@ -43,12 +31,12 @@ public abstract class GameObject {
 	/**
 	 * The location on the Map.
 	 */
-	private MapLocation location = NOT_PLACED;
+	private MapLocation location = Constants.GAMEOBJECT_NOT_PLACED;
 
 	/**
 	 * The maximum amount of health points for this object.
 	 */
-	private int hpMax = DEFAULT_HP;
+	private int hpMax = Constants.GAMEOBJECT_DEFAULT_HP;
 
 	/**
 	 * The amount of health points this object currently has.
@@ -65,7 +53,7 @@ public abstract class GameObject {
 	 * {@link GameObject#GameObject(int, MapLocation, int, int)}
 	 */
 	public GameObject(int id, MapLocation mapLocation) {
-		this(id, mapLocation, DEFAULT_HP);
+		this(id, mapLocation, Constants.GAMEOBJECT_DEFAULT_HP);
 	}
 
 	/**

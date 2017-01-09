@@ -2,9 +2,11 @@ package net.codepoke.ai.challenge.hunterkiller.gameobjects.unit;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import net.codepoke.ai.challenge.hunterkiller.Constants;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
+import net.codepoke.ai.challenge.hunterkiller.enums.UnitType;
 
 /**
  * Class representing a Soldier unit in HunterKiller.
@@ -16,51 +18,6 @@ import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 public class Soldier
 		extends Unit {
 
-	// region Constants
-
-	/**
-	 * Health points for a Soldier.
-	 */
-	public static final int SOLDIER_MAX_HP = 5;
-	/**
-	 * Field of View range for a Soldier.
-	 */
-	public static final int SOLDIER_FOV_RANGE = 3;
-	/**
-	 * Field of View angle for a Soldier.
-	 */
-	public static final int SOLDIER_FOV_ANGLE = 90;
-	/**
-	 * Attack range for a Soldier.
-	 */
-	public static final int SOLDIER_ATTACK_RANGE = 4;
-	/**
-	 * Attack damage for a Soldier.
-	 */
-	public static final int SOLDIER_ATTACK_DAMAGE = 3;
-	/**
-	 * Cooldown of a Soldier's special attack
-	 */
-	public static final int SOLDIER_COOLDOWN = 20;
-	/**
-	 * Spawn cost for a Soldier.
-	 */
-	public static final int SOLDIER_SPAWN_COST = 5;
-	/**
-	 * The amount of points a Soldier is worth when defeated.
-	 */
-	public static final int SOLDIER_SCORE = 25;
-	/**
-	 * The range of the Soldier's special attack.
-	 */
-	public static final int SOLDIER_SPECIAL_RANGE = 3;
-	/**
-	 * The damage of the Soldier's special attack.
-	 */
-	public static final int SOLDIER_SPECIAL_DAMAGE = 3;
-
-	// endregion
-
 	// region Constructor
 
 	/**
@@ -70,8 +27,9 @@ public class Soldier
 	 * {@link Soldier#Soldier(int, int, MapLocation, int, int, Direction, int, int, int, int, int, int, int)}
 	 */
 	public Soldier(int id, int spawningPlayerID, MapLocation mapLocation, Direction facing) {
-		this(id, spawningPlayerID, mapLocation, SOLDIER_MAX_HP, SOLDIER_MAX_HP, facing, SOLDIER_FOV_RANGE, SOLDIER_FOV_ANGLE,
-				SOLDIER_ATTACK_RANGE, SOLDIER_ATTACK_DAMAGE, 0, SOLDIER_SPAWN_COST, SOLDIER_SCORE);
+		this(id, spawningPlayerID, mapLocation, Constants.SOLDIER_MAX_HP, Constants.SOLDIER_MAX_HP, facing, Constants.SOLDIER_FOV_RANGE,
+				Constants.SOLDIER_FOV_ANGLE, Constants.SOLDIER_ATTACK_RANGE, Constants.SOLDIER_ATTACK_DAMAGE, 0,
+				Constants.SOLDIER_SPAWN_COST, Constants.SOLDIER_SCORE);
 	}
 
 	/**
@@ -106,7 +64,8 @@ public class Soldier
 	 */
 	public Soldier(int id, int spawningPlayerID, MapLocation mapLocation, int maxHP, int currentHP, Direction facing, int fovRange,
 					int fovAngle, int attckRange, int attckDmg, int cooldown, int cost, int score) {
-		super(id, spawningPlayerID, mapLocation, maxHP, currentHP, facing, fovRange, fovAngle, attckRange, attckDmg, cooldown, cost, score);
+		super(id, spawningPlayerID, UnitType.Soldier, mapLocation, maxHP, currentHP, facing, fovRange, fovAngle, attckRange, attckDmg,
+				cooldown, cost, score);
 	}
 
 	// endregion
@@ -115,7 +74,7 @@ public class Soldier
 
 	@Override
 	public Soldier copy(int id) {
-		Soldier newS = new Soldier(id, this.getSquadPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(),
+		Soldier newS = new Soldier(id, this.getControllingPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(),
 									this.getOrientation(), this.getFieldOfViewRange(), this.getFieldOfViewAngle(), this.getAttackRange(),
 									this.getAttackDamage(), this.getSpecialAttackCooldown(), this.getSpawnCost(), this.getScoreWorth());
 		newS.updateFieldOfView(this.getFieldOfView());
@@ -132,7 +91,7 @@ public class Soldier
 	 */
 	@Override
 	public void startCooldown() {
-		this.setSpecialAttackCooldown(SOLDIER_COOLDOWN);
+		this.setSpecialAttackCooldown(Constants.SOLDIER_COOLDOWN);
 	}
 
 	@Override

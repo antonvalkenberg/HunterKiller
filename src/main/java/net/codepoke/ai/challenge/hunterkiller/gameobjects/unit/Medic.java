@@ -2,9 +2,11 @@ package net.codepoke.ai.challenge.hunterkiller.gameobjects.unit;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import net.codepoke.ai.challenge.hunterkiller.Constants;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
+import net.codepoke.ai.challenge.hunterkiller.enums.UnitType;
 
 /**
  * Class representing a Medic unit in HunterKiller.
@@ -16,47 +18,6 @@ import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 public class Medic
 		extends Unit {
 
-	// region Constants
-
-	/**
-	 * Health points for a Medic.
-	 */
-	public static final int MEDIC_MAX_HP = 2;
-	/**
-	 * Field of View range for a Medic.
-	 */
-	public static final int MEDIC_FOV_RANGE = 3;
-	/**
-	 * Field of View angle for a Medic.
-	 */
-	public static final int MEDIC_FOV_ANGLE = 90;
-	/**
-	 * Attack range for a Medic.
-	 */
-	public static final int MEDIC_ATTACK_RANGE = 4;
-	/**
-	 * Attack damage for a Medic.
-	 */
-	public static final int MEDIC_ATTACK_DAMAGE = 1;
-	/**
-	 * Cooldown of a Medic's special attack.
-	 */
-	public static final int MEDIC_COOLDOWN = 2;
-	/**
-	 * Spawn cost for a Medic.
-	 */
-	public static final int MEDIC_SPAWN_COST = 10;
-	/**
-	 * The amount of points a Medic is worth when defeated.
-	 */
-	public static final int MEDIC_SCORE = 50;
-	/**
-	 * The amount of health points a Medic's special attack heals.
-	 */
-	public static final int MEDIC_SPECIAL_HEAL = 2;
-
-	// endregion
-
 	// region Constructor
 
 	/**
@@ -66,8 +27,9 @@ public class Medic
 	 * {@link Medic#Medic(int, int, MapLocation, int, int, Direction, int, int, int, int, int, int, int)}
 	 */
 	public Medic(int id, int spawningPlayerID, MapLocation mapLocation, Direction facing) {
-		this(id, spawningPlayerID, mapLocation, MEDIC_MAX_HP, MEDIC_MAX_HP, facing, MEDIC_FOV_RANGE, MEDIC_FOV_ANGLE, MEDIC_ATTACK_RANGE,
-				MEDIC_ATTACK_DAMAGE, 0, MEDIC_SPAWN_COST, MEDIC_SCORE);
+		this(id, spawningPlayerID, mapLocation, Constants.MEDIC_MAX_HP, Constants.MEDIC_MAX_HP, facing, Constants.MEDIC_FOV_RANGE,
+				Constants.MEDIC_FOV_ANGLE, Constants.MEDIC_ATTACK_RANGE, Constants.MEDIC_ATTACK_DAMAGE, 0, Constants.MEDIC_SPAWN_COST,
+				Constants.MEDIC_SCORE);
 	}
 
 	/**
@@ -102,7 +64,8 @@ public class Medic
 	 */
 	public Medic(int id, int spawningPlayerID, MapLocation mapLocation, int maxHP, int currentHP, Direction facing, int fovRange,
 					int fovAngle, int attckRange, int attckDmg, int cooldown, int cost, int score) {
-		super(id, spawningPlayerID, mapLocation, maxHP, currentHP, facing, fovRange, fovAngle, attckRange, attckDmg, cooldown, cost, score);
+		super(id, spawningPlayerID, UnitType.Medic, mapLocation, maxHP, currentHP, facing, fovRange, fovAngle, attckRange, attckDmg,
+				cooldown, cost, score);
 	}
 
 	// endregion
@@ -111,7 +74,7 @@ public class Medic
 
 	@Override
 	public Medic copy(int id) {
-		Medic newM = new Medic(id, this.getSquadPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(),
+		Medic newM = new Medic(id, this.getControllingPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(),
 								this.getOrientation(), this.getFieldOfViewRange(), this.getFieldOfViewAngle(), this.getAttackRange(),
 								this.getAttackDamage(), this.getSpecialAttackCooldown(), this.getSpawnCost(), this.getScoreWorth());
 		newM.updateFieldOfView(this.getFieldOfView());
@@ -128,7 +91,7 @@ public class Medic
 	 */
 	@Override
 	public void startCooldown() {
-		this.setSpecialAttackCooldown(MEDIC_COOLDOWN);
+		this.setSpecialAttackCooldown(Constants.MEDIC_COOLDOWN);
 	}
 
 	@Override

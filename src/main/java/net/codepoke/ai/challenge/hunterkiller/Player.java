@@ -28,15 +28,6 @@ import com.badlogic.gdx.utils.IntArray;
 public class Player
 		implements Comparable<Player> {
 
-	// region Constants
-
-	/**
-	 * The amount of resources a player starts the game with.
-	 */
-	public static final int PLAYER_STARTING_RESOURCE = 10;
-
-	// endregion
-
 	// region Properties
 
 	/**
@@ -93,7 +84,7 @@ public class Player
 		this.ID = id;
 		this.name = name;
 		this.mapSection = mapSection;
-		this.resource = PLAYER_STARTING_RESOURCE;
+		this.resource = Constants.PLAYER_STARTING_RESOURCE;
 		// Create a new list to store the squad into
 		squadIDs = new IntArray();
 	}

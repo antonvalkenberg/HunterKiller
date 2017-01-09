@@ -8,9 +8,6 @@ import net.codepoke.ai.challenge.hunterkiller.enums.BaseOrderType;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitOrderType;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
-import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
-import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
-import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 import net.codepoke.ai.challenge.hunterkiller.orders.BaseOrder;
 import net.codepoke.ai.challenge.hunterkiller.orders.HunterKillerOrder;
@@ -24,8 +21,6 @@ import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
  *
  */
 public class MoveGenerator {
-
-	private static final int DEFAULT_ACTION_INDEX = 0;
 
 	/**
 	 * Returns a list containing all legal orders for a base in the current state. For a list of all types of orders
@@ -48,24 +43,24 @@ public class MoveGenerator {
 		}
 
 		// Get the player
-		Player player = state.getPlayer(base.getPlayerID());
+		Player player = state.getPlayer(base.getControllingPlayerID());
 
 		// Check if the player has enough resources to spawn a soldier
-		if (player.getResource() >= Soldier.SOLDIER_SPAWN_COST) {
+		if (player.getResource() >= Constants.SOLDIER_SPAWN_COST) {
 			// Create an order to spawn a Soldier
-			orders.add(new BaseOrder(base, BaseOrderType.SPAWN_SOLDIER, DEFAULT_ACTION_INDEX));
+			orders.add(new BaseOrder(base, BaseOrderType.SPAWN_SOLDIER, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX));
 		}
 
 		// Check if the player has enough resources to spawn a medic
-		if (player.getResource() >= Medic.MEDIC_SPAWN_COST) {
+		if (player.getResource() >= Constants.MEDIC_SPAWN_COST) {
 			// Create an order to spawn a Soldier
-			orders.add(new BaseOrder(base, BaseOrderType.SPAWN_MEDIC, DEFAULT_ACTION_INDEX));
+			orders.add(new BaseOrder(base, BaseOrderType.SPAWN_MEDIC, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX));
 		}
 
 		// Check if the player has enough resources to spawn an infected
-		if (player.getResource() >= Infected.INFECTED_SPAWN_COST) {
+		if (player.getResource() >= Constants.INFECTED_SPAWN_COST) {
 			// Create an order to spawn a Soldier
-			orders.add(new BaseOrder(base, BaseOrderType.SPAWN_INFECTED, DEFAULT_ACTION_INDEX));
+			orders.add(new BaseOrder(base, BaseOrderType.SPAWN_INFECTED, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX));
 		}
 
 		// Return the list of legal orders
@@ -91,25 +86,25 @@ public class MoveGenerator {
 		MapLocation unitLocation = unit.getLocation();
 
 		// Can always rotate east or west
-		orders.add(new UnitOrder(unit, UnitOrderType.ROTATE_EAST, DEFAULT_ACTION_INDEX));
-		orders.add(new UnitOrder(unit, UnitOrderType.ROTATE_WEST, DEFAULT_ACTION_INDEX));
+		orders.add(new UnitOrder(unit, UnitOrderType.ROTATE_CLOCKWISE, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX));
+		orders.add(new UnitOrder(unit, UnitOrderType.ROTATE_COUNTER_CLOCKWISE, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX));
 
 		// Check what movement options we have
 		if (map.isMovePossible(unitLocation, Direction.NORTH)) {
-			orders.add(new UnitOrder(unit, UnitOrderType.MOVE_NORTH, DEFAULT_ACTION_INDEX,
-										map.getLocationInDirection(unitLocation, Direction.NORTH, Unit.MOVEMENT_RANGE)));
+			orders.add(new UnitOrder(unit, UnitOrderType.MOVE_NORTH, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX,
+										map.getLocationInDirection(unitLocation, Direction.NORTH, Constants.UNIT_MOVEMENT_RANGE)));
 		}
 		if (map.isMovePossible(unitLocation, Direction.EAST)) {
-			orders.add(new UnitOrder(unit, UnitOrderType.MOVE_EAST, DEFAULT_ACTION_INDEX,
-										map.getLocationInDirection(unitLocation, Direction.EAST, Unit.MOVEMENT_RANGE)));
+			orders.add(new UnitOrder(unit, UnitOrderType.MOVE_EAST, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX,
+										map.getLocationInDirection(unitLocation, Direction.EAST, Constants.UNIT_MOVEMENT_RANGE)));
 		}
 		if (map.isMovePossible(unitLocation, Direction.SOUTH)) {
-			orders.add(new UnitOrder(unit, UnitOrderType.MOVE_SOUTH, DEFAULT_ACTION_INDEX,
-										map.getLocationInDirection(unitLocation, Direction.SOUTH, Unit.MOVEMENT_RANGE)));
+			orders.add(new UnitOrder(unit, UnitOrderType.MOVE_SOUTH, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX,
+										map.getLocationInDirection(unitLocation, Direction.SOUTH, Constants.UNIT_MOVEMENT_RANGE)));
 		}
 		if (map.isMovePossible(unitLocation, Direction.WEST)) {
-			orders.add(new UnitOrder(unit, UnitOrderType.MOVE_WEST, DEFAULT_ACTION_INDEX,
-										map.getLocationInDirection(unitLocation, Direction.WEST, Unit.MOVEMENT_RANGE)));
+			orders.add(new UnitOrder(unit, UnitOrderType.MOVE_WEST, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX,
+										map.getLocationInDirection(unitLocation, Direction.WEST, Constants.UNIT_MOVEMENT_RANGE)));
 		}
 
 		// TODO create attack orders for locations in player's FoV versus Unit's?
@@ -119,7 +114,7 @@ public class MoveGenerator {
 		HashSet<MapLocation> unitFoV = unit.getFieldOfView();
 
 		// Get the unit's attack range
-		int attackRange = Unit.getAttackRange(unit);
+		int attackRange = Unit.getAttackRange(unit.getType());
 
 		for (MapLocation location : unitFoV) {
 			// Check if this location is within the unit's attack range
@@ -127,10 +122,10 @@ public class MoveGenerator {
 				// Check if the special for this unit is available
 				if (unit.getSpecialAttackCooldown() <= 0) {
 					// Create a special attack order for this location
-					orders.add(new UnitOrder(unit, UnitOrderType.ATTACK_SPECIAL, DEFAULT_ACTION_INDEX, location));
+					orders.add(new UnitOrder(unit, UnitOrderType.ATTACK_SPECIAL, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX, location));
 				}
 				// Create an attack order for this location
-				orders.add(new UnitOrder(unit, UnitOrderType.ATTACK, DEFAULT_ACTION_INDEX, location));
+				orders.add(new UnitOrder(unit, UnitOrderType.ATTACK, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX, location));
 			}
 		}
 

@@ -18,7 +18,6 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Wall;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
-import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 
 import org.apache.commons.io.IOUtils;
 
@@ -293,7 +292,7 @@ public class HunterKillerStateFactory
 				map.place(mapPosition, new Door(map.requestNewGameObjectID(), location));
 				break;
 			case DOOR_OPEN:
-				map.place(mapPosition, new Door(map.requestNewGameObjectID(), location, Door.DOOR_OPEN_ROUNDS));
+				map.place(mapPosition, new Door(map.requestNewGameObjectID(), location, Constants.DOOR_OPEN_ROUNDS));
 				break;
 			case FLOOR:
 				map.place(mapPosition, new Floor(map.requestNewGameObjectID(), location));
@@ -319,11 +318,13 @@ public class HunterKillerStateFactory
 				int playerID = sectionPlayerIDMap.get(sectionIndex, -1);
 
 				if (!ignoreUnitAndBase && tile == TileType.INFECTED) {
-					map.place(mapPosition, new Infected(map.requestNewGameObjectID(), playerID, location, Unit.DEFAULT_ORIENTATION));
+					map.place(mapPosition, new Infected(map.requestNewGameObjectID(), playerID, location,
+														Constants.UNIT_DEFAULT_ORIENTATION));
 				} else if (!ignoreUnitAndBase && tile == TileType.MEDIC) {
-					map.place(mapPosition, new Medic(map.requestNewGameObjectID(), playerID, location, Unit.DEFAULT_ORIENTATION));
+					map.place(mapPosition, new Medic(map.requestNewGameObjectID(), playerID, location, Constants.UNIT_DEFAULT_ORIENTATION));
 				} else if (!ignoreUnitAndBase && tile == TileType.SOLDIER) {
-					map.place(mapPosition, new Soldier(map.requestNewGameObjectID(), playerID, location, Unit.DEFAULT_ORIENTATION));
+					map.place(	mapPosition,
+								new Soldier(map.requestNewGameObjectID(), playerID, location, Constants.UNIT_DEFAULT_ORIENTATION));
 				} else if (!ignoreUnitAndBase) {
 					// Remove the Floor
 					map.remove(mapPosition, tempFloor);
@@ -338,7 +339,7 @@ public class HunterKillerStateFactory
 						// Already initialised it for our patch-section, break out
 						break;
 					case A_H:
-						// Section 2 (top right of map), spawns in opposite direction when WEST or EAST
+						// Section 2 (top right of map), spawns in opposite direction when COUNTER_CLOCKWISE or CLOCKWISE
 						if (patchBaseSpawnDirection == Direction.NORTH || patchBaseSpawnDirection == Direction.SOUTH) {
 							// spawning in same direction, so break out
 							break;

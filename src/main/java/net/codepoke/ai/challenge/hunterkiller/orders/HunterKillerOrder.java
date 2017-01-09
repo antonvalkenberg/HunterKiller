@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
 import net.codepoke.ai.challenge.hunterkiller.Player;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
@@ -31,6 +32,7 @@ public abstract class HunterKillerOrder
 	/**
 	 * The index of this order in a {@link HunterKillerAction}.
 	 */
+	@Setter
 	public int actionIndex;
 
 	// endregion

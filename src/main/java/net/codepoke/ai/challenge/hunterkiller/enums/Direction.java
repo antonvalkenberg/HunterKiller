@@ -70,41 +70,41 @@ public enum Direction {
 	public static Direction rotate(Direction facing, Rotation rotation) {
 		switch (facing) {
 		case NORTH:
-			// When facing north, rotating east will face you east, rotating west will face you west
+			// When facing north, rotating clockwise will face you east, rotating counter-clockwise will face you west
 			switch (rotation) {
-			case EAST:
+			case CLOCKWISE:
 				return EAST;
-			case WEST:
+			case COUNTER_CLOCKWISE:
 				return WEST;
 			default:
 				return null;
 			}
 		case EAST:
-			// When facing east, rotating east will face you south, rotating west will face you north
+			// When facing east, rotating clockwise will face you south, rotating counter-clockwise will face you north
 			switch (rotation) {
-			case EAST:
+			case CLOCKWISE:
 				return SOUTH;
-			case WEST:
+			case COUNTER_CLOCKWISE:
 				return NORTH;
 			default:
 				return null;
 			}
 		case SOUTH:
-			// When facing south, rotating east will face you west, rotating west will face you east
+			// When facing south, rotating clockwise will face you west, rotating counter-clockwise will face you east
 			switch (rotation) {
-			case EAST:
+			case CLOCKWISE:
 				return WEST;
-			case WEST:
+			case COUNTER_CLOCKWISE:
 				return EAST;
 			default:
 				return null;
 			}
 		case WEST:
-			// When facing west, rotating east will face you north, rotating west will face you south
+			// When facing west, rotating clockwise will face you north, rotating counter-clockwise will face you south
 			switch (rotation) {
-			case EAST:
+			case CLOCKWISE:
 				return NORTH;
-			case WEST:
+			case COUNTER_CLOCKWISE:
 				return SOUTH;
 			default:
 				return null;
@@ -132,14 +132,14 @@ public enum Direction {
 	}
 
 	/**
-	 * Enumeration of the rotations used in HunterKiller. Currently only east and west are supported.
+	 * Enumeration of the rotations used in HunterKiller.
 	 * 
 	 * @author Anton Valkenberg (anton.valkenberg@gmail.com)
 	 *
 	 */
 	public enum Rotation {
-		EAST,
-		WEST;
+		CLOCKWISE,
+		COUNTER_CLOCKWISE;
 	}
 
 }

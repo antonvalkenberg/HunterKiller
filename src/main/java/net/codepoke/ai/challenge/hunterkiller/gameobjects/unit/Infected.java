@@ -2,9 +2,11 @@ package net.codepoke.ai.challenge.hunterkiller.gameobjects.unit;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import net.codepoke.ai.challenge.hunterkiller.Constants;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
+import net.codepoke.ai.challenge.hunterkiller.enums.UnitType;
 
 /**
  * Class representing an Infected unit in HunterKiller.
@@ -16,43 +18,6 @@ import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 public class Infected
 		extends Unit {
 
-	// region Constants
-
-	/**
-	 * Health points for an Infected.
-	 */
-	public static final int INFECTED_MAX_HP = 10;
-	/**
-	 * Field of View range for an Infected.
-	 */
-	public static final int INFECTED_FOV_RANGE = 4;
-	/**
-	 * Field of View angle for an Infected.
-	 */
-	public static final int INFECTED_FOV_ANGLE = 360;
-	/**
-	 * Attack range for an Infected.
-	 */
-	public static final int INFECTED_ATTACK_RANGE = 1;
-	/**
-	 * Attack damage for an Infected.
-	 */
-	public static final int INFECTED_ATTACK_DAMAGE = 5;
-	/**
-	 * Cooldown of an Infected's special attack.
-	 */
-	public static final int INFECTED_COOLDOWN = 2;
-	/**
-	 * Spawn cost for an Infected.
-	 */
-	public static final int INFECTED_SPAWN_COST = 10;
-	/**
-	 * The amount of points an Infected is worth when defeated.
-	 */
-	public static final int INFECTED_SCORE = 25;
-
-	// endregion
-
 	// region Constructor
 
 	/**
@@ -62,8 +27,9 @@ public class Infected
 	 * {@link Infected#Infected(int, int, MapLocation, int, int, Direction, int, int, int, int, int, int, int)}
 	 */
 	public Infected(int id, int spawningPlayerID, MapLocation mapLocation, Direction facing) {
-		this(id, spawningPlayerID, mapLocation, INFECTED_MAX_HP, INFECTED_MAX_HP, facing, INFECTED_FOV_RANGE, INFECTED_FOV_ANGLE,
-				INFECTED_ATTACK_RANGE, INFECTED_ATTACK_DAMAGE, 0, INFECTED_SPAWN_COST, INFECTED_SCORE);
+		this(id, spawningPlayerID, mapLocation, Constants.INFECTED_MAX_HP, Constants.INFECTED_MAX_HP, facing, Constants.INFECTED_FOV_RANGE,
+				Constants.INFECTED_FOV_ANGLE, Constants.INFECTED_ATTACK_RANGE, Constants.INFECTED_ATTACK_DAMAGE, 0,
+				Constants.INFECTED_SPAWN_COST, Constants.INFECTED_SCORE);
 	}
 
 	/**
@@ -98,7 +64,8 @@ public class Infected
 	 */
 	public Infected(int id, int spawningPlayerID, MapLocation mapLocation, int maxHP, int currentHP, Direction facing, int fovRange,
 					int fovAngle, int attckRange, int attckDmg, int cooldown, int cost, int score) {
-		super(id, spawningPlayerID, mapLocation, maxHP, currentHP, facing, fovRange, fovAngle, attckRange, attckDmg, cooldown, cost, score);
+		super(id, spawningPlayerID, UnitType.Infected, mapLocation, maxHP, currentHP, facing, fovRange, fovAngle, attckRange, attckDmg,
+				cooldown, cost, score);
 	}
 
 	// endregion
@@ -107,7 +74,7 @@ public class Infected
 
 	@Override
 	public Infected copy(int id) {
-		Infected newI = new Infected(id, this.getSquadPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(),
+		Infected newI = new Infected(id, this.getControllingPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(),
 										this.getOrientation(), this.getFieldOfViewRange(), this.getFieldOfViewAngle(),
 										this.getAttackRange(), this.getAttackDamage(), this.getSpecialAttackCooldown(),
 										this.getSpawnCost(), this.getScoreWorth());
@@ -125,7 +92,7 @@ public class Infected
 	 */
 	@Override
 	public void startCooldown() {
-		this.setSpecialAttackCooldown(INFECTED_COOLDOWN);
+		this.setSpecialAttackCooldown(Constants.INFECTED_COOLDOWN);
 	}
 
 	@Override

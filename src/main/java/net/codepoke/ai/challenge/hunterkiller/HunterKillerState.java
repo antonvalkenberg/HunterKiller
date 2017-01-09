@@ -23,19 +23,6 @@ import net.codepoke.ai.states.SequentialState;
 public class HunterKillerState
 		implements HiddenState, SequentialState {
 
-	// region Constants
-
-	/**
-	 * The frequency (in rounds) with which resources are awarded to players.
-	 */
-	private static final int RESOURCE_AWARD_FREQUENCY = 3;
-	/**
-	 * The amount of resources awarded to a player.
-	 */
-	private static final int RESOURCE_AWARD_AMOUNT = 12;
-
-	// endregion
-
 	// region Properties
 
 	/**
@@ -140,8 +127,10 @@ public class HunterKillerState
 	 * Determines whether or not this state represents a completed game.
 	 */
 	public boolean isDone() {
-		// A game is completed once only 1 base remains
-		return map.getCurrentBaseCount() == 1 || currentRound >= HunterKillerRules.MAX_GAME_ROUNDS;
+		// A game is completed once only 1 base remains, or if we have reached the maximum allowed number of rounds and
+		// the last player has made their move
+		return map.getCurrentBaseCount() == 1
+				|| (currentRound >= Constants.RULES_MAX_GAME_ROUNDS && activePlayerID == players[players.length - 1].getID());
 	}
 
 	/**
@@ -161,9 +150,9 @@ public class HunterKillerState
 		// Do a tick on the map after each player's turn
 		map.tick(this);
 		// If the next round-threshold has been reached, award players with new resources
-		if (currentRound % RESOURCE_AWARD_FREQUENCY == 0) {
+		if (currentRound % Constants.RULES_RESOURCE_AWARD_FREQUENCY == 0) {
 			for (Player player : players) {
-				player.setResource(player.resource + RESOURCE_AWARD_AMOUNT);
+				player.setResource(player.resource + Constants.RULES_RESOURCE_AWARD_AMOUNT);
 			}
 		}
 	}

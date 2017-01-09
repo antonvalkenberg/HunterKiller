@@ -2,6 +2,7 @@ package net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import net.codepoke.ai.challenge.hunterkiller.Constants;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 
@@ -15,23 +16,6 @@ import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 public class Wall
 		extends MapFeature {
 
-	// region Constants
-
-	/**
-	 * Walls are indestructible.
-	 */
-	public static final boolean WALL_DESTRUCTIBLE = false;
-	/**
-	 * Walls block Line of Sight.
-	 */
-	public static final boolean WALL_BLOCKS_LOS = true;
-	/**
-	 * Walls can not be moved over.
-	 */
-	public static final boolean WALL_WALKABLE = false;
-
-	// endregion
-
 	// region Constructor
 
 	/**
@@ -43,7 +27,7 @@ public class Wall
 	 *            The Wall's location on the Map.
 	 */
 	public Wall(int id, MapLocation mapLocation) {
-		super(id, mapLocation, WALL_DESTRUCTIBLE, WALL_BLOCKS_LOS, WALL_WALKABLE);
+		super(id, mapLocation, Constants.WALL_DESTRUCTIBLE, Constants.WALL_BLOCKS_LOS, Constants.WALL_WALKABLE);
 	}
 
 	// endregion

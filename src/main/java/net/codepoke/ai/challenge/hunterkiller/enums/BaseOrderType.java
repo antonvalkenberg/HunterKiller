@@ -1,9 +1,8 @@
 package net.codepoke.ai.challenge.hunterkiller.enums;
 
 /**
- * Enumeration of all types of {@link net.codepoke.ai.challenge.hunterkiller.orders.HunterKillerOrder HunterKillerOrder}
- * s
- * available to the {@link net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base Base}.
+ * Enumeration of all types of {@link net.codepoke.ai.challenge.hunterkiller.orders.HunterKillerOrder
+ * HunterKillerOrders} available to the {@link net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base Base}.
  * These currently include:
  * <ul>
  * <li>Spawn a {@link net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier Soldier}.</li>

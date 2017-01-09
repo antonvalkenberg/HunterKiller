@@ -7,9 +7,11 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.codepoke.ai.challenge.hunterkiller.Constants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
+import net.codepoke.ai.challenge.hunterkiller.enums.UnitType;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 
 /**
@@ -24,98 +26,58 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 public abstract class Unit
 		extends GameObject {
 
-	// region Constants
-
-	/**
-	 * Default health points for a Unit.
-	 */
-	public static final int DEFAULT_UNIT_HP = 5;
-	/**
-	 * Default orientation for a Unit.
-	 */
-	public static final Direction DEFAULT_ORIENTATION = Direction.NORTH;
-	/**
-	 * Default Field of View range for a Unit.
-	 */
-	public static final int DEFAULT_FOV_RANGE = 3;
-	/**
-	 * Default Field of View angle for a Unit.
-	 */
-	public static final int DEFAULT_FOV_ANGLE = 90;
-	/**
-	 * Default attack range for a Unit.
-	 */
-	public static final int DEFAULT_ATTACK_RANGE = 4;
-	/**
-	 * Default attack damage for a Unit.
-	 */
-	public static final int DEFAULT_ATTACK_DAMAGE = 3;
-	/**
-	 * Default cooldown for a Unit's special attack.
-	 */
-	public static final int DEFAULT_SPECIAL_COOLDOWN = 0;
-	/**
-	 * Default spawn cost for a Unit.
-	 */
-	public static final int DEFAULT_SPAWN_COST = 5;
-	/**
-	 * Default score that a Unit is worth.
-	 */
-	public static final int DEFAULT_SCORE = 25;
-	/**
-	 * The movement range for a Unit.
-	 */
-	public static final int MOVEMENT_RANGE = 1;
-
-	// endregion
-
 	// region Properties
 
 	/**
 	 * The ID of the player that has this Unit in it's squad.
 	 */
-	private int squadPlayerID;
+	private int controllingPlayerID;
+
+	/**
+	 * The type of unit.
+	 */
+	private UnitType type;
 
 	/**
 	 * The Direction the Unit is facing.
 	 */
 	@Setter
-	private Direction orientation = DEFAULT_ORIENTATION;
+	private Direction orientation = Constants.UNIT_DEFAULT_ORIENTATION;
 
 	/**
 	 * The range (in squares) of the Unit's Field of View.
 	 */
-	private int fieldOfViewRange = DEFAULT_FOV_RANGE;
+	private int fieldOfViewRange = Constants.UNIT_DEFAULT_FOV_RANGE;
 
 	/**
 	 * The angle (in degrees) of the Unit's Field of View.
 	 */
-	private int fieldOfViewAngle = DEFAULT_FOV_ANGLE;
+	private int fieldOfViewAngle = Constants.UNIT_DEFAULT_FOV_ANGLE;
 
 	/**
 	 * The range (in squares) of the Unit's attacks.
 	 */
-	private int attackRange = DEFAULT_ATTACK_RANGE;
+	private int attackRange = Constants.UNIT_DEFAULT_ATTACK_RANGE;
 
 	/**
 	 * The damage the Unit's attacks inflict.
 	 */
-	private int attackDamage = DEFAULT_ATTACK_DAMAGE;
+	private int attackDamage = Constants.UNIT_DEFAULT_ATTACK_DAMAGE;
 
 	/**
 	 * The remaining cool down time (in ticks) of the Unit's special attack.
 	 */
-	private int specialAttackCooldown = DEFAULT_SPECIAL_COOLDOWN;
+	private int specialAttackCooldown = Constants.UNIT_DEFAULT_SPECIAL_COOLDOWN;
 
 	/**
 	 * The cost to spawn an instance of this Unit.
 	 */
-	private int spawnCost = DEFAULT_SPAWN_COST;
+	private int spawnCost = Constants.UNIT_DEFAULT_SPAWN_COST;
 
 	/**
 	 * The score this Unit is worth when defeated by the opposing team.
 	 */
-	private int scoreWorth = DEFAULT_SCORE;
+	private int scoreWorth = Constants.UNIT_DEFAULT_SCORE;
 
 	/**
 	 * The current field-of-view of this Unit.
@@ -129,21 +91,23 @@ public abstract class Unit
 	/**
 	 * Constructs a new instance of a Unit with default HP.
 	 * 
-	 * {@link Unit#Unit(int, int, MapLocation, int, int, Direction, int, int, int, int, int, int, int)}
+	 * {@link Unit#Unit(int, int, UnitType, MapLocation, int, int, Direction, int, int, int, int, int, int, int)}
 	 */
-	public Unit(int id, int spawningPlayerID, MapLocation mapLocation, Direction facing, int fovRange, int fovAngle, int attckRange,
-				int attckDmg, int cooldown, int cost, int score) {
-		this(id, spawningPlayerID, mapLocation, DEFAULT_UNIT_HP, facing, fovRange, fovAngle, attckRange, attckDmg, cooldown, cost, score);
+	public Unit(int id, int spawningPlayerID, UnitType unitType, MapLocation mapLocation, Direction facing, int fovRange, int fovAngle,
+				int attckRange, int attckDmg, int cooldown, int cost, int score) {
+		this(id, spawningPlayerID, unitType, mapLocation, Constants.UNIT_DEFAULT_HP, facing, fovRange, fovAngle, attckRange, attckDmg,
+				cooldown, cost, score);
 	}
 
 	/**
 	 * Constructs a new instance of a Unit with full health.
 	 * 
-	 * {@link Unit#Unit(int, int, MapLocation, int, int, Direction, int, int, int, int, int, int, int)}
+	 * {@link Unit#Unit(int, int, UnitType, MapLocation, int, int, Direction, int, int, int, int, int, int, int)}
 	 */
-	public Unit(int id, int spawningPlayerID, MapLocation mapLocation, int maxHP, Direction facing, int fovRange, int fovAngle,
-				int attckRange, int attckDmg, int cooldown, int cost, int score) {
-		this(id, spawningPlayerID, mapLocation, maxHP, maxHP, facing, fovRange, fovAngle, attckRange, attckDmg, cooldown, cost, score);
+	public Unit(int id, int spawningPlayerID, UnitType unitType, MapLocation mapLocation, int maxHP, Direction facing, int fovRange,
+				int fovAngle, int attckRange, int attckDmg, int cooldown, int cost, int score) {
+		this(id, spawningPlayerID, unitType, mapLocation, maxHP, maxHP, facing, fovRange, fovAngle, attckRange, attckDmg, cooldown, cost,
+				score);
 	}
 
 	/**
@@ -153,6 +117,8 @@ public abstract class Unit
 	 *            The Unit's unique identifier.
 	 * @param spawningPlayerID
 	 *            The ID of the Player that spawned this Unit.
+	 * @param unitType
+	 *            The type of Unit.
 	 * @param mapLocation
 	 *            The Unit's location on the Map.
 	 * @param maxHP
@@ -176,10 +142,11 @@ public abstract class Unit
 	 * @param score
 	 *            The score the Unit is worth.
 	 */
-	public Unit(int id, int spawningPlayerID, MapLocation mapLocation, int maxHP, int currentHP, Direction facing, int fovRange,
-				int fovAngle, int attckRange, int attckDmg, int cooldown, int cost, int score) {
+	public Unit(int id, int spawningPlayerID, UnitType unitType, MapLocation mapLocation, int maxHP, int currentHP, Direction facing,
+				int fovRange, int fovAngle, int attckRange, int attckDmg, int cooldown, int cost, int score) {
 		super(id, mapLocation, maxHP, currentHP);
-		squadPlayerID = spawningPlayerID;
+		controllingPlayerID = spawningPlayerID;
+		type = unitType;
 		orientation = facing;
 		fieldOfViewRange = fovRange;
 		fieldOfViewAngle = fovAngle;
@@ -249,18 +216,39 @@ public abstract class Unit
 	/**
 	 * Returns the attack range for a Unit.
 	 * 
-	 * @param unit
-	 *            The Unit.
+	 * @param unitType
+	 *            The type of Unit.
 	 */
-	public static int getAttackRange(Unit unit) {
-		int attackRange = -1;
-		if (unit instanceof Soldier)
-			attackRange = Soldier.SOLDIER_ATTACK_RANGE;
-		else if (unit instanceof Medic)
-			attackRange = Medic.MEDIC_ATTACK_RANGE;
-		else if (unit instanceof Infected)
-			attackRange = Infected.INFECTED_ATTACK_RANGE;
-		return attackRange;
+	public static int getAttackRange(UnitType unitType) {
+		switch (unitType) {
+		case Infected:
+			return Constants.INFECTED_ATTACK_RANGE;
+		case Medic:
+			return Constants.MEDIC_ATTACK_RANGE;
+		case Soldier:
+			return Constants.SOLDIER_ATTACK_RANGE;
+		default:
+			return 0;
+		}
+	}
+
+	/**
+	 * Returns the spawn cost for a Unit.
+	 * 
+	 * @param unitType
+	 *            The type of Unit.
+	 */
+	public static int getSpawnCost(UnitType unitType) {
+		switch (unitType) {
+		case Infected:
+			return Constants.INFECTED_SPAWN_COST;
+		case Medic:
+			return Constants.MEDIC_SPAWN_COST;
+		case Soldier:
+			return Constants.SOLDIER_SPAWN_COST;
+		default:
+			return 0;
+		}
 	}
 
 	// endregion

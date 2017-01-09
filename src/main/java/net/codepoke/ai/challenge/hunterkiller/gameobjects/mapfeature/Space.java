@@ -2,6 +2,7 @@ package net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import net.codepoke.ai.challenge.hunterkiller.Constants;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 
@@ -15,23 +16,6 @@ import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 public class Space
 		extends MapFeature {
 
-	// region Constants
-
-	/**
-	 * Space is indestructible.
-	 */
-	public static final boolean SPACE_DESTRUCTIBLE = false;
-	/**
-	 * Space does not block Line of Sight.
-	 */
-	public static final boolean SPACE_BLOCKS_LOS = false;
-	/**
-	 * Space can not be moved over.
-	 */
-	public static final boolean SPACE_WALKABLE = false;
-
-	// endregion
-
 	// region Constructor
 
 	/**
@@ -43,7 +27,7 @@ public class Space
 	 *            The Space's location on the Map.
 	 */
 	public Space(int id, MapLocation mapLocation) {
-		super(id, mapLocation, SPACE_DESTRUCTIBLE, SPACE_BLOCKS_LOS, SPACE_WALKABLE);
+		super(id, mapLocation, Constants.SPACE_DESTRUCTIBLE, Constants.SPACE_BLOCKS_LOS, Constants.SPACE_WALKABLE);
 	}
 
 	// endregion

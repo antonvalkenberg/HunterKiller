@@ -134,7 +134,7 @@ public class UnitOrderTest {
 
 		// Create an order to rotate the unit
 		HunterKillerAction rotateAction = new HunterKillerAction(state);
-		UnitOrder order = new UnitOrder(unit, UnitOrderType.ROTATE_EAST, 0);
+		UnitOrder order = new UnitOrder(unit, UnitOrderType.ROTATE_CLOCKWISE, 0);
 		rotateAction.addOrder(order);
 
 		// Make the game logic execute the action

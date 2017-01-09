@@ -29,8 +29,6 @@ import com.badlogic.gdx.utils.Array;
 public class HunterKillerRules
 		implements GameRules<HunterKillerState, HunterKillerAction> {
 
-	public static final int MAX_GAME_ROUNDS = 20;
-
 	/**
 	 * Handles the specified action. Also ends the player's turn and checks for a completed game
 	 * state.
@@ -52,7 +50,7 @@ public class HunterKillerRules
 		state.endPlayerTurn();
 
 		// Check if the game has ended
-		if (state.isDone() || state.getCurrentRound() >= MAX_GAME_ROUNDS) {
+		if (state.isDone()) {
 			// Sort the players by score
 			Array<Player> players = new Array<Player>(state.getPlayers());
 			players.sort();
@@ -100,14 +98,14 @@ public class HunterKillerRules
 			} else if (order instanceof UnitOrder) {
 				UnitOrder unitOrder = (UnitOrder) order;
 				switch (unitOrder.getOrderType()) {
-				case ROTATE_EAST:
+				case ROTATE_CLOCKWISE:
 					// Try to rotate the unit east
-					if (!rotateUnit(map, unitOrder.getObjectID(), Rotation.EAST, failures))
+					if (!rotateUnit(map, unitOrder.getObjectID(), Rotation.CLOCKWISE, failures))
 						failCount++;
 					break;
-				case ROTATE_WEST:
+				case ROTATE_COUNTER_CLOCKWISE:
 					// Try to rotate the unit west
-					if (!rotateUnit(map, unitOrder.getObjectID(), Rotation.WEST, failures))
+					if (!rotateUnit(map, unitOrder.getObjectID(), Rotation.COUNTER_CLOCKWISE, failures))
 						failCount++;
 					break;
 				case MOVE_NORTH:
@@ -173,13 +171,13 @@ public class HunterKillerRules
 		int spawnCosts = -1;
 		switch (spawnType) {
 		case SPAWN_INFECTED:
-			spawnCosts = Infected.INFECTED_SPAWN_COST;
+			spawnCosts = Constants.INFECTED_SPAWN_COST;
 			break;
 		case SPAWN_MEDIC:
-			spawnCosts = Medic.MEDIC_SPAWN_COST;
+			spawnCosts = Constants.MEDIC_SPAWN_COST;
 			break;
 		case SPAWN_SOLDIER:
-			spawnCosts = Soldier.SOLDIER_SPAWN_COST;
+			spawnCosts = Constants.SOLDIER_SPAWN_COST;
 			break;
 		default:
 			failures.append(String.format("Spawn Failure: Unsupported BaseOrderType.%n"));
@@ -359,7 +357,7 @@ public class HunterKillerRules
 			attackSuccess = map.remove(map.toPosition(targetLocation), deadUnit);
 			if (attackSuccess) {
 				// Remove the unit from it's owners squad
-				state.getPlayer(deadUnit.getSquadPlayerID())
+				state.getPlayer(deadUnit.getControllingPlayerID())
 						.removeUnitFromSquad(deadUnit.getID());
 				// Award points to the player
 				awardPointsForUnitDeath(player, targetUnit);
@@ -429,9 +427,9 @@ public class HunterKillerRules
 			return false;
 		} else if (object instanceof Medic) {
 			// The special attack of a medic heals a unit for an amount
-			Unit target = (Unit) map.getMapContent()[map.toPosition(attackOrder.getTargetLocation())][Map.INTERNAL_MAP_UNIT_INDEX];
+			Unit target = (Unit) map.getMapContent()[map.toPosition(attackOrder.getTargetLocation())][Constants.MAP_INTERNAL_UNIT_INDEX];
 			if (target != null) {
-				target.increaseHP(Medic.MEDIC_SPECIAL_HEAL);
+				target.increaseHP(Constants.MEDIC_SPECIAL_HEAL);
 				attackSuccess = true;
 			}
 		} else if (object instanceof Soldier) {
@@ -439,7 +437,7 @@ public class HunterKillerRules
 			List<MapLocation> areaOfEffect = map.getAreaAround(attackOrder.getTargetLocation(), true);
 			for (MapLocation location : areaOfEffect) {
 				// Call an attack on each location inside the area of effect
-				if (map.attackLocation(location, Soldier.SOLDIER_SPECIAL_DAMAGE)) {
+				if (map.attackLocation(location, Constants.SOLDIER_SPECIAL_DAMAGE)) {
 					// Report success if at least one of the locations is successfully attacked
 					attackSuccess = true;
 				}
@@ -461,11 +459,11 @@ public class HunterKillerRules
 	 */
 	private void awardPointsForUnitDeath(Player player, Unit killedUnit) {
 		if (killedUnit instanceof Soldier) {
-			player.awardScore(Soldier.SOLDIER_SCORE);
+			player.awardScore(Constants.SOLDIER_SCORE);
 		} else if (killedUnit instanceof Medic) {
-			player.awardScore(Medic.MEDIC_SCORE);
+			player.awardScore(Constants.MEDIC_SCORE);
 		} else if (killedUnit instanceof Infected) {
-			player.awardScore(Infected.INFECTED_SCORE);
+			player.awardScore(Constants.INFECTED_SCORE);
 		}
 	}
 

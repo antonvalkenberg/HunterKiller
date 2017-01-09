@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import net.codepoke.ai.challenge.hunterkiller.Constants;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 
@@ -18,27 +19,6 @@ import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Door
 		extends MapFeature {
-
-	// region Constants
-
-	/**
-	 * Doors are indestructible.
-	 */
-	public static final boolean DOOR_DESTRUCTIBLE = false;
-	/**
-	 * Door are created closed and block Line of Sight in that state.
-	 */
-	public static final boolean DOOR_BLOCKS_LOS = true;
-	/**
-	 * Doors can be moved over. (At which point they will open and remain open for a number of rounds)
-	 */
-	public static final boolean DOOR_WALKABLE = true;
-	/**
-	 * Once opened a door will remain open for this amount of rounds.
-	 */
-	public static final int DOOR_OPEN_ROUNDS = 5;
-
-	// endregion
 
 	// region Properties
 
@@ -71,7 +51,7 @@ public class Door
 	 *            Amount of rounds before the Door closes.
 	 */
 	public Door(int id, MapLocation mapLocation, int timeToClose) {
-		super(id, mapLocation, DOOR_DESTRUCTIBLE, timeToClose <= 0, DOOR_WALKABLE);
+		super(id, mapLocation, Constants.DOOR_DESTRUCTIBLE, timeToClose <= 0, Constants.DOOR_WALKABLE);
 		openTimer = timeToClose;
 	}
 
@@ -92,7 +72,7 @@ public class Door
 	 * Open this Door. It will close after a predetermined amount of rounds.
 	 */
 	public void open() {
-		openTimer = DOOR_OPEN_ROUNDS;
+		openTimer = Constants.DOOR_OPEN_ROUNDS;
 		isBlockingLOS = false;
 	}
 

@@ -91,7 +91,7 @@ public class LineOfSightTest {
 		assertTrue(northFOV.contains(new MapLocation(2, 0)));
 		assertTrue(northFOV.contains(new MapLocation(1, 1)));
 
-		// Create a new soldier at [1,1] facing EAST
+		// Create a new soldier at [1,1] facing CLOCKWISE
 		Soldier eastSoldier = new Soldier(testMap.requestNewGameObjectID(), 0, new MapLocation(1, 1), Direction.EAST);
 		// Get the field-of-view for the east-facing soldier
 		HashSet<MapLocation> eastFOV = testMap.getFieldOfView(eastSoldier);
@@ -127,7 +127,7 @@ public class LineOfSightTest {
 		assertTrue(southFOV.contains(new MapLocation(1, 3)));
 		assertTrue(southFOV.contains(new MapLocation(2, 3)));
 
-		// Create a new soldier at [1,1] facing WEST
+		// Create a new soldier at [1,1] facing COUNTER_CLOCKWISE
 		Soldier westSoldier = new Soldier(testMap.requestNewGameObjectID(), 0, new MapLocation(1, 1), Direction.WEST);
 		// Get the field-of-view for the west-facing soldier
 		HashSet<MapLocation> westFOV = testMap.getFieldOfView(westSoldier);
@@ -216,7 +216,7 @@ public class LineOfSightTest {
 		assertTrue(northFOV.contains(new MapLocation(2, 0)));
 		assertTrue(northFOV.contains(new MapLocation(1, 1)));
 
-		// Create a new soldier at [1,1] facing EAST
+		// Create a new soldier at [1,1] facing CLOCKWISE
 		Soldier eastSoldier = new Soldier(testMap.requestNewGameObjectID(), 0, new MapLocation(1, 1), Direction.EAST);
 		// Get the field-of-view for the east-facing soldier
 		HashSet<MapLocation> eastFOV = testMap.getFieldOfView(eastSoldier);
@@ -249,7 +249,7 @@ public class LineOfSightTest {
 		assertTrue(southFOV.contains(new MapLocation(1, 3)));
 		assertTrue(southFOV.contains(new MapLocation(2, 3)));
 
-		// Create a new soldier at [1,1] facing WEST
+		// Create a new soldier at [1,1] facing COUNTER_CLOCKWISE
 		Soldier westSoldier = new Soldier(testMap.requestNewGameObjectID(), 0, new MapLocation(1, 1), Direction.WEST);
 		// Get the field-of-view for the west-facing soldier
 		HashSet<MapLocation> westFOV = testMap.getFieldOfView(westSoldier);
@@ -299,7 +299,7 @@ public class LineOfSightTest {
 	 * </pre>
 	 * 
 	 * Note that in this diagram, 'U' stands for the Unit, '[' stands for a Wall tile, and '-' stands
-	 * for a Floor tile. This setup is tested with the Unit in EAST and SOUTH orientation and once for
+	 * for a Floor tile. This setup is tested with the Unit in CLOCKWISE and SOUTH orientation and once for
 	 * an Infected.
 	 */
 	@Test
@@ -319,7 +319,7 @@ public class LineOfSightTest {
 		// In the next sections, when visualising the FOV; '.' refers to visible tiles, and '#' refers to obscured
 		// tiles.
 
-		// Create a new soldier at [0,0] facing EAST
+		// Create a new soldier at [0,0] facing CLOCKWISE
 		Soldier eastSoldier = new Soldier(testMap.requestNewGameObjectID(), 0, new MapLocation(0, 0), Direction.EAST);
 		// Get the field-of-view for the east-facing soldier
 		HashSet<MapLocation> eastFOV = testMap.getFieldOfView(eastSoldier);
@@ -384,7 +384,7 @@ public class LineOfSightTest {
 	 * </pre>
 	 * 
 	 * Note that in this diagram, 'U' stands for the Unit, '[' stands for a Wall tile, and '-' stands
-	 * for a Floor tile. This setup is tested with the Unit in NORTH and WEST orientation and once for
+	 * for a Floor tile. This setup is tested with the Unit in NORTH and COUNTER_CLOCKWISE orientation and once for
 	 * an Infected.
 	 */
 	@Test
@@ -404,7 +404,7 @@ public class LineOfSightTest {
 		// In the next sections, when visualising the FOV; '.' refers to visible tiles, and '#' refers to obscured
 		// tiles.
 
-		// Create a new soldier at [3,3] facing WEST
+		// Create a new soldier at [3,3] facing COUNTER_CLOCKWISE
 		Soldier westSoldier = new Soldier(testMap.requestNewGameObjectID(), 0, new MapLocation(3, 3), Direction.WEST);
 		// Get the field-of-view for the west-facing soldier
 		HashSet<MapLocation> westFOV = testMap.getFieldOfView(westSoldier);
