@@ -124,7 +124,9 @@ public class HunterKillerStateFactory
 			options = "";
 		// Check that either 2, 3 or 4 players are provided, other amounts are not supported
 		if (playerNames.length < 2 || playerNames.length > 4) {
-			// TODO throw an error! unsupported player amount
+			throw new HunterKillerException(
+											String.format(	"Unsupported amount of players: %d. Only 2, 3 and 4 players are currently supported.",
+															playerNames.length));
 		}
 
 		// Select the map section we will be using for the players
@@ -255,7 +257,11 @@ public class HunterKillerStateFactory
 				if (!sectionPlayerIDMap.containsKey(player.getMapSection())) {
 					sectionPlayerIDMap.put(player.getMapSection(), player.getID());
 				} else {
-					// TODO throw an error! a map section was assigned to more than one Player
+					throw new HunterKillerException(
+													String.format(	"Player with ID %d is assigned section %d, which is already assigned to player with ID %d",
+																	player.getID(),
+																	player.getMapSection(),
+																	sectionPlayerIDMap.get(player.getMapSection(), -1)));
 				}
 			}
 		}
@@ -339,7 +345,8 @@ public class HunterKillerStateFactory
 						// Already initialised it for our patch-section, break out
 						break;
 					case A_H:
-						// Section 2 (top right of map), spawns in opposite direction when COUNTER_CLOCKWISE or CLOCKWISE
+						// Section 2 (top right of map), spawns in opposite direction when COUNTER_CLOCKWISE or
+						// CLOCKWISE
 						if (patchBaseSpawnDirection == Direction.NORTH || patchBaseSpawnDirection == Direction.SOUTH) {
 							// spawning in same direction, so break out
 							break;
