@@ -140,21 +140,24 @@ public class HunterKillerState
 	public void endPlayerTurn() {
 		// Select the next player (next ID)
 		activePlayerID = ++activePlayerID % players.length;
+
 		// Check if we've reached a new round
 		if (activePlayerID == 0) {
 			// Reduce open-timers for Doors and special-attack cooldowns for Units.
 			map.timer();
+
 			// Increase round count
 			currentRound++;
+
+			// If the next round-threshold has been reached, award players with new resources
+			if (currentRound % Constants.RULES_RESOURCE_AWARD_FREQUENCY == 0) {
+				for (Player player : players) {
+					player.setResource(player.resource + Constants.RULES_RESOURCE_AWARD_AMOUNT);
+				}
+			}
 		}
 		// Do a tick on the map after each player's turn
 		map.tick(this);
-		// If the next round-threshold has been reached, award players with new resources
-		if (currentRound % Constants.RULES_RESOURCE_AWARD_FREQUENCY == 0) {
-			for (Player player : players) {
-				player.setResource(player.resource + Constants.RULES_RESOURCE_AWARD_AMOUNT);
-			}
-		}
 	}
 
 	// endregion

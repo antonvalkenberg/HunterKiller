@@ -3,6 +3,7 @@ package hunterkiller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import net.codepoke.ai.GameRules.Result;
+import net.codepoke.ai.challenge.hunterkiller.Constants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerRules;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
@@ -12,7 +13,6 @@ import net.codepoke.ai.challenge.hunterkiller.MapSetup;
 import net.codepoke.ai.challenge.hunterkiller.Player;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitOrderType;
-import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
 
@@ -70,6 +70,7 @@ public class HunterKillerRulesTest {
 
 	@After
 	public void tearDown() throws Exception {
+		state = null;
 	}
 
 	// endregion
@@ -109,14 +110,14 @@ public class HunterKillerRulesTest {
 
 		// Determine the location we want to attack
 		MapLocation targetLocation = new MapLocation(2, 1);
-		// Set the health of the Unit at the location we want to attack so that it dies to the attack we'll be making
+		// Set the health of the Unit at the target location so that it dies to the attack we'll be making
 		Unit targetUnit = state.getMap()
 								.getUnitAtLocation(targetLocation);
-		targetUnit.reduceHP(targetUnit.getHpCurrent() - Soldier.SOLDIER_ATTACK_DAMAGE);
+		targetUnit.reduceHP(targetUnit.getHpCurrent() - Constants.SOLDIER_ATTACK_DAMAGE);
 
 		// Create an order to attack the target location
 		HunterKillerAction attackAction = new HunterKillerAction(state);
-		UnitOrder order = new UnitOrder(unit, UnitOrderType.ATTACK, 0, targetLocation);
+		UnitOrder order = new UnitOrder(unit, UnitOrderType.ATTACK, targetLocation);
 		attackAction.addOrder(order);
 
 		// Make the game logic execute the action
@@ -134,7 +135,7 @@ public class HunterKillerRulesTest {
 		int post_ActivePlayerScore = state.getPlayer(activePlayer.getID())
 											.getScore();
 		// Make sure the player was awarded the correct score amount
-		assertEquals(Soldier.SOLDIER_SCORE, (post_ActivePlayerScore - pre_ActivePlayerScore));
+		assertEquals(Constants.SOLDIER_SCORE, (post_ActivePlayerScore - pre_ActivePlayerScore));
 	}
 
 	// endregion

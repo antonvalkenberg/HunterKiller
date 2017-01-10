@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashSet;
 
 import net.codepoke.ai.GameRules.Result;
+import net.codepoke.ai.challenge.hunterkiller.Constants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerRules;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
@@ -16,7 +17,7 @@ import net.codepoke.ai.challenge.hunterkiller.HunterKillerStateFactory;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.MapSetup;
 import net.codepoke.ai.challenge.hunterkiller.Player;
-import net.codepoke.ai.challenge.hunterkiller.enums.BaseOrderType;
+import net.codepoke.ai.challenge.hunterkiller.enums.UnitType;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
@@ -78,6 +79,7 @@ public class BaseOrderTest {
 
 	@After
 	public void tearDown() throws Exception {
+		state = null;
 	}
 
 	// endregion
@@ -100,7 +102,7 @@ public class BaseOrderTest {
 
 		// Create a base-order to spawn an infected for the active player
 		HunterKillerAction spawnInfectedAction = new HunterKillerAction(state);
-		BaseOrder order = new BaseOrder(base, BaseOrderType.SPAWN_INFECTED, 0);
+		BaseOrder order = base.spawn(UnitType.Infected);
 		spawnInfectedAction.addOrder(order);
 
 		// Make the game logic execute the action
@@ -114,7 +116,7 @@ public class BaseOrderTest {
 		assertEquals("", result.getExplanation());
 
 		// Check that the player's resource was reduced
-		assertEquals(beforePlayerResource - Infected.INFECTED_SPAWN_COST, activePlayer.getResource());
+		assertEquals(beforePlayerResource - Constants.INFECTED_SPAWN_COST, activePlayer.getResource());
 		// Check that the player has an extra squad member
 		assertEquals(beforePlayerSquadSize + 1, activePlayer.getSquadIDs().size);
 
@@ -124,7 +126,7 @@ public class BaseOrderTest {
 		// Check that the infected on the spawn location belongs to the formerly active player
 		assertEquals(activePlayer.getID(), state.getMap()
 												.getUnitAtLocation(spawnLocation)
-												.getSquadPlayerID());
+												.getControllingPlayerID());
 
 		// Get the newly spawned unit
 		Unit spawnedUnit = state.getMap()
@@ -152,7 +154,7 @@ public class BaseOrderTest {
 
 		// Create a base-order to spawn an infected for the active player
 		HunterKillerAction spawnInfectedAction = new HunterKillerAction(state);
-		BaseOrder order = new BaseOrder(base, BaseOrderType.SPAWN_INFECTED, 0);
+		BaseOrder order = base.spawn(UnitType.Infected);
 		spawnInfectedAction.addOrder(order);
 
 		// Now set the player's resource to an amount that is not enough to spawn an infected unit
@@ -187,7 +189,7 @@ public class BaseOrderTest {
 
 		// Create a base-order to spawn an infected for the active player
 		HunterKillerAction spawnInfectedAction = new HunterKillerAction(state);
-		BaseOrder order = new BaseOrder(base, BaseOrderType.SPAWN_INFECTED, 0);
+		BaseOrder order = base.spawn(UnitType.Infected);
 		spawnInfectedAction.addOrder(order);
 
 		// Make the game logic execute the action
@@ -203,5 +205,7 @@ public class BaseOrderTest {
 		assertEquals(pre_PlayerSquadSize, activePlayer.getSquadIDs().size);
 		assertEquals(pre_PlayerResources, activePlayer.getResource());
 	}
+
 	// endregion
+
 }

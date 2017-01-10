@@ -37,29 +37,22 @@ public class UnitOrder
 
 	// endregion
 
-	// region Public methods
-
-	/**
-	 * Returns an order to rotate a Unit.
-	 * 
-	 * @param unit
-	 *            The unit to rotate.
-	 * @param clockwise
-	 *            Whether or not to rotate the unit clockwise.
-	 */
-	public static UnitOrder rotate(Unit unit, boolean clockwise) {
-		UnitOrderType type = clockwise ? UnitOrderType.ROTATE_CLOCKWISE : UnitOrderType.ROTATE_COUNTER_CLOCKWISE;
-		return new UnitOrder(unit, type, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX);
-	}
-
-	// endregion
-
 	// region Constructor
 
 	/**
-	 * Constructs a new instance.
+	 * Constructs a new order for a unit.
 	 * 
-	 * {@link UnitOrder#UnitOrder(Unit, UnitOrderType, MapLocation)}
+	 * {@link UnitOrder#UnitOrder(Unit, UnitOrderType, int, MapLocation)}
+	 */
+	public UnitOrder(Unit unit, UnitOrderType type) {
+		super(unit, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX);
+		this.orderType = type;
+	}
+
+	/**
+	 * Constructs a new order for a unit.
+	 * 
+	 * {@link UnitOrder#UnitOrder(Unit, UnitOrderType, int, MapLocation)}
 	 */
 	public UnitOrder(Unit unit, UnitOrderType type, int actionIndex) {
 		super(unit, actionIndex);
@@ -67,7 +60,17 @@ public class UnitOrder
 	}
 
 	/**
-	 * Constructs a new instance with a target location.
+	 * Constructs a new order for a unit with a target location.
+	 * 
+	 * {@link UnitOrder#UnitOrder(Unit, UnitOrderType, int, MapLocation)}
+	 */
+	public UnitOrder(Unit unit, UnitOrderType type, MapLocation target) {
+		this(unit, type, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX);
+		this.targetLocation = new MapLocation(target.getX(), target.getY());
+	}
+
+	/**
+	 * Constructs a new order for a unit with a target location.
 	 * 
 	 * @param unit
 	 *            The unit the order is for.

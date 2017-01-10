@@ -9,10 +9,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.codepoke.ai.challenge.hunterkiller.Constants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
+import net.codepoke.ai.challenge.hunterkiller.Map;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
+import net.codepoke.ai.challenge.hunterkiller.enums.UnitOrderType;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitType;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
+import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
 
 /**
  * Abstract class representing a unit in HunterKiller.
@@ -249,6 +252,87 @@ public abstract class Unit
 		default:
 			return 0;
 		}
+	}
+
+	/**
+	 * Returns an order to rotate this unit.
+	 * 
+	 * @param clockwise
+	 *            Whether or not to rotate the unit clockwise.
+	 */
+	public UnitOrder rotate(boolean clockwise) {
+		UnitOrderType type = clockwise ? UnitOrderType.ROTATE_CLOCKWISE : UnitOrderType.ROTATE_COUNTER_CLOCKWISE;
+		return new UnitOrder(this, type);
+	}
+
+	/**
+	 * Returns an order to move this unit.
+	 * 
+	 * @param direction
+	 *            The {@link Direction} to move the unit in.
+	 * @param map
+	 *            The {@link Map} the unit is on.
+	 */
+	public UnitOrder move(Direction direction, Map map) {
+		UnitOrderType type;
+		// Determine the correct order-type for the direction, and the target location
+		switch (direction) {
+		case EAST:
+			type = UnitOrderType.MOVE_EAST;
+			break;
+		case NORTH:
+			type = UnitOrderType.MOVE_NORTH;
+			break;
+		case SOUTH:
+			type = UnitOrderType.MOVE_SOUTH;
+			break;
+		case WEST:
+			type = UnitOrderType.MOVE_WEST;
+			break;
+		default:
+			System.err.println(String.format("WARNING: Unsupported movement direction: %s", direction));
+			return null;
+		}
+
+		// Get the location that is in the provided direction
+		MapLocation targetLocation = map.getAdjacentLocationInDirection(getLocation(), direction);
+
+		// Return the UnitOrder
+		return new UnitOrder(this, type, targetLocation);
+	}
+
+	/**
+	 * Returns an order for this unit to attack a specific location on the map. Note: this method does not check whether
+	 * or not the specified location is an existing location on the map.
+	 * 
+	 * @param targetLocation
+	 *            The location to attack.
+	 * @param useSpecialAttack
+	 *            Whether or not to use the unit's special attack when attacking.
+	 */
+	public UnitOrder attack(MapLocation targetLocation, boolean useSpecialAttack) {
+		return new UnitOrder(this, useSpecialAttack ? UnitOrderType.ATTACK_SPECIAL : UnitOrderType.ATTACK, targetLocation);
+	}
+
+	/**
+	 * Returns an order for this unit to attack a specific unit on the map. Note: this method will return null if the
+	 * specified unit cannot be found.
+	 * 
+	 * @param targetUnit
+	 *            The unit to attack.
+	 * @param map
+	 *            The current map being played on.
+	 * @param useSpecialAttack
+	 *            Whether or not to use the unit's special attack when attacking.
+	 */
+	public UnitOrder attack(Unit targetUnit, Map map, boolean useSpecialAttack) {
+		// Try to find the unit on the map
+		MapLocation targetLocation = map.getObjectLocation(targetUnit.getID());
+		// Check if we found anything
+		if (targetLocation == null)
+			return null;
+		// If we did, return the order
+		return new UnitOrder(this, useSpecialAttack ? UnitOrderType.ATTACK_SPECIAL : UnitOrderType.ATTACK, targetLocation);
 	}
 
 	// endregion

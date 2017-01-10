@@ -590,6 +590,23 @@ public class Map {
 	}
 
 	/**
+	 * Updates the Field-of-View for all Units on the map.
+	 */
+	public void updateFieldOfView() {
+		// Check the map for Units
+		for (int i = 0; i < mapWidth * mapHeight; i++) {
+			if (mapContent[i][Constants.MAP_INTERNAL_UNIT_INDEX] != null
+				&& mapContent[i][Constants.MAP_INTERNAL_UNIT_INDEX] instanceof Unit) {
+				Unit unit = (Unit) mapContent[i][Constants.MAP_INTERNAL_UNIT_INDEX];
+				// Get the field-of-view collection for the unit
+				HashSet<MapLocation> fieldOfView = getFieldOfView(unit);
+				// Tell the unit to update it's field-of-view
+				unit.updateFieldOfView(fieldOfView);
+			}
+		}
+	}
+
+	/**
 	 * Creates a deep copy of this map.
 	 * 
 	 * @return
@@ -911,23 +928,6 @@ public class Map {
 		if (mapContent[position][Constants.MAP_INTERNAL_UNIT_INDEX] != null)
 			mapContent[position][Constants.MAP_INTERNAL_UNIT_INDEX].reduceHP(damage);
 		return true;
-	}
-
-	/**
-	 * Updates the Field-of-View for all Units on the map.
-	 */
-	protected void updateFieldOfView() {
-		// Check the map for Units
-		for (int i = 0; i < mapWidth * mapHeight; i++) {
-			if (mapContent[i][Constants.MAP_INTERNAL_UNIT_INDEX] != null
-				&& mapContent[i][Constants.MAP_INTERNAL_UNIT_INDEX] instanceof Unit) {
-				Unit unit = (Unit) mapContent[i][Constants.MAP_INTERNAL_UNIT_INDEX];
-				// Get the field-of-view collection for the unit
-				HashSet<MapLocation> fieldOfView = getFieldOfView(unit);
-				// Tell the unit to update it's field-of-view
-				unit.updateFieldOfView(fieldOfView);
-			}
-		}
 	}
 
 	// endregion

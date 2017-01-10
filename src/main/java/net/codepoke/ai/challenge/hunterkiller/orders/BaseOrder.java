@@ -3,6 +3,7 @@ package net.codepoke.ai.challenge.hunterkiller.orders;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import net.codepoke.ai.challenge.hunterkiller.Constants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
 import net.codepoke.ai.challenge.hunterkiller.enums.BaseOrderType;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
@@ -30,6 +31,16 @@ public class BaseOrder
 	// endregion
 
 	// region Constructor
+
+	/**
+	 * Constructs a new instance.
+	 * 
+	 * {@link BaseOrder#BaseOrder(Base, BaseOrderType, int)}
+	 */
+	public BaseOrder(Base base, BaseOrderType type) {
+		super(base, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX);
+		this.orderType = type;
+	}
 
 	/**
 	 * Constructs a new instance.

@@ -119,9 +119,10 @@ public class Player
 	 *            The {@link Map} to get the field-of-view from.
 	 */
 	public HashSet<MapLocation> getCombinedFieldOfView(Map map) {
-		// Start with the Base's field of view
-		// TODO define Base's field of view
 		HashSet<MapLocation> fieldOfViewSet = new HashSet<MapLocation>();
+		// Start with the Base's field of view
+		Base base = (Base) map.getObject(baseID);
+		fieldOfViewSet.addAll(map.getAreaAround(base.getLocation(), true));
 		// Go through our squad
 		for (int i = 0; i < squadIDs.size; i++) {
 			// Get the Unit from the map

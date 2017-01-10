@@ -7,6 +7,7 @@ import java.util.List;
 import net.codepoke.ai.challenge.hunterkiller.enums.BaseOrderType;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitOrderType;
+import net.codepoke.ai.challenge.hunterkiller.enums.UnitType;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 import net.codepoke.ai.challenge.hunterkiller.orders.BaseOrder;
@@ -35,32 +36,16 @@ public class MoveGenerator {
 		// Create a list to write to
 		List<BaseOrder> orders = new ArrayList<BaseOrder>();
 
-		// Check if the base's spawn location is occupied
-		if (!state.getMap()
-					.isTraversable(base.getSpawnLocation())) {
+		// Check if the base can spawn anything
+		if (base.canSpawn(state)) {
 			// If so, return now because nothing can be spawned
 			return orders;
 		}
 
-		// Get the player
-		Player player = state.getPlayer(base.getControllingPlayerID());
-
-		// Check if the player has enough resources to spawn a soldier
-		if (player.getResource() >= Constants.SOLDIER_SPAWN_COST) {
-			// Create an order to spawn a Soldier
-			orders.add(new BaseOrder(base, BaseOrderType.SPAWN_SOLDIER, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX));
-		}
-
-		// Check if the player has enough resources to spawn a medic
-		if (player.getResource() >= Constants.MEDIC_SPAWN_COST) {
-			// Create an order to spawn a Soldier
-			orders.add(new BaseOrder(base, BaseOrderType.SPAWN_MEDIC, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX));
-		}
-
-		// Check if the player has enough resources to spawn an infected
-		if (player.getResource() >= Constants.INFECTED_SPAWN_COST) {
-			// Create an order to spawn a Soldier
-			orders.add(new BaseOrder(base, BaseOrderType.SPAWN_INFECTED, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX));
+		// Check for each unit type if the base can spawn it
+		for (UnitType type : UnitType.values()) {
+			if (base.canSpawn(type, state))
+				orders.add(base.spawn(type));
 		}
 
 		// Return the list of legal orders
@@ -86,25 +71,13 @@ public class MoveGenerator {
 		MapLocation unitLocation = unit.getLocation();
 
 		// Can always rotate east or west
-		orders.add(new UnitOrder(unit, UnitOrderType.ROTATE_CLOCKWISE, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX));
-		orders.add(new UnitOrder(unit, UnitOrderType.ROTATE_COUNTER_CLOCKWISE, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX));
+		orders.add(unit.rotate(true));
+		orders.add(unit.rotate(false));
 
 		// Check what movement options we have
-		if (map.isMovePossible(unitLocation, Direction.NORTH)) {
-			orders.add(new UnitOrder(unit, UnitOrderType.MOVE_NORTH, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX,
-										map.getLocationInDirection(unitLocation, Direction.NORTH, Constants.UNIT_MOVEMENT_RANGE)));
-		}
-		if (map.isMovePossible(unitLocation, Direction.EAST)) {
-			orders.add(new UnitOrder(unit, UnitOrderType.MOVE_EAST, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX,
-										map.getLocationInDirection(unitLocation, Direction.EAST, Constants.UNIT_MOVEMENT_RANGE)));
-		}
-		if (map.isMovePossible(unitLocation, Direction.SOUTH)) {
-			orders.add(new UnitOrder(unit, UnitOrderType.MOVE_SOUTH, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX,
-										map.getLocationInDirection(unitLocation, Direction.SOUTH, Constants.UNIT_MOVEMENT_RANGE)));
-		}
-		if (map.isMovePossible(unitLocation, Direction.WEST)) {
-			orders.add(new UnitOrder(unit, UnitOrderType.MOVE_WEST, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX,
-										map.getLocationInDirection(unitLocation, Direction.WEST, Constants.UNIT_MOVEMENT_RANGE)));
+		for (Direction direction : Direction.values()) {
+			if (map.isMovePossible(unitLocation, direction))
+				orders.add(unit.move(direction, map));
 		}
 
 		// TODO create attack orders for locations in player's FoV versus Unit's?
@@ -122,10 +95,10 @@ public class MoveGenerator {
 				// Check if the special for this unit is available
 				if (unit.getSpecialAttackCooldown() <= 0) {
 					// Create a special attack order for this location
-					orders.add(new UnitOrder(unit, UnitOrderType.ATTACK_SPECIAL, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX, location));
+					orders.add(unit.attack(location, true));
 				}
 				// Create an attack order for this location
-				orders.add(new UnitOrder(unit, UnitOrderType.ATTACK, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX, location));
+				orders.add(unit.attack(location, false));
 			}
 		}
 

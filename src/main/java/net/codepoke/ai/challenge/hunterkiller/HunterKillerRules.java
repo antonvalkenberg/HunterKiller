@@ -37,11 +37,17 @@ public class HunterKillerRules
 	public Result handle(HunterKillerState state, HunterKillerAction action) {
 		// Check to make sure only the active player can perform an action
 		if (action.getActingPlayerID() != state.getCurrentPlayer()) {
-			return new Result(false, false, null, "Invalid action", "Player performing the action is not the active player.");
+			return new Result(false, false, null, "Invalid action",
+								String.format(	"Player performing the action (ID: %d) is not the active player (ID: %d).",
+												action.getActingPlayerID(),
+												state.getCurrentPlayer()));
 		}
 		// Check to make sure the round numbers match
 		if (action.getCurrentRound() != state.getCurrentRound()) {
-			return new Result(false, false, null, "Invalid action", "Round number of the action did not match the State's.");
+			return new Result(false, false, null, "Invalid action",
+								String.format(	"Round number of the action (%d) did not match the State's (%d).",
+												action.getCurrentRound(),
+												state.getCurrentRound()));
 		}
 
 		// Perform the action requested by the player
@@ -127,12 +133,13 @@ public class HunterKillerRules
 						failCount++;
 					break;
 				default:
-					failures.append(String.format("WARNING: Unsupported UnitOrderType.%n"));
+					failures.append(String.format("WARNING: Unsupported UnitOrderType (%s).%n", unitOrder.getOrderType()));
 					failCount++;
 					break;
 				}
 			} else {
-				failures.append(String.format("WARNING: Unsupported OrderType.%n"));
+				failures.append(String.format("WARNING: Unsupported type of order (%s).%n", order.getClass()
+																									.getName()));
 				failCount++;
 			}
 		}
@@ -180,7 +187,7 @@ public class HunterKillerRules
 			spawnCosts = Constants.SOLDIER_SPAWN_COST;
 			break;
 		default:
-			failures.append(String.format("Spawn Failure: Unsupported BaseOrderType.%n"));
+			failures.append(String.format("Spawn Failure: Unsupported BaseOrderType (%s).%n", spawnType));
 			return false;
 		}
 		// Check if the player has enough resources
@@ -202,7 +209,7 @@ public class HunterKillerRules
 					unit = new Soldier(map.requestNewGameObjectID(), player.getID(), spawnlocation, spawnDirection);
 					break;
 				default:
-					failures.append(String.format("Spawn Failure: Unsupported BaseOrderType.%n"));
+					failures.append(String.format("Spawn Failure: Unsupported BaseOrderType (%s).%n", spawnType));
 					return false;
 				}
 				// Place the unit on the map
@@ -213,11 +220,13 @@ public class HunterKillerRules
 					unit.updateFieldOfView(map.getFieldOfView(unit));
 				}
 			} else {
-				failures.append(String.format("Spawn Failure: Spawn location is not traversable, potential causes: location is off grid, MapFeature at location is not walkable or s Unit is present at location.%n"));
+				failures.append(String.format("Spawn Failure: Spawn location is not traversable, potential causes: location is off grid, MapFeature at location is not walkable or a Unit is present at location.%n"));
 				return false;
 			}
 		} else {
-			failures.append(String.format("Spawn Failure: Insufficient resources.%n"));
+			failures.append(String.format(	"Spawn Failure: Insufficient resources: required %d, available %d.%n",
+											spawnCosts,
+											player.getResource()));
 			return false;
 		}
 		// Return
@@ -246,7 +255,8 @@ public class HunterKillerRules
 			return false;
 		}
 		if (!(object instanceof Unit)) {
-			failures.append(String.format("Rotate Failure: Cannot rotate non-Unit object.%n"));
+			failures.append(String.format("Rotate Failure: Cannot rotate non-Unit object (%s).%n", object.getClass()
+																											.getName()));
 			return false;
 		}
 		// Rotate the unit in the specified direction
@@ -277,7 +287,8 @@ public class HunterKillerRules
 			return false;
 		}
 		if (!(object instanceof Unit)) {
-			failures.append(String.format("Movement Failure: Cannot move non-Unit object.%n"));
+			failures.append(String.format("Movement Failure: Cannot move non-Unit object (%s).%n", object.getClass()
+																											.getName()));
 			return false;
 		}
 		// Check if a target for the move has been set
@@ -287,7 +298,7 @@ public class HunterKillerRules
 		}
 		// Check if the ordered move is possible
 		if (!map.isMovePossible(map.getObjectLocation(moveOrder.getObjectID()), moveOrder)) {
-			failures.append(String.format("Movement Failure: Illegal move supplied.%n"));
+			failures.append(String.format("Movement Failure: Illegal move supplied. Possible causes: No unit at origin location, target location is off grid, MapFeature at target location is not walkable or a Unit is present at target location. %n"));
 			return false;
 		}
 		// Execute the move
@@ -321,7 +332,8 @@ public class HunterKillerRules
 			return false;
 		}
 		if (!(object instanceof Unit)) {
-			failures.append(String.format("Attack Failure: Cannot attack with non-Unit object.%n"));
+			failures.append(String.format("Attack Failure: Cannot attack with non-Unit object (%s).%n", object.getClass()
+																												.getName()));
 			return false;
 		}
 
@@ -330,12 +342,14 @@ public class HunterKillerRules
 		// Check if the target location is in the Player's combined field of view
 		if (!player.getCombinedFieldOfView(map)
 					.contains(targetLocation)) {
-			failures.append(String.format("Attack Failure: Target location is not in your Field-of-View.%n"));
+			failures.append(String.format("Attack Failure: Target location is not in player's Field-of-View.%n"));
 			return false;
 		}
 		// Check if the target location is within the Unit's attack range
 		if (unit.getAttackRange() < MapLocation.getManhattanDist(unit.getLocation(), targetLocation)) {
-			failures.append(String.format("Attack Failure: Target location outside of attack range.%n"));
+			failures.append(String.format(	"Attack Failure: Target location is outside of attack range (range: %d, distance: %d).%n",
+											unit.getAttackRange(),
+											MapLocation.getManhattanDist(unit.getLocation(), targetLocation)));
 			return false;
 		}
 
@@ -399,25 +413,29 @@ public class HunterKillerRules
 			return false;
 		}
 		if (!(object instanceof Unit)) {
-			failures.append(String.format("Special Attack Failure: Cannot attack with non-Unit object.%n"));
+			failures.append(String.format("Special Attack Failure: Cannot attack with non-Unit object (%s).%n", object.getClass()
+																														.getName()));
 			return false;
 		}
 		Unit unit = (Unit) object;
 		MapLocation targetLocation = attackOrder.getTargetLocation();
 		// Check if the Unit's special attack has cooled down
 		if (unit.getSpecialAttackCooldown() > 0) {
-			failures.append(String.format("Special Attack Failure: Ability is still on cooldown.%n"));
+			failures.append(String.format(	"Special Attack Failure: Ability is still on cooldown (%d round(s) remaining).%n",
+											unit.getSpecialAttackCooldown()));
 			return false;
 		}
 		// Check if the target location is in the Players's combined field of view.
 		if (!player.getCombinedFieldOfView(map)
 					.contains(targetLocation)) {
-			failures.append(String.format("Special Attack Failure: Target location is not in your Field-of-View.%n"));
+			failures.append(String.format("Special Attack Failure: Target location is not in player's Field-of-View.%n"));
 			return false;
 		}
 		// Check if the target location is within the Unit's attack range
-		if (unit.getAttackRange() < MapLocation.getManhattanDist(unit.getLocation(), attackOrder.getTargetLocation())) {
-			failures.append(String.format("Special Attack Failure: Target location outside of attack range.%n"));
+		if (unit.getAttackRange() < MapLocation.getManhattanDist(unit.getLocation(), targetLocation)) {
+			failures.append(String.format(	"Special Attack Failure: Target location outside of attack range (range: %d, distance: %d).%n",
+											unit.getAttackRange(),
+											MapLocation.getManhattanDist(unit.getLocation(), targetLocation)));
 			return false;
 		}
 		// Execute the special action, this is different per Unit type

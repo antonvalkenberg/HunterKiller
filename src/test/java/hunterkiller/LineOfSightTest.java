@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 
+import net.codepoke.ai.challenge.hunterkiller.Constants;
 import net.codepoke.ai.challenge.hunterkiller.Map;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
@@ -27,18 +28,22 @@ import org.junit.Test;
  */
 public class LineOfSightTest {
 
+	// region Properties
+
 	private Map testMap;
 	private static final int testWidth = 4;
 	private static final int testHeight = 4;
 
+	// endregion
+
+	// region Setup methods
+
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-
 	}
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-
 	}
 
 	@Before
@@ -48,8 +53,12 @@ public class LineOfSightTest {
 
 	@After
 	public void tearDown() throws Exception {
-
+		testMap = null;
 	}
+
+	// endregion
+
+	// region Test methods
 
 	/**
 	 * Tests a line-of-sight setup with no obstacles:
@@ -67,9 +76,9 @@ public class LineOfSightTest {
 	@Test
 	public void testOpenVision() {
 		// Fill map with Floors
-		GameObject[][] mapContent = new GameObject[testMap.getMapWidth() * testMap.getMapHeight()][Map.INTERNAL_MAP_LAYERS];
+		GameObject[][] mapContent = new GameObject[testMap.getMapWidth() * testMap.getMapHeight()][Constants.MAP_INTERNAL_LAYERS];
 		for (int i = 0; i < mapContent.length; i++) {
-			mapContent[i][Map.INTERNAL_MAP_FEATURE_INDEX] = new Floor(testMap.requestNewGameObjectID(), testMap.toLocation(i));
+			mapContent[i][Constants.MAP_INTERNAL_FEATURE_INDEX] = new Floor(testMap.requestNewGameObjectID(), testMap.toLocation(i));
 		}
 		testMap.setMapContent(mapContent);
 
@@ -91,7 +100,7 @@ public class LineOfSightTest {
 		assertTrue(northFOV.contains(new MapLocation(2, 0)));
 		assertTrue(northFOV.contains(new MapLocation(1, 1)));
 
-		// Create a new soldier at [1,1] facing CLOCKWISE
+		// Create a new soldier at [1,1] facing EAST
 		Soldier eastSoldier = new Soldier(testMap.requestNewGameObjectID(), 0, new MapLocation(1, 1), Direction.EAST);
 		// Get the field-of-view for the east-facing soldier
 		HashSet<MapLocation> eastFOV = testMap.getFieldOfView(eastSoldier);
@@ -127,7 +136,7 @@ public class LineOfSightTest {
 		assertTrue(southFOV.contains(new MapLocation(1, 3)));
 		assertTrue(southFOV.contains(new MapLocation(2, 3)));
 
-		// Create a new soldier at [1,1] facing COUNTER_CLOCKWISE
+		// Create a new soldier at [1,1] facing WEST
 		Soldier westSoldier = new Soldier(testMap.requestNewGameObjectID(), 0, new MapLocation(1, 1), Direction.WEST);
 		// Get the field-of-view for the west-facing soldier
 		HashSet<MapLocation> westFOV = testMap.getFieldOfView(westSoldier);
@@ -187,13 +196,13 @@ public class LineOfSightTest {
 	@Test
 	public void testWallVision() {
 		// Fill map with Floors, except for the first column
-		GameObject[][] mapContent = new GameObject[testMap.getMapWidth() * testMap.getMapHeight()][Map.INTERNAL_MAP_LAYERS];
+		GameObject[][] mapContent = new GameObject[testMap.getMapWidth() * testMap.getMapHeight()][Constants.MAP_INTERNAL_LAYERS];
 		for (int i = 0; i < mapContent.length; i++) {
 			MapLocation location = testMap.toLocation(i);
 			if (location.getX() == 2) {
-				mapContent[i][Map.INTERNAL_MAP_FEATURE_INDEX] = new Wall(testMap.requestNewGameObjectID(), location);
+				mapContent[i][Constants.MAP_INTERNAL_FEATURE_INDEX] = new Wall(testMap.requestNewGameObjectID(), location);
 			} else {
-				mapContent[i][Map.INTERNAL_MAP_FEATURE_INDEX] = new Floor(testMap.requestNewGameObjectID(), location);
+				mapContent[i][Constants.MAP_INTERNAL_FEATURE_INDEX] = new Floor(testMap.requestNewGameObjectID(), location);
 			}
 		}
 		testMap.setMapContent(mapContent);
@@ -216,7 +225,7 @@ public class LineOfSightTest {
 		assertTrue(northFOV.contains(new MapLocation(2, 0)));
 		assertTrue(northFOV.contains(new MapLocation(1, 1)));
 
-		// Create a new soldier at [1,1] facing CLOCKWISE
+		// Create a new soldier at [1,1] facing EAST
 		Soldier eastSoldier = new Soldier(testMap.requestNewGameObjectID(), 0, new MapLocation(1, 1), Direction.EAST);
 		// Get the field-of-view for the east-facing soldier
 		HashSet<MapLocation> eastFOV = testMap.getFieldOfView(eastSoldier);
@@ -249,7 +258,7 @@ public class LineOfSightTest {
 		assertTrue(southFOV.contains(new MapLocation(1, 3)));
 		assertTrue(southFOV.contains(new MapLocation(2, 3)));
 
-		// Create a new soldier at [1,1] facing COUNTER_CLOCKWISE
+		// Create a new soldier at [1,1] facing WEST
 		Soldier westSoldier = new Soldier(testMap.requestNewGameObjectID(), 0, new MapLocation(1, 1), Direction.WEST);
 		// Get the field-of-view for the west-facing soldier
 		HashSet<MapLocation> westFOV = testMap.getFieldOfView(westSoldier);
@@ -305,13 +314,13 @@ public class LineOfSightTest {
 	@Test
 	public void testCornerVision() {
 		// Fill map with Floors, except for position #4
-		GameObject[][] mapContent = new GameObject[testMap.getMapWidth() * testMap.getMapHeight()][Map.INTERNAL_MAP_LAYERS];
+		GameObject[][] mapContent = new GameObject[testMap.getMapWidth() * testMap.getMapHeight()][Constants.MAP_INTERNAL_LAYERS];
 		for (int i = 0; i < mapContent.length; i++) {
 			MapLocation location = testMap.toLocation(i);
 			if (i == 4) {
-				mapContent[i][Map.INTERNAL_MAP_FEATURE_INDEX] = new Wall(testMap.requestNewGameObjectID(), location);
+				mapContent[i][Constants.MAP_INTERNAL_FEATURE_INDEX] = new Wall(testMap.requestNewGameObjectID(), location);
 			} else {
-				mapContent[i][Map.INTERNAL_MAP_FEATURE_INDEX] = new Floor(testMap.requestNewGameObjectID(), location);
+				mapContent[i][Constants.MAP_INTERNAL_FEATURE_INDEX] = new Floor(testMap.requestNewGameObjectID(), location);
 			}
 		}
 		testMap.setMapContent(mapContent);
@@ -319,7 +328,7 @@ public class LineOfSightTest {
 		// In the next sections, when visualising the FOV; '.' refers to visible tiles, and '#' refers to obscured
 		// tiles.
 
-		// Create a new soldier at [0,0] facing CLOCKWISE
+		// Create a new soldier at [0,0] facing EAST
 		Soldier eastSoldier = new Soldier(testMap.requestNewGameObjectID(), 0, new MapLocation(0, 0), Direction.EAST);
 		// Get the field-of-view for the east-facing soldier
 		HashSet<MapLocation> eastFOV = testMap.getFieldOfView(eastSoldier);
@@ -390,13 +399,13 @@ public class LineOfSightTest {
 	@Test
 	public void testRoomVision() {
 		// Fill map with Floors, except for positions #5, 6, 7, 9, 13
-		GameObject[][] mapContent = new GameObject[testMap.getMapWidth() * testMap.getMapHeight()][Map.INTERNAL_MAP_LAYERS];
+		GameObject[][] mapContent = new GameObject[testMap.getMapWidth() * testMap.getMapHeight()][Constants.MAP_INTERNAL_LAYERS];
 		for (int i = 0; i < mapContent.length; i++) {
 			MapLocation location = testMap.toLocation(i);
 			if (i == 5 || i == 6 || i == 7 || i == 9 || i == 13) {
-				mapContent[i][Map.INTERNAL_MAP_FEATURE_INDEX] = new Wall(testMap.requestNewGameObjectID(), location);
+				mapContent[i][Constants.MAP_INTERNAL_FEATURE_INDEX] = new Wall(testMap.requestNewGameObjectID(), location);
 			} else {
-				mapContent[i][Map.INTERNAL_MAP_FEATURE_INDEX] = new Floor(testMap.requestNewGameObjectID(), location);
+				mapContent[i][Constants.MAP_INTERNAL_FEATURE_INDEX] = new Floor(testMap.requestNewGameObjectID(), location);
 			}
 		}
 		testMap.setMapContent(mapContent);
@@ -404,7 +413,7 @@ public class LineOfSightTest {
 		// In the next sections, when visualising the FOV; '.' refers to visible tiles, and '#' refers to obscured
 		// tiles.
 
-		// Create a new soldier at [3,3] facing COUNTER_CLOCKWISE
+		// Create a new soldier at [3,3] facing WEST
 		Soldier westSoldier = new Soldier(testMap.requestNewGameObjectID(), 0, new MapLocation(3, 3), Direction.WEST);
 		// Get the field-of-view for the west-facing soldier
 		HashSet<MapLocation> westFOV = testMap.getFieldOfView(westSoldier);
@@ -456,5 +465,7 @@ public class LineOfSightTest {
 		assertTrue(infectedFOV.contains(new MapLocation(2, 1)));
 		assertTrue(infectedFOV.contains(new MapLocation(1, 1)));
 	}
+
+	// endregion
 
 }

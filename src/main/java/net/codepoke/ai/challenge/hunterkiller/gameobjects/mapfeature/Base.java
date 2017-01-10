@@ -8,9 +8,11 @@ import net.codepoke.ai.challenge.hunterkiller.Constants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import net.codepoke.ai.challenge.hunterkiller.Map;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
+import net.codepoke.ai.challenge.hunterkiller.enums.BaseOrderType;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitType;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
+import net.codepoke.ai.challenge.hunterkiller.orders.BaseOrder;
 
 /**
  * Class representing the base for a player. The base can spawn {@link Unit}s on a nearby {@link MapLocation}.
@@ -122,6 +124,26 @@ public class Base
 									.getResource();
 		// Check if the resource amount is at least the cost to spawn the specified unit type
 		return playerResource >= Unit.getSpawnCost(unitType);
+	}
+
+	/**
+	 * Returns an order to spawn a unit from this base.
+	 * 
+	 * @param unitType
+	 *            The type of unit to spawn.
+	 */
+	public BaseOrder spawn(UnitType unitType) {
+		switch (unitType) {
+		case Infected:
+			return new BaseOrder(this, BaseOrderType.SPAWN_INFECTED);
+		case Medic:
+			return new BaseOrder(this, BaseOrderType.SPAWN_MEDIC);
+		case Soldier:
+			return new BaseOrder(this, BaseOrderType.SPAWN_SOLDIER);
+		default:
+			System.err.println(String.format("WARNING: Unsupported unit type: %s", unitType));
+			return null;
+		}
 	}
 
 	// endregion

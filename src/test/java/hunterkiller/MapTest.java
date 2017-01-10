@@ -3,6 +3,7 @@ package hunterkiller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import net.codepoke.ai.challenge.hunterkiller.Constants;
 import net.codepoke.ai.challenge.hunterkiller.FourPatch;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerStateFactory;
@@ -43,12 +44,10 @@ public class MapTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-
 	}
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-
 	}
 
 	@Before
@@ -136,7 +135,7 @@ public class MapTest {
 
 		// Go through the MapFeatures
 		GameObject[][] content = createdMap.getMapContent();
-		int index = Map.INTERNAL_MAP_FEATURE_INDEX;
+		int index = Constants.MAP_INTERNAL_FEATURE_INDEX;
 
 		// Should be 24 positions on the map
 		assertEquals(24, content.length);
@@ -194,8 +193,8 @@ public class MapTest {
 		// Check that the initialState starts in round 1
 		assertEquals(1, initialState.getCurrentRound());
 		// Check that the current player has the starting amount of resource
-		assertEquals(Player.PLAYER_STARTING_RESOURCE, initialState.getPlayer(initialState.getCurrentPlayer())
-																	.getResource());
+		assertEquals(Constants.PLAYER_STARTING_RESOURCE, initialState.getPlayer(initialState.getCurrentPlayer())
+																		.getResource());
 		// Make sure the initial state is not done
 		assertFalse(initialState.isDone());
 
@@ -203,4 +202,5 @@ public class MapTest {
 	}
 
 	// endregion
+
 }
