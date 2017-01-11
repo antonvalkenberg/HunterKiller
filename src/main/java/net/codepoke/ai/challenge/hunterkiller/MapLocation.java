@@ -125,17 +125,26 @@ public class MapLocation {
 		// Check that the points are not the same
 		if (origin.equals(target))
 			return null;
+
+		// Get the differences in coordinates
 		int dX = origin.getX() - target.getX();
 		int dY = origin.getY() - target.getY();
-		// Check cardinal directions
+
+		// Check if the Y-coordinate of the origin is smaller than that of the target, and if the Xs were equal
 		if (dY < 0 && dX == 0)
-			return Direction.NORTH;
-		else if (dY == 0 && dX > 0)
-			return Direction.EAST;
-		else if (dY > 0 && dX == 0)
+			// This means the direction from origin to target is increasing in Y, equal in X
 			return Direction.SOUTH;
-		else if (dY == 0 && dX < 0)
+		// Check if the Yx were equal, and if the X-coordinate of the origin was greater than that of the target
+		else if (dY == 0 && dX > 0)
+			// This means the direction from origin to target is decreasing in X, equal in Y
 			return Direction.WEST;
+		// Check if the Y-coordinate of the origin is greater than that of the target, and if the Xs were equal
+		else if (dY > 0 && dX == 0)
+			// This means the direction from origin to target is decreasing in Y, equal in X
+			return Direction.NORTH;
+		else if (dY == 0 && dX < 0)
+			// That only leaves this one
+			return Direction.EAST;
 		else {
 			// Non-cardinal direction
 			return null;
