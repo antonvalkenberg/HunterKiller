@@ -370,11 +370,11 @@ public class HunterKillerRules
 			Unit deadUnit = map.getUnitAtLocation(targetLocation);
 			attackSuccess = map.remove(map.toPosition(targetLocation), deadUnit);
 			if (attackSuccess) {
+				// Award points to the player
+				awardPointsForUnitDeath(player, deadUnit);
 				// Remove the unit from it's owners squad
 				state.getPlayer(deadUnit.getControllingPlayerID())
 						.removeUnitFromSquad(deadUnit.getID());
-				// Award points to the player
-				awardPointsForUnitDeath(player, targetUnit);
 				// Spawn a new Infected, on the same team as the Infected that performed this attack
 				Infected spawn = new Infected(map.requestNewGameObjectID(), player.getID(), targetLocation, unit.getOrientation());
 				attackSuccess = map.place(map.toPosition(targetLocation), spawn);
@@ -458,6 +458,13 @@ public class HunterKillerRules
 				if (map.attackLocation(location, Constants.SOLDIER_SPECIAL_DAMAGE)) {
 					// Report success if at least one of the locations is successfully attacked
 					attackSuccess = true;
+
+					// Check if there was a Unit on the targeted location, and if it is currently dead
+					Unit targetUnit = map.getUnitAtLocation(location);
+					if (targetUnit != null && targetUnit.getHpCurrent() <= 0) {
+						// Award points to the player
+						awardPointsForUnitDeath(player, targetUnit);
+					}
 				}
 			}
 		}
@@ -476,6 +483,11 @@ public class HunterKillerRules
 	 *            The Unit that died.
 	 */
 	private void awardPointsForUnitDeath(Player player, Unit killedUnit) {
+		// Only award points if the unit did not belong to the player itself
+		if (player.getSquadIDs()
+					.contains(killedUnit.getID()))
+			return;
+
 		if (killedUnit instanceof Soldier) {
 			player.awardScore(Constants.SOLDIER_SCORE);
 		} else if (killedUnit instanceof Medic) {
