@@ -30,11 +30,28 @@ public enum Direction {
 
 	/**
 	 * The angle of this direction, which assumes that X-positive, Y==0 will be 0, and increases
-	 * counter-clockwise. This is primarily used in {@link net.codepoke.ai.challenge.hunterkiller.LineOfSight
-	 * LineOfSight} calculations and can be
-	 * safely ignored.
+	 * clockwise. This is primarily used in {@link net.codepoke.ai.challenge.hunterkiller.LineOfSight
+	 * LineOfSight} calculations and can be safely ignored.
 	 */
 	public float angle;
+
+	/**
+	 * Returns the rotation needed to correctly render this direction in the visualisation (using libgdx).
+	 * This is primarily used in the visualisation of HunterKiller and can be safely ignored.
+	 */
+	public float getLibgdxRotationAngle() {
+		switch (this) {
+		case EAST:
+			return 180;
+		case NORTH:
+			return 270;
+		case SOUTH:
+			return 90;
+		case WEST:
+		default:
+			return 0;
+		}
+	}
 
 	/**
 	 * Returns the direction that is directly opposite of this.
