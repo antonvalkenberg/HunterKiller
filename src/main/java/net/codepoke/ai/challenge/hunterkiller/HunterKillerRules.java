@@ -381,7 +381,7 @@ public class HunterKillerRules
 				// Add the newly spawned unit to the player's squad
 				if (attackSuccess) {
 					player.addUnitToSquad(spawn.getID());
-					unit.updateFieldOfView(map.getFieldOfView(unit));
+					spawn.updateFieldOfView(map.getFieldOfView(spawn));
 					// If we executed the special action, start the cooldown
 					unit.startCooldown();
 				}
