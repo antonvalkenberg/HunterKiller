@@ -37,8 +37,8 @@ public class MoveGenerator {
 		List<BaseOrder> orders = new ArrayList<BaseOrder>();
 
 		// Check if the base can spawn anything
-		if (base.canSpawn(state)) {
-			// If so, return now because nothing can be spawned
+		if (!base.canSpawn(state)) {
+			// If not, return now because nothing can be spawned
 			return orders;
 		}
 
