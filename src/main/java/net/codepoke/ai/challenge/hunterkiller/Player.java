@@ -107,6 +107,8 @@ public class Player
 		}
 		// Set the resources
 		newPlayer.setResource(this.resource);
+		// Set the score
+		newPlayer.setScore(this.score);
 
 		return newPlayer;
 	}
@@ -233,6 +235,20 @@ public class Player
 	 */
 	protected void removeUnitFromSquad(int unitID) {
 		squadIDs.removeValue(unitID);
+	}
+
+	// endregion
+
+	// region Private methods
+
+	/**
+	 * Set this player's score
+	 * 
+	 * @param score
+	 *            The score to set.
+	 */
+	private void setScore(int score) {
+		this.score = score;
 	}
 
 	// endregion
