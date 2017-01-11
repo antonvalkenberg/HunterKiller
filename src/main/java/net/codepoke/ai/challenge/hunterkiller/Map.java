@@ -41,6 +41,11 @@ public class Map {
 	// region Properties
 
 	/**
+	 * The name of this map.
+	 */
+	public String name;
+
+	/**
 	 * The height of this map.
 	 */
 	@Getter
@@ -80,12 +85,15 @@ public class Map {
 	/**
 	 * Constructs a new empty map with specified width and height.
 	 * 
+	 * @param name
+	 *            The map's name
 	 * @param width
 	 *            The map's width
 	 * @param height
 	 *            The map's height
 	 */
-	public Map(int width, int height) {
+	public Map(String name, int width, int height) {
+		this.name = name;
 		mapWidth = width;
 		mapHeight = height;
 		// Map will have (width * height) positions
@@ -227,15 +235,16 @@ public class Map {
 	 */
 	public boolean isTraversable(MapLocation location) {
 		int locationPosition = toPosition(location);
-		// Check some things
+		// Check if the coordinates exist
 		boolean validX = isXonMap(location.getX());
 		boolean validY = isYonMap(location.getY());
-		// A tile can be walked on/over if there is no Unit in the way, and the MapFeature on that location is walkable
+		// There is a unit on a square if the content of the unit layer is not null
 		boolean unitPresent = mapContent[locationPosition][Constants.MAP_INTERNAL_UNIT_INDEX] != null;
-		boolean featureWalkable = mapContent[locationPosition][Constants.MAP_INTERNAL_FEATURE_INDEX] != null
-									&& ((MapFeature) mapContent[locationPosition][Constants.MAP_INTERNAL_FEATURE_INDEX]).isWalkable();
+		// A feature can be walked on/over if it is walkable, derp
+		boolean featureWalkable = ((MapFeature) mapContent[locationPosition][Constants.MAP_INTERNAL_FEATURE_INDEX]).isWalkable();
+		// Define walkable
 		boolean walkable = !unitPresent && featureWalkable;
-		// Traversable if all three are ok
+		// Traversable if all three are true
 		return validX && validY && walkable;
 	}
 
@@ -250,10 +259,10 @@ public class Map {
 	 * @return
 	 */
 	public boolean isMovePossible(MapLocation fromLocation, UnitOrder move) {
-		// Check that there is a unit on the origin location
+		// Make sure that there is a unit on the origin location
 		if (mapContent[toPosition(fromLocation)][Constants.MAP_INTERNAL_UNIT_INDEX] == null)
 			return false;
-		// Check that the unit that is trying to move is actually at the location they are trying to move from
+		// Make sure that the unit that is trying to move is actually at the location they are trying to move from
 		if (move.getObjectID() != ((Unit) mapContent[toPosition(fromLocation)][Constants.MAP_INTERNAL_UNIT_INDEX]).getID())
 			return false;
 
@@ -344,7 +353,7 @@ public class Map {
 
 	/**
 	 * Returns the {@link MapLocation} that is a distance away from a location. Returns null if no
-	 * such location exists.
+	 * such location exists, or if the distance is large enough to wrap around the map.
 	 * 
 	 * @param location
 	 *            The location to start from.
@@ -355,6 +364,11 @@ public class Map {
 	 * @return
 	 */
 	public MapLocation getLocationInDirection(MapLocation location, Direction direction, int distance) {
+		// Check if the distance is not larger than the maximum distance available (on the map) in that direction
+		if (distance > getMaxTravelDistance(location, direction))
+			return null;
+
+		// Find the position in that direction
 		int targetPosition = getPositionInDirection(toPosition(location), direction, distance);
 		return targetPosition >= 0 ? toLocation(targetPosition) : null;
 	}
@@ -396,6 +410,39 @@ public class Map {
 		}
 		// Check if the target position doesn't go out of bounds.
 		return targetPosition > 0 && targetPosition < mapWidth * mapHeight ? targetPosition : -1;
+	}
+
+	/**
+	 * Returns the maximum distance of travel there is available before the edge of the map is encountered.
+	 * 
+	 * @param location
+	 *            The location to start from.
+	 * @param direction
+	 *            The direction to travel in.
+	 */
+	public int getMaxTravelDistance(MapLocation origin, Direction direction) {
+		switch (direction) {
+		case EAST:
+			// When travelling east, X is increasing and Y stays equal
+			// This means we can only go as far as the width of the map, minus our current X-coordinate
+			// (minus 1 because of indexes)
+			return mapWidth - 1 - origin.getX();
+		case NORTH:
+			// When travelling north, Y is decreasing and X stays equal
+			// This means we can only go a number of steps equal to our Y-coordinate
+			return origin.getY();
+		case SOUTH:
+			// When travelling south, Y is increasing and X stays equal
+			// This means we can only go as far as the height of the map, minus our current Y-coordinate
+			// (minus 1 because of indexes)
+			return mapHeight - 1 - origin.getY();
+		case WEST:
+			// When travelling west, X is decreasing and Y stays equal
+			// This means we can only go a number of steps equal to our X-coordinate
+			return origin.getX();
+		default:
+			return 0;
+		}
 	}
 
 	/**
@@ -613,7 +660,7 @@ public class Map {
 	 */
 	public Map copy() {
 		// Create a new map
-		Map newMap = new Map(this.mapWidth, this.mapHeight);
+		Map newMap = new Map(this.name, this.mapWidth, this.mapHeight);
 		// Deep copy the map content
 		GameObject[][] content = copyMapContent();
 		// Set some things

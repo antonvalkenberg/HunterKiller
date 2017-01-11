@@ -275,7 +275,7 @@ public abstract class Unit
 	 */
 	public UnitOrder move(Direction direction, Map map) {
 		UnitOrderType type;
-		// Determine the correct order-type for the direction, and the target location
+		// Determine the correct order-type for the direction
 		switch (direction) {
 		case EAST:
 			type = UnitOrderType.MOVE_EAST;

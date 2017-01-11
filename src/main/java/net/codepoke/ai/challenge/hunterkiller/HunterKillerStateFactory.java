@@ -45,6 +45,9 @@ public class HunterKillerStateFactory
 		Pattern p = Pattern.compile("^\\d");
 
 		for (File mapFile : maps.listFiles()) {
+			// Check if the file isn't a directory
+			if (mapFile.isDirectory())
+				continue;
 			try {
 				String rawMapData = IOUtils.toString(mapFile.toURI());
 
@@ -84,12 +87,14 @@ public class HunterKillerStateFactory
 	public static Map constructMap(MapSetup premade, Player[] players) {
 		// Create a FourPatch
 		FourPatch patch = new FourPatch(new HunterKillerMapCreation(), premade.mapData, premade.quadrantAWidth, premade.quadrantAHeight);
-		return constructFromFourPatch(patch, players, premade.spawnDirection);
+		return constructFromFourPatch(premade.name, patch, players, premade.spawnDirection);
 	}
 
 	/**
 	 * This method uses a {@link FourPatch} to create a full {@link Map}.
 	 * 
+	 * @param mapName
+	 *            The name of the map.
 	 * @param patch
 	 *            The {@link FourPatch} that will be used to construct the map.
 	 * @param players
@@ -99,9 +104,9 @@ public class HunterKillerStateFactory
 	 * 
 	 * @return The constructed {@link Map} object.
 	 */
-	public static Map constructFromFourPatch(FourPatch patch, Player[] players, Direction patchBaseSpawnDirection) {
+	public static Map constructFromFourPatch(String mapName, FourPatch patch, Player[] players, Direction patchBaseSpawnDirection) {
 		// Create a new Map
-		Map map = new Map(patch.getGridWidth(), patch.getGridHeight());
+		Map map = new Map(mapName, patch.getGridWidth(), patch.getGridHeight());
 
 		// Set up the HunterKillerMapCreation
 		HunterKillerMapCreation.setup(players, map, patchBaseSpawnDirection);

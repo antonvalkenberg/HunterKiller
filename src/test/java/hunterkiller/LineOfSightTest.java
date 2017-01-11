@@ -48,7 +48,7 @@ public class LineOfSightTest {
 
 	@Before
 	public void setUp() throws Exception {
-		testMap = new Map(testWidth, testHeight);
+		testMap = new Map("LoS_test", testWidth, testHeight);
 	}
 
 	@After

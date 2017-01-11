@@ -320,7 +320,7 @@ public class Constants {
 	/**
 	 * The maximum number of rounds a game will have.
 	 */
-	public static final int RULES_MAX_GAME_ROUNDS = 20;
+	public static final int RULES_MAX_GAME_ROUNDS = 100;
 
 	// endregion
 

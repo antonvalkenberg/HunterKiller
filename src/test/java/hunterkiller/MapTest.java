@@ -52,7 +52,7 @@ public class MapTest {
 
 	@Before
 	public void setUpBeforeMethod() throws Exception {
-		testMap = new Map(testWidth, testHeight);
+		testMap = new Map("map_test", testWidth, testHeight);
 	}
 
 	@After
@@ -131,7 +131,7 @@ public class MapTest {
 		// Set the spawn direction
 		Direction spawnDirection = Direction.NORTH;
 		// Test the creation from a pre made map
-		Map createdMap = HunterKillerStateFactory.constructFromFourPatch(testPatch, players, spawnDirection);
+		Map createdMap = HunterKillerStateFactory.constructFromFourPatch("testPatch", testPatch, players, spawnDirection);
 
 		// Go through the MapFeatures
 		GameObject[][] content = createdMap.getMapContent();
