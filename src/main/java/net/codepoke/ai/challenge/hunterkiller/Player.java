@@ -57,6 +57,12 @@ public class Player
 	private int baseID;
 
 	/**
+	 * Whether or not this Player's base exists.
+	 */
+	@Setter
+	private boolean baseExists = false;;
+
+	/**
 	 * Collection of IDs of {@link Unit}s that this player controls.
 	 */
 	protected IntArray squadIDs;
@@ -109,13 +115,15 @@ public class Player
 		newPlayer.setResource(this.resource);
 		// Set the score
 		newPlayer.setScore(this.score);
+		// Set base status
+		newPlayer.setBaseExists(this.baseExists);
 
 		return newPlayer;
 	}
 
 	/**
 	 * Returns the combined Field-of-View of the player, in a given state. This Field-of-View is made up of the union of
-	 * all it's Unit's Field-of-View, and it's Base.
+	 * all it's Unit's Field-of-View, and it's Base (if that exists).
 	 * 
 	 * @param map
 	 *            The {@link Map} to get the field-of-view from.
@@ -123,8 +131,10 @@ public class Player
 	public HashSet<MapLocation> getCombinedFieldOfView(Map map) {
 		HashSet<MapLocation> fieldOfViewSet = new HashSet<MapLocation>();
 		// Start with the Base's field of view
-		Base base = (Base) map.getObject(baseID);
-		fieldOfViewSet.addAll(map.getAreaAround(base.getLocation(), true));
+		if (baseExists) {
+			Base base = (Base) map.getObject(baseID);
+			fieldOfViewSet.addAll(map.getAreaAround(base.getLocation(), true));
+		}
 		// Go through our squad
 		for (int i = 0; i < squadIDs.size; i++) {
 			// Get the Unit from the map
@@ -139,13 +149,18 @@ public class Player
 	}
 
 	/**
-	 * Returns this player's {@link Base} on the provided {@link Map}.
+	 * Returns this player's {@link Base} on the provided {@link Map}. Note: this method returns null when a Player's
+	 * base no longer exists.
 	 * 
 	 * @param map
 	 *            The map to get the base from.
 	 */
 	public Base getBase(Map map) {
-		return (Base) map.getObject(baseID);
+		// Check if our base exists
+		if (baseExists)
+			return (Base) map.getObject(baseID);
+		else
+			return null;
 	}
 
 	/**
@@ -205,6 +220,7 @@ public class Player
 	 */
 	protected void assignBase(int baseID) {
 		this.baseID = baseID;
+		baseExists = true;
 	}
 
 	/**
@@ -235,6 +251,19 @@ public class Player
 	 */
 	protected void removeUnitFromSquad(int unitID) {
 		squadIDs.removeValue(unitID);
+	}
+
+	/**
+	 * Inform this Player that it's Base has been destroyed.
+	 * 
+	 * @param baseID
+	 *            The unique identifier of the {@link Base} that was destroyed.
+	 */
+	protected void informBaseDestroyed(int baseID) {
+		// Check if the IDs match
+		if (this.baseID == baseID)
+			baseExists = false;
+		// Otherwise just ignore
 	}
 
 	// endregion

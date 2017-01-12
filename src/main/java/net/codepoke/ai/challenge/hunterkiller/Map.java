@@ -24,6 +24,8 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
 
+import com.badlogic.gdx.utils.IntArray;
+
 /**
  * The map on which HunterKiller is played. The map is internally represented as a 2-dimensional
  * array. The first dimension contains all locations on the map (width * height) mapped to a
@@ -811,6 +813,26 @@ public class Map {
 					if (object.tick(state)) {
 						// Returning true indicates that the object should be removed
 						remove(i, object);
+						// If the object is a Base, replace it with a Space-tile
+						if (object instanceof Base) {
+							mapContent[i][Constants.MAP_INTERNAL_FEATURE_INDEX] = new Space(requestNewGameObjectID(), toLocation(i));
+							Base base = (Base) object;
+							Player player = state.getPlayer(base.getControllingPlayerID());
+							// Tell the Player that was controlling the Base that it's gone
+							player.informBaseDestroyed(base.getID());
+							// Remove all of the Player's Units as well
+							IntArray unitIDs = player.getSquadIDs();
+							for (int id : unitIDs.items) {
+								Unit unit = (Unit) getObject(id);
+								// Check if the Unit is still around (might have died this same tick)
+								if (unit != null) {
+									// Remove the Unit from this map
+									remove(toPosition(unit.getLocation()), unit);
+									// Also remove it from the Player's squad
+									player.removeUnitFromSquad(id);
+								}
+							}
+						}
 						// If the object is a Unit, tell it's Player to remove it from it's squad
 						if (object instanceof Unit) {
 							Unit unit = (Unit) object;
