@@ -840,7 +840,7 @@ public class Map {
 						// Reduce the timer if the door is open
 						Door door = (Door) object;
 						if (door.isOpen())
-							door.reduceTimer();
+							door.reduceTimer(this);
 					}
 					// Check if it's a Unit
 					else if (object instanceof Unit) {

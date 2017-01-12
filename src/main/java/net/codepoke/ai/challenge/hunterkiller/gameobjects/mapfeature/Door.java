@@ -5,8 +5,10 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.codepoke.ai.challenge.hunterkiller.Constants;
+import net.codepoke.ai.challenge.hunterkiller.Map;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 
 /**
  * Class representing a door in HunterKiller.
@@ -77,23 +79,40 @@ public class Door
 	}
 
 	/**
-	 * Close this Door.
+	 * Close this Door. This method does nothing if there is a Unit at this Door's location.
+	 * 
+	 * @param map
+	 *            The {@link Map} this Door is on.
 	 */
-	public void close() {
-		openTimer = 0;
-		isBlockingLOS = true;
+	public void close(Map map) {
+		if (map.getUnitAtLocation(getLocation()) == null) {
+			openTimer = 0;
+			isBlockingLOS = true;
+		}
 	}
 
 	/**
-	 * Reduces the timer that keeps track of how long this door remains open.
+	 * Reduces the timer that keeps track of how long this door remains open. Will not reduce the timer below 1 if a
+	 * Unit is present at the Door's location.
+	 * 
+	 * @param map
+	 *            The {@link Map} this Door is on.
 	 */
-	public void reduceTimer() {
+	public void reduceTimer(Map map) {
 		// Don't reduce if already at 0
 		if (openTimer > 0)
 			openTimer--;
 		// Check if the door should be closed now
-		if (openTimer == 0 && !isBlockingLOS)
-			isBlockingLOS = true;
+		if (openTimer == 0 && !isBlockingLOS) {
+			// Get any Unit that might be at this Door's location
+			Unit unit = map.getUnitAtLocation(getLocation());
+			if (unit != null) {
+				// If there is a Unit, don't close
+				openTimer = 1;
+				return;
+			} else
+				isBlockingLOS = true;
+		}
 	}
 
 	// endregion
