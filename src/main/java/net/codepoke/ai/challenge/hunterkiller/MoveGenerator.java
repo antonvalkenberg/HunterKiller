@@ -56,12 +56,55 @@ public class MoveGenerator {
 	 * Returns a list containing all legal orders for a unit in the current state. For a list of all types of orders
 	 * available to a Unit, see {@link UnitOrderType}.
 	 * 
+	 * {@link MoveGenerator#getAllLegalOrders(HunterKillerState, Unit, boolean, boolean, boolean)}
+	 */
+	public static List<UnitOrder> getAllLegalOrders(HunterKillerState state, Unit unit) {
+		return getAllLegalOrders(state, unit, true, true, true);
+	}
+
+	/**
+	 * Returns a list containing all legal orders for a unit in the current state. For a list of all types of orders
+	 * available to a Unit, see {@link UnitOrderType}.
+	 * 
 	 * @param state
 	 *            The current {@link HunterKillerState} of the game.
 	 * @param unit
 	 *            The {@link Unit} to receive legal orders for.
+	 * @param includeRotation
+	 *            Whether or not to include orders in the rotation category.
+	 * @param includeMovement
+	 *            Whether or not to include orders in the movement category.
+	 * @param includeAttack
+	 *            Whether or not to include orders in the attack category.
 	 */
-	public static List<UnitOrder> getAllLegalOrders(HunterKillerState state, Unit unit) {
+	public static List<UnitOrder> getAllLegalOrders(HunterKillerState state, Unit unit, boolean includeRotation, boolean includeMovement,
+			boolean includeAttack) {
+		// Create a list to write to
+		List<UnitOrder> orders = new ArrayList<UnitOrder>();
+
+		// Get all legal rotation orders
+		if (includeRotation)
+			orders.addAll(getAllLegalRotationOrders(state, unit));
+
+		// Get all legal movement orders
+		if (includeMovement)
+			orders.addAll(getAllLegalMoveOrders(state, unit));
+
+		// Get all legal attack orders
+		if (includeAttack)
+			orders.addAll(getAllLegalAttackOrders(state, unit));
+
+		// Return the list of legal orders
+		return orders;
+	}
+
+	/**
+	 * Returns a collection of {@link UnitOrder}s containing all legal orders in the movement category. See
+	 * {@link UnitOrderType} for a list of possible orders.
+	 * 
+	 * {@link MoveGenerator#getAllLegalOrders(HunterKillerState, Unit)}
+	 */
+	public static List<UnitOrder> getAllLegalMoveOrders(HunterKillerState state, Unit unit) {
 		// Create a list to write to
 		List<UnitOrder> orders = new ArrayList<UnitOrder>();
 
@@ -70,26 +113,78 @@ public class MoveGenerator {
 		// And the unit's location
 		MapLocation unitLocation = unit.getLocation();
 
-		// Can always rotate east or west
-		orders.add(unit.rotate(true));
-		orders.add(unit.rotate(false));
-
 		// Check what movement options we have
 		for (Direction direction : Direction.values()) {
 			if (map.isMovePossible(unitLocation, direction))
 				orders.add(unit.move(direction, map));
 		}
 
-		// TODO create attack orders for locations in player's FoV versus Unit's?
-		// Get the Player's field-of-view
-		// HashSet<MapLocation> playerFoV = state.getPlayer(unit.getSquadPlayerID()).getCombinedFieldOfView(map);
-		// Get the Unit's field-of-view
-		HashSet<MapLocation> unitFoV = unit.getFieldOfView();
+		return orders;
+	}
+
+	/**
+	 * Returns a collection of {@link UnitOrder}s containing all legal orders in the rotation category. See
+	 * {@link UnitOrderType} for a list of possible orders.
+	 * 
+	 * {@link MoveGenerator#getAllLegalOrders(HunterKillerState, Unit)}
+	 */
+	public static List<UnitOrder> getAllLegalRotationOrders(HunterKillerState state, Unit unit) {
+		// Create a list to write to
+		List<UnitOrder> orders = new ArrayList<UnitOrder>();
+
+		// Can always rotate east or west
+		orders.add(unit.rotate(true));
+		orders.add(unit.rotate(false));
+
+		return orders;
+	}
+
+	/**
+	 * Returns a collection of {@link UnitOrder}s containing all legal orders in the attack category. See
+	 * {@link UnitOrderType} for a list of possible orders.
+	 * 
+	 * {@link MoveGenerator#getAllLegalAttackOrders(HunterKillerState, Unit, boolean)}
+	 */
+	public static List<UnitOrder> getAllLegalAttackOrders(HunterKillerState state, Unit unit) {
+		return getAllLegalAttackOrders(state, unit, false);
+	}
+
+	/**
+	 * Returns a collection of {@link UnitOrder}s containing all legal orders, from the Unit's Field-of-View, in the
+	 * attack category. See {@link UnitOrderType} for a list of possible orders.
+	 * 
+	 * @param state
+	 *            The current {@link HunterKillerState} of the game.
+	 * @param unit
+	 *            The {@link Unit} to receive legal orders for.
+	 * @param usePlayersFoV
+	 *            Whether or not to use the Player's Field-of-View, instead of the Unit's.
+	 */
+	public static List<UnitOrder> getAllLegalAttackOrders(HunterKillerState state, Unit unit, boolean usePlayersFoV) {
+		// Create a list to write to
+		List<UnitOrder> orders = new ArrayList<UnitOrder>();
+
+		// Get the map we are currently on
+		Map map = state.getMap();
+		// And the unit's location
+		MapLocation unitLocation = unit.getLocation();
+
+		// Create a field-of-view set
+		HashSet<MapLocation> fov = new HashSet<MapLocation>();
+
+		// Determine which field-of-view we'll be using
+		if (usePlayersFoV) {
+			fov = state.getPlayer(unit.getControllingPlayerID())
+						.getCombinedFieldOfView(map);
+		} else {
+			fov = unit.getFieldOfView();
+		}
 
 		// Get the unit's attack range
 		int attackRange = Unit.getAttackRange(unit.getType());
 
-		for (MapLocation location : unitFoV) {
+		// Go through the field-of-view
+		for (MapLocation location : fov) {
 			// Check if this location is within the unit's attack range
 			if (map.getDistance(unitLocation, location) <= attackRange) {
 				// Check if the special for this unit is available
@@ -105,5 +200,4 @@ public class MoveGenerator {
 		// Return the list of legal orders
 		return orders;
 	}
-
 }
