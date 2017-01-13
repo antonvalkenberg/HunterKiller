@@ -508,6 +508,58 @@ public class Map {
 	}
 
 	/**
+	 * Returns a 3-by-3 array containing the {@link MapFeature}s around a specific location on the map. This array will
+	 * contain null values for locations that are not on the map.
+	 * 
+	 * @param location
+	 *            The {@link MapLocation} to get the features around.
+	 */
+	public MapFeature[] getMapFeaturesAround(MapLocation location) {
+		// Create an array of size 9 because it's a 3x3 area.
+		MapFeature[] features = new MapFeature[9];
+		// Check if the location is on the map
+		if (!isOnMap(location))
+			return features;
+
+		// Index 0 is -1,-1
+		if (isXonMap(location.getX() - 1) && isYonMap(location.getY() - 1)) {
+			features[0] = (MapFeature) mapContent[toPosition(location.getX() - 1, location.getY() - 1)][Constants.MAP_INTERNAL_FEATURE_INDEX];
+		}
+		// Index 1 is 0, -1
+		if (isXonMap(location.getX()) && isYonMap(location.getY() - 1)) {
+			features[1] = (MapFeature) mapContent[toPosition(location.getX(), location.getY() - 1)][Constants.MAP_INTERNAL_FEATURE_INDEX];
+		}
+		// Index 2 is +1, -1
+		if (isXonMap(location.getX() + 1) && isYonMap(location.getY() - 1)) {
+			features[2] = (MapFeature) mapContent[toPosition(location.getX() + 1, location.getY() - 1)][Constants.MAP_INTERNAL_FEATURE_INDEX];
+		}
+		// Index 3 is -1, 0
+		if (isXonMap(location.getX() - 1) && isYonMap(location.getY())) {
+			features[3] = (MapFeature) mapContent[toPosition(location.getX() - 1, location.getY())][Constants.MAP_INTERNAL_FEATURE_INDEX];
+		}
+		// Index 4 is 0, 0
+		features[4] = (MapFeature) mapContent[toPosition(location)][Constants.MAP_INTERNAL_FEATURE_INDEX];
+		// Index 5 is +1, 0
+		if (isXonMap(location.getX() + 1) && isYonMap(location.getY())) {
+			features[5] = (MapFeature) mapContent[toPosition(location.getX() + 1, location.getY())][Constants.MAP_INTERNAL_FEATURE_INDEX];
+		}
+		// Index 6 is -1, +1
+		if (isXonMap(location.getX() - 1) && isYonMap(location.getY() + 1)) {
+			features[6] = (MapFeature) mapContent[toPosition(location.getX() - 1, location.getY() + 1)][Constants.MAP_INTERNAL_FEATURE_INDEX];
+		}
+		// Index 7 is 0, +1
+		if (isXonMap(location.getX()) && isYonMap(location.getY() + 1)) {
+			features[7] = (MapFeature) mapContent[toPosition(location.getX(), location.getY() + 1)][Constants.MAP_INTERNAL_FEATURE_INDEX];
+		}
+		// Index 8 is +1, +1
+		if (isXonMap(location.getX() + 1) && isYonMap(location.getY() + 1)) {
+			features[8] = (MapFeature) mapContent[toPosition(location.getX() + 1, location.getY() + 1)][Constants.MAP_INTERNAL_FEATURE_INDEX];
+		}
+
+		return features;
+	}
+
+	/**
 	 * Returns a collection of locations that are in the Unit's field-of-view.
 	 * 
 	 * @param unit
