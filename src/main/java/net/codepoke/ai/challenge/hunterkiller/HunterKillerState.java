@@ -193,7 +193,7 @@ public class HunterKillerState
 	}
 
 	@Override
-	public void prepare(int playerIndex) {
+	public void prepare(int activePlayerID) {
 		// TODO Remove info from other players from state.
 	}
 
