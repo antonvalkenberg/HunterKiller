@@ -14,6 +14,7 @@ import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitOrderType;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitType;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.Controlled;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
 
@@ -27,7 +28,7 @@ import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class Unit
-		extends GameObject {
+		extends GameObject implements Controlled {
 
 	// region Properties
 

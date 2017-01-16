@@ -11,6 +11,7 @@ import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.BaseOrderType;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitType;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.Controlled;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 import net.codepoke.ai.challenge.hunterkiller.orders.BaseOrder;
 
@@ -24,7 +25,7 @@ import net.codepoke.ai.challenge.hunterkiller.orders.BaseOrder;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Base
-		extends MapFeature {
+		extends MapFeature implements Controlled {
 
 	// region Properties
 
