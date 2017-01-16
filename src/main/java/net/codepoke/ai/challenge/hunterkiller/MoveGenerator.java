@@ -9,6 +9,7 @@ import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitOrderType;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitType;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 import net.codepoke.ai.challenge.hunterkiller.orders.BaseOrder;
 import net.codepoke.ai.challenge.hunterkiller.orders.HunterKillerOrder;
@@ -187,8 +188,8 @@ public class MoveGenerator {
 		for (MapLocation location : fov) {
 			// Check if this location is within the unit's attack range
 			if (map.getDistance(unitLocation, location) <= attackRange) {
-				// Check if the special for this unit is available
-				if (unit.getSpecialAttackCooldown() <= 0) {
+				// Check if the special for this unit is available, but don't create an order for Infected (can't order)
+				if (unit.getSpecialAttackCooldown() <= 0 && !(unit instanceof Infected)) {
 					// Create a special attack order for this location
 					orders.add(unit.attack(location, true));
 				}
