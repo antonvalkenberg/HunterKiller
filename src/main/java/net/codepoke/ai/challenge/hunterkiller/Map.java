@@ -897,14 +897,14 @@ public class Map {
 					if (object.tick(state)) {
 						// Returning true indicates that the object should be removed
 						remove(i, object);
+
 						// If the object is a Base, replace it with a Space-tile
 						if (object instanceof Base) {
 							mapContent[i][Constants.MAP_INTERNAL_FEATURE_INDEX] = new Space(requestNewGameObjectID(), toLocation(i));
 							Base base = (Base) object;
 							Player player = state.getPlayer(base.getControllingPlayerID());
-							// Tell the Player that was controlling the Base that it's gone
-							player.informBaseDestroyed(base.getID());
-							// Remove all of the Player's Units as well
+
+							// Remove all of the Player's Units
 							IntArray unitIDs = player.getUnitIDs();
 							for (int k = 0; k < unitIDs.size; k++) {
 								int id = unitIDs.get(k);
@@ -913,10 +913,11 @@ public class Map {
 								if (unit != null) {
 									// Remove the Unit from this map
 									remove(toPosition(unit.getLocation()), unit);
-									// Also tell the player to remove it
-									player.removeUnit(id);
 								}
 							}
+
+							// Tell the Player that was controlling the Base that it's gone
+							player.informBaseDestroyed(base.getID());
 						}
 						// If the object is a Unit, tell it's Player to remove it
 						if (object instanceof Unit) {

@@ -91,8 +91,8 @@ public class Player
 		this.name = name;
 		this.mapSection = mapSection;
 		this.resource = Constants.PLAYER_STARTING_RESOURCE;
-		// Create a new list to store the units into
-		unitIDs = new IntArray();
+		// Create a new list to store the units into (unordered, educated guess on initial capacity)
+		unitIDs = new IntArray(false, 10);
 	}
 
 	// endregion
@@ -108,9 +108,12 @@ public class Player
 		// Copy the Base's ID
 		newPlayer.assignBase(this.baseID);
 		// Copy all the Units
-		for (int i = 0; i < unitIDs.size; i++) {
-			newPlayer.addUnit(unitIDs.get(i));
-		}
+		/*
+		 * for (int i = 0; i < this.unitIDs.size; i++) {
+		 * newPlayer.addUnit(this.unitIDs.get(i));
+		 * }
+		 */
+		newPlayer.unitIDs.addAll(this.unitIDs);
 		// Set the resources
 		newPlayer.setResource(this.resource);
 		// Set the score
@@ -254,16 +257,21 @@ public class Player
 	}
 
 	/**
-	 * Inform this Player that it's Base has been destroyed.
+	 * Inform this Player that it's Base has been destroyed. This method will remove all Unit IDs from the player's
+	 * collection and will half the player's current score.
 	 * 
 	 * @param baseID
 	 *            The unique identifier of the {@link Base} that was destroyed.
 	 */
 	protected void informBaseDestroyed(int baseID) {
 		// Check if the IDs match
-		if (this.baseID == baseID)
+		if (this.baseID == baseID) {
 			baseExists = false;
-		// Otherwise just ignore
+			// Clear collection of Unit IDs
+			unitIDs.clear();
+			// Half the player's score
+			this.setScore((int) (this.score / 2f));
+		}
 	}
 
 	// endregion
