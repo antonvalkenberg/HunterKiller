@@ -24,6 +24,7 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
 
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
 
 /**
@@ -66,6 +67,16 @@ public class Map {
 	private GameObject[][] mapContent;
 
 	/**
+	 * Collection of objects present on this map, indexed by ID.
+	 */
+	private Array<GameObject> objects;
+
+	/**
+	 * A temporary storage for IDs that are currently not being owned by an object.
+	 */
+	private IntArray idBuffer;
+
+	/**
 	 * A counter that records the latest ID given out to a game object.
 	 */
 	private int internalObjectIDCounter;
@@ -100,6 +111,9 @@ public class Map {
 		mapHeight = height;
 		// Map will have (width * height) positions
 		mapContent = new GameObject[width * height][Constants.MAP_INTERNAL_LAYERS];
+		// Create new collections for our ID->Object lookup and ID buffer
+		objects = new Array<GameObject>();
+		idBuffer = new IntArray();
 		// Reset the Object ID counter
 		internalObjectIDCounter = -1;
 		// Create the classes required for line-of-sight
@@ -615,15 +629,10 @@ public class Map {
 	 * @return The object, or null if no object was found.
 	 */
 	public GameObject getObject(int objectID) {
-		// Check the map content
-		for (int i = 0; i < mapWidth * mapHeight; i++) {
-			for (int j = 0; j < Constants.MAP_INTERNAL_LAYERS; j++) {
-				if (mapContent[i][j] != null && mapContent[i][j].getID() == objectID) {
-					return mapContent[i][j];
-				}
-			}
-		}
-		return null;
+		// Make sure this ID doesn't go out of bounds of our objects-collection.
+		if (objects.size < objectID)
+			return null;
+		return objects.get(objectID);
 	}
 
 	/**
@@ -635,15 +644,12 @@ public class Map {
 	 * @return The {@link MapLocation} of the object, or null if no object was found.
 	 */
 	public MapLocation getObjectLocation(int objectID) {
-		// Check the map content
-		for (int i = 0; i < mapWidth * mapHeight; i++) {
-			for (int j = 0; j < Constants.MAP_INTERNAL_LAYERS; j++) {
-				if (mapContent[i][j] != null && mapContent[i][j].getID() == objectID) {
-					return toLocation(i);
-				}
-			}
-		}
-		return null;
+		// Make sure this ID doesn't go out of bounds of our objects-collection.
+		if (objects.size < objectID || objects.get(objectID) == null)
+			return null;
+		// Return the object's location
+		return objects.get(objectID)
+						.getLocation();
 	}
 
 	/**
@@ -683,8 +689,8 @@ public class Map {
 	public int getCurrentBaseCount() {
 		// Bases are MapFeatures
 		int count = 0;
-		for (int i = 0; i < mapWidth * mapHeight; i++) {
-			if (mapContent[i][Constants.MAP_INTERNAL_FEATURE_INDEX] instanceof Base)
+		for (GameObject object : objects) {
+			if (object != null && object instanceof Base)
 				count++;
 		}
 		return count;
@@ -712,25 +718,52 @@ public class Map {
 	}
 
 	/**
-	 * Returns the next available ID for a new game object.
-	 * 
-	 * @return
+	 * Returns the next available ID for a new game object. Note: this method returns an ID from the ID-buffer if any
+	 * are available.
 	 */
-	public int requestNewGameObjectID() {
-		// Return the next ID
-		internalObjectIDCounter++;
-		return internalObjectIDCounter;
+	public int requestIDForNewGameObject() {
+		// Check the ID-buffer has any available IDs
+		if (idBuffer.size > 0) {
+			return idBuffer.pop();
+		} else {
+			// Return a new ID
+			internalObjectIDCounter++;
+			return internalObjectIDCounter;
+		}
+	}
+
+	/**
+	 * Alert the map that an object wants to join the map's collection of objects.
+	 * 
+	 * @param object
+	 *            The object that needs to be registered.
+	 */
+	public void registerGameObject(GameObject object) {
+		// Set the object into our object collection
+		objects.set(object.getID(), object);
+	}
+
+	/**
+	 * Alert the map that this object is no longer present and that it's ID can be added to the buffer array.
+	 * 
+	 * @param object
+	 *            The object that can be unregistered.
+	 */
+	public void unregisterGameObject(GameObject object) {
+		// Set the space in our object collection to null
+		objects.set(object.getID(), null);
+		// Add this ID to the buffer
+		idBuffer.add(object.getID());
 	}
 
 	/**
 	 * Updates the Field-of-View for all Units on the map.
 	 */
 	public void updateFieldOfView() {
-		// Check the map for Units
-		for (int i = 0; i < mapWidth * mapHeight; i++) {
-			if (mapContent[i][Constants.MAP_INTERNAL_UNIT_INDEX] != null
-				&& mapContent[i][Constants.MAP_INTERNAL_UNIT_INDEX] instanceof Unit) {
-				Unit unit = (Unit) mapContent[i][Constants.MAP_INTERNAL_UNIT_INDEX];
+		// Check all units
+		for (GameObject object : objects) {
+			if (object != null && object instanceof Unit) {
+				Unit unit = (Unit) object;
 				// Get the field-of-view collection for the unit
 				HashSet<MapLocation> fieldOfView = getFieldOfView(unit);
 				// Tell the unit to update it's field-of-view
@@ -752,6 +785,11 @@ public class Map {
 		// Set some things
 		newMap.setObjectIDCounter(this.internalObjectIDCounter);
 		newMap.setMapContent(content);
+
+		// TODO do this in copyMapContent
+		newMap.objects = new Array<GameObject>(objects);
+		newMap.idBuffer = new IntArray(idBuffer);
+
 		// Return the created map
 		return newMap;
 	}
@@ -876,6 +914,7 @@ public class Map {
 			return false;
 		}
 		// Remove the object
+		object.setLocation(Constants.GAMEOBJECT_NOT_PLACED);
 		mapContent[position][layer] = null;
 		return true;
 	}
@@ -888,47 +927,59 @@ public class Map {
 	 *            The current state of the game.
 	 */
 	protected void tick(HunterKillerState state) {
-		// Check the map content for 'dead' objects
-		for (int i = 0; i < mapWidth * mapHeight; i++) {
-			for (int j = 0; j < Constants.MAP_INTERNAL_LAYERS; j++) {
-				GameObject object = mapContent[i][j];
-				// Check if there is anything there
-				if (object != null) {
-					if (object.tick(state)) {
-						// Returning true indicates that the object should be removed
-						remove(i, object);
+		// Check our object collection for 'dead' objects
+		for (GameObject object : objects) {
+			// Check if there is anything there
+			if (object != null) {
+				// If the '.tick' method returns true, that indicates that the object should be removed
+				if (object.tick(state)) {
+					// Get this object's position on the map
+					int mapPosition = toPosition(object.getLocation());
 
-						// If the object is a Base, replace it with a Space-tile
-						if (object instanceof Base) {
-							mapContent[i][Constants.MAP_INTERNAL_FEATURE_INDEX] = new Space(requestNewGameObjectID(), toLocation(i));
-							Base base = (Base) object;
-							Player player = state.getPlayer(base.getControllingPlayerID());
+					// Delete the object
+					remove(mapPosition, object);
+					// Unregister the object
+					unregisterGameObject(object);
 
-							// Remove all of the Player's Units
-							IntArray unitIDs = player.getUnitIDs();
-							for (int k = 0; k < unitIDs.size; k++) {
-								int id = unitIDs.get(k);
-								Unit unit = (Unit) getObject(id);
-								// Check if the Unit is still around (might have died this same tick)
-								if (unit != null) {
-									// Remove the Unit from this map
-									remove(toPosition(unit.getLocation()), unit);
-								}
+					// If the object is a Base, replace it with a Space-tile
+					if (object instanceof Base) {
+						// Create a new Space object
+						Space space = new Space(requestIDForNewGameObject(), toLocation(mapPosition));
+						// Register the object
+						registerGameObject(space);
+						// Place it on the map
+						place(mapPosition, space);
+
+						Base base = (Base) object;
+						Player player = state.getPlayer(base.getControllingPlayerID());
+
+						// Remove all of the Player's Units
+						IntArray unitIDs = player.getUnitIDs();
+						for (int k = 0; k < unitIDs.size; k++) {
+							int id = unitIDs.get(k);
+							Unit unit = (Unit) getObject(id);
+							// Check if the Unit is still around (might have died this same tick)
+							if (unit != null) {
+								// Delete the Unit from this map
+								remove(toPosition(unit.getLocation()), unit);
+								// Unregister the Unit
+								unregisterGameObject(unit);
 							}
+						}
 
-							// Tell the Player that was controlling the Base that it's gone
-							player.informBaseDestroyed(base.getID());
-						}
-						// If the object is a Unit, tell it's Player to remove it
-						if (object instanceof Unit) {
-							Unit unit = (Unit) object;
-							state.getPlayer(unit.getControllingPlayerID())
-									.removeUnit(unit.getID());
-						}
+						// Tell the Player that was controlling the Base that it's gone
+						player.informBaseDestroyed(base.getID());
+					}
+					// If the object is a Unit, tell it's Player to remove it
+					if (object instanceof Unit) {
+						Unit unit = (Unit) object;
+						state.getPlayer(unit.getControllingPlayerID())
+								.removeUnit(unit.getID());
 					}
 				}
 			}
 		}
+
 		// Update the Field-of-View for all remaining Units
 		updateFieldOfView();
 	}
@@ -938,23 +989,21 @@ public class Map {
 	 * start of a new round.
 	 */
 	protected void timer() {
-		for (int i = 0; i < mapWidth * mapHeight; i++) {
-			for (int j = 0; j < Constants.MAP_INTERNAL_LAYERS; j++) {
-				GameObject object = mapContent[i][j];
-				// Check if there is anything there
-				if (object != null) {
-					// Check if it's a Door
-					if (object instanceof Door) {
-						// Reduce the timer if the door is open
-						Door door = (Door) object;
-						if (door.isOpen())
-							door.reduceTimer(this);
-					}
-					// Check if it's a Unit
-					else if (object instanceof Unit) {
-						// Reduce the unit's cooldown
-						((Unit) object).reduceCooldown();
-					}
+		// Check all our objects
+		for (GameObject object : objects) {
+			// Check if there is anything there
+			if (object != null) {
+				// Check if it's a Door
+				if (object instanceof Door) {
+					// Reduce the timer if the door is open
+					Door door = (Door) object;
+					if (door.isOpen())
+						door.reduceTimer(this);
+				}
+				// Check if it's a Unit
+				else if (object instanceof Unit) {
+					// Reduce the unit's cooldown
+					((Unit) object).reduceCooldown();
 				}
 			}
 		}
@@ -1044,10 +1093,10 @@ public class Map {
 	 *            The {@link Player} to assign objects to.
 	 */
 	protected void assignObjectsToPlayer(Player player) {
-		// Check the map content for Bases or Units
-		for (int i = 0; i < mapWidth * mapHeight; i++) {
-			for (int j = 0; j < Constants.MAP_INTERNAL_LAYERS; j++) {
-				GameObject object = mapContent[i][j];
+		// Check for Bases and Units
+		for (GameObject object : objects) {
+			// Check if there is anything there
+			if (object != null) {
 				// Check if it's a base and belongs to this player
 				if (object instanceof Base && ((Base) object).getControllingPlayerID() == player.getID()) {
 					player.assignBase(object.getID());
