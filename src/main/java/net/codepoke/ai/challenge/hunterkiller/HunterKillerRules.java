@@ -10,6 +10,7 @@ import net.codepoke.ai.challenge.hunterkiller.enums.Direction.Rotation;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.MapFeature;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Wall;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
@@ -460,6 +461,11 @@ public class HunterKillerRules
 				attackSuccess = true;
 			}
 		} else if (object instanceof Soldier) {
+			// The special of a Soldier can't have a Wall as it's target (to avoid the explosion going through walls)
+			if (map.getFeatureAtLocation(attackOrder.getTargetLocation()) instanceof Wall) {
+				failures.append(String.format("Special Attack Failure: A Soldier's special attack cannot target a Wall.%n"));
+				return false;
+			}
 			// The special attack of a soldier is a grenade that does damage in an area
 			List<MapLocation> areaOfEffect = map.getAreaAround(attackOrder.getTargetLocation(), true);
 			for (MapLocation location : areaOfEffect) {
