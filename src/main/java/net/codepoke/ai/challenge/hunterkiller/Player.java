@@ -65,7 +65,7 @@ public class Player
 	/**
 	 * Collection of IDs of {@link Unit}s that this player controls.
 	 */
-	protected IntArray squadIDs;
+	protected IntArray unitIDs;
 
 	/**
 	 * The score this player has accumulated during the game.
@@ -91,8 +91,8 @@ public class Player
 		this.name = name;
 		this.mapSection = mapSection;
 		this.resource = Constants.PLAYER_STARTING_RESOURCE;
-		// Create a new list to store the squad into
-		squadIDs = new IntArray();
+		// Create a new list to store the units into
+		unitIDs = new IntArray();
 	}
 
 	// endregion
@@ -108,8 +108,8 @@ public class Player
 		// Copy the Base's ID
 		newPlayer.assignBase(this.baseID);
 		// Copy all the Units
-		for (int i = 0; i < squadIDs.size; i++) {
-			newPlayer.addUnitToSquad(squadIDs.get(i));
+		for (int i = 0; i < unitIDs.size; i++) {
+			newPlayer.addUnit(unitIDs.get(i));
 		}
 		// Set the resources
 		newPlayer.setResource(this.resource);
@@ -136,9 +136,9 @@ public class Player
 			fieldOfViewSet.addAll(map.getAreaAround(base.getLocation(), true));
 		}
 		// Go through our squad
-		for (int i = 0; i < squadIDs.size; i++) {
+		for (int i = 0; i < unitIDs.size; i++) {
 			// Get the Unit from the map
-			Unit unit = (Unit) map.getObject(squadIDs.get(i));
+			Unit unit = (Unit) map.getObject(unitIDs.get(i));
 			// Check if the unit isn't dead
 			if (unit.getHpCurrent() > 0) {
 				fieldOfViewSet.addAll(unit.getFieldOfView());
@@ -164,17 +164,17 @@ public class Player
 	}
 
 	/**
-	 * Returns a collection of {@link Unit}s that make up this player's squad on the provided {@link Map}.
+	 * Returns a collection of {@link Unit}s that this player is currently controlling on the provided {@link Map}.
 	 * 
 	 * @param map
 	 *            The map to get the units from.
 	 */
 	public List<Unit> getUnits(Map map) {
-		List<Unit> squad = new ArrayList<Unit>();
-		for (int i = 0; i < squadIDs.size; i++) {
-			squad.add((Unit) map.getObject(squadIDs.get(i)));
+		List<Unit> units = new ArrayList<Unit>();
+		for (int i = 0; i < unitIDs.size; i++) {
+			units.add((Unit) map.getObject(unitIDs.get(i)));
 		}
-		return squad;
+		return units;
 	}
 
 	// endregion
@@ -234,23 +234,23 @@ public class Player
 	}
 
 	/**
-	 * Adds a Unit to this Player's squad.
+	 * Adds a Unit to this Player's control.
 	 * 
 	 * @param unitID
 	 *            The ID of the unit to add.
 	 */
-	protected void addUnitToSquad(int unitID) {
-		squadIDs.add(unitID);
+	protected void addUnit(int unitID) {
+		unitIDs.add(unitID);
 	}
 
 	/**
-	 * Removes a Unit from this Player's squad.
+	 * Removes a Unit from this Player's control.
 	 * 
 	 * @param unitID
 	 *            The ID of the unit to remove.
 	 */
-	protected void removeUnitFromSquad(int unitID) {
-		squadIDs.removeValue(unitID);
+	protected void removeUnit(int unitID) {
+		unitIDs.removeValue(unitID);
 	}
 
 	/**

@@ -197,8 +197,6 @@ public class MapTest {
 																		.getResource());
 		// Make sure the initial state is not done
 		assertFalse(initialState.isDone());
-
-		// TODO More initial state tests
 	}
 
 	// endregion

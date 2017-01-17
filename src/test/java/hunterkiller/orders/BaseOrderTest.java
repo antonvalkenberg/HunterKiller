@@ -95,7 +95,7 @@ public class BaseOrderTest {
 		// Set some values of things before the order
 		Player activePlayer = state.getPlayer(state.getActivePlayerID());
 		int beforePlayerResource = activePlayer.getResource();
-		int beforePlayerSquadSize = activePlayer.getSquadIDs().size;
+		int beforePlayerSquadSize = activePlayer.getUnitIDs().size;
 		Base base = (Base) state.getMap()
 								.getObject(activePlayer.getBaseID());
 		MapLocation spawnLocation = base.getSpawnLocation();
@@ -118,7 +118,7 @@ public class BaseOrderTest {
 		// Check that the player's resource was reduced
 		assertEquals(beforePlayerResource - Constants.INFECTED_SPAWN_COST, activePlayer.getResource());
 		// Check that the player has an extra squad member
-		assertEquals(beforePlayerSquadSize + 1, activePlayer.getSquadIDs().size);
+		assertEquals(beforePlayerSquadSize + 1, activePlayer.getUnitIDs().size);
 
 		// Check that there is an infected on the map, in the correct location
 		assertTrue(state.getMap()
@@ -182,7 +182,7 @@ public class BaseOrderTest {
 
 		// Set some values of things before the order
 		Player activePlayer = state.getPlayer(state.getActivePlayerID());
-		int pre_PlayerSquadSize = activePlayer.getSquadIDs().size;
+		int pre_PlayerSquadSize = activePlayer.getUnitIDs().size;
 		int pre_PlayerResources = activePlayer.getResource();
 		Base base = (Base) state.getMap()
 								.getObject(activePlayer.getBaseID());
@@ -202,7 +202,7 @@ public class BaseOrderTest {
 		assertTrue(result.getExplanation()
 							.length() > 0);
 		// Check that nothing has actually been spawned
-		assertEquals(pre_PlayerSquadSize, activePlayer.getSquadIDs().size);
+		assertEquals(pre_PlayerSquadSize, activePlayer.getUnitIDs().size);
 		assertEquals(pre_PlayerResources, activePlayer.getResource());
 	}
 

@@ -224,6 +224,14 @@ public class Map {
 	}
 
 	/**
+	 * Whether or not the specified location is traversable. This method does not print the reasons why it returns
+	 * false. See {@link Map#isTraversable(MapLocation, boolean)}.
+	 */
+	public boolean isTraversable(MapLocation location) {
+		return isTraversable(location, false);
+	}
+
+	/**
 	 * Whether or not the specified location is traversable. This method checks:
 	 * <ul>
 	 * <li>If the {@link MapLocation} is on the map</li>
@@ -232,18 +240,31 @@ public class Map {
 	 * </ul>
 	 * 
 	 * @param location
-	 *            The location to check
+	 *            The location to check.
+	 * @param printFailReasons
+	 *            Whether or not reasons for failure should be printed.
 	 * @return Boolean value indicating if the location is traversable.
 	 */
-	public boolean isTraversable(MapLocation location) {
+	public boolean isTraversable(MapLocation location, boolean printFailReasons) {
 		int locationPosition = toPosition(location);
 		// Check if the coordinates exist
 		boolean validX = isXonMap(location.getX());
+		if (!validX && printFailReasons)
+			System.out.printf("WARNING: Location not traversable, X-coordinate is not on the map (%d).%n", location.getX());
 		boolean validY = isYonMap(location.getY());
+		if (!validY && printFailReasons)
+			System.out.printf("WARNING: Location not traversable, Y-coordinate is not on the map (%d).%n", location.getY());
+
 		// There is a unit on a square if the content of the unit layer is not null
 		boolean unitPresent = mapContent[locationPosition][Constants.MAP_INTERNAL_UNIT_INDEX] != null;
+		if (unitPresent && printFailReasons)
+			System.out.println("WARNING: Location not traversable, Unit present.");
+
 		// A feature can be walked on/over if it is walkable, derp
 		boolean featureWalkable = ((MapFeature) mapContent[locationPosition][Constants.MAP_INTERNAL_FEATURE_INDEX]).isWalkable();
+		if (!featureWalkable && printFailReasons)
+			System.out.println("WARNING: Location not traversable, MapFeature is not walkable.");
+
 		// Define walkable
 		boolean walkable = !unitPresent && featureWalkable;
 		// Traversable if all three are true
@@ -262,11 +283,17 @@ public class Map {
 	 */
 	public boolean isMovePossible(MapLocation fromLocation, UnitOrder move) {
 		// Make sure that there is a unit on the origin location
-		if (mapContent[toPosition(fromLocation)][Constants.MAP_INTERNAL_UNIT_INDEX] == null)
+		if (mapContent[toPosition(fromLocation)][Constants.MAP_INTERNAL_UNIT_INDEX] == null) {
+			System.out.printf("WARNING: Move not possible, no Unit on origin location (%s).%n", fromLocation);
 			return false;
+		}
 		// Make sure that the unit that is trying to move is actually at the location they are trying to move from
-		if (move.getObjectID() != ((Unit) mapContent[toPosition(fromLocation)][Constants.MAP_INTERNAL_UNIT_INDEX]).getID())
+		if (move.getObjectID() != ((Unit) mapContent[toPosition(fromLocation)][Constants.MAP_INTERNAL_UNIT_INDEX]).getID()) {
+			System.out.printf(	"WARNING: Move not possible, subject Unit (ID: %d) is not on origin location (%s).%n",
+								move.getObjectID(),
+								fromLocation);
 			return false;
+		}
 
 		// Switch on the type of move described in the UnitOrder
 		switch (move.getOrderType()) {
@@ -284,6 +311,7 @@ public class Map {
 																		.equals(getLocationInDirection(fromLocation, Direction.WEST, 1));
 		default:
 			// Rest of the UnitActionTypes are not moves, so they should return false
+			System.out.printf("WARNING: Move not possible, unsupported move-order type (%s).%n", move.getOrderType());
 			return false;
 		}
 	}
@@ -320,11 +348,15 @@ public class Map {
 		boolean success = false;
 		int targetPosition = toPosition(targetLocation);
 		// Check if the targetLocation is traversable
-		if (!isTraversable(targetLocation))
+		if (!isTraversable(targetLocation)) {
+			System.out.println("WARNING: Unable to move, location not traversable.");
 			return false;
+		}
 		// Check if the object is a Unit
-		if (!(object instanceof Unit))
+		if (!(object instanceof Unit)) {
+			System.out.println("WARNING: Unable to move, object is not a Unit.");
 			return false;
+		}
 		// Remove the object
 		success = remove(toPosition(object.getLocation()), object);
 		// Only continue with placement if removal was successful
@@ -408,10 +440,10 @@ public class Map {
 			targetPosition = position - distance;
 			break;
 		default:
-			System.err.println("UNHANDLED DIRECTION TYPE!");
+			System.out.println("UNHANDLED DIRECTION TYPE!");
 		}
 		// Check if the target position doesn't go out of bounds.
-		return targetPosition > 0 && targetPosition < mapWidth * mapHeight ? targetPosition : -1;
+		return targetPosition >= 0 && targetPosition < mapWidth * mapHeight ? targetPosition : -1;
 	}
 
 	/**
@@ -799,12 +831,12 @@ public class Map {
 		else if (object instanceof Unit)
 			layer = Constants.MAP_INTERNAL_UNIT_INDEX;
 		else {
-			System.err.println("WARNING: Unable to place object on map, unknown type");
+			System.out.println("WARNING: Unable to place object on map, unknown type");
 			return false;
 		}
 		// Check if there isn't already an object at the specified position
 		if (mapContent[position][layer] != null) {
-			System.err.println("WARNING: Unable to place object on map, space occupied");
+			System.out.println("WARNING: Unable to place object on map, space occupied");
 			return false;
 		}
 		// Place the object
@@ -830,17 +862,17 @@ public class Map {
 		else if (object instanceof Unit)
 			layer = Constants.MAP_INTERNAL_UNIT_INDEX;
 		else {
-			System.err.println("WARNING: Unable to remove object from map, unknown type");
+			System.out.println("WARNING: Unable to remove object from map, unknown type");
 			return false;
 		}
 		// Check if there is an object to remove
 		if (mapContent[position][layer] == null) {
-			System.err.println("WARNING: Unable to remove object from map, space is empty");
+			System.out.println("WARNING: Unable to remove object from map, space is empty");
 			return false;
 		}
-		// Check if the object to remove is equal to the object currently at that position
-		if (!mapContent[position][layer].equals(object)) {
-			System.err.println("WARNING: Unable to remove object from map, no matching object found");
+		// Check if the object to remove has the same ID as the object currently at that position
+		if (mapContent[position][layer].getID() != object.getID()) {
+			System.out.println("WARNING: Unable to remove object from map, no matching object found");
 			return false;
 		}
 		// Remove the object
@@ -873,23 +905,24 @@ public class Map {
 							// Tell the Player that was controlling the Base that it's gone
 							player.informBaseDestroyed(base.getID());
 							// Remove all of the Player's Units as well
-							IntArray unitIDs = player.getSquadIDs();
-							for (int id : unitIDs.items) {
+							IntArray unitIDs = player.getUnitIDs();
+							for (int k = 0; k < unitIDs.size; k++) {
+								int id = unitIDs.get(k);
 								Unit unit = (Unit) getObject(id);
 								// Check if the Unit is still around (might have died this same tick)
 								if (unit != null) {
 									// Remove the Unit from this map
 									remove(toPosition(unit.getLocation()), unit);
-									// Also remove it from the Player's squad
-									player.removeUnitFromSquad(id);
+									// Also tell the player to remove it
+									player.removeUnit(id);
 								}
 							}
 						}
-						// If the object is a Unit, tell it's Player to remove it from it's squad
+						// If the object is a Unit, tell it's Player to remove it
 						if (object instanceof Unit) {
 							Unit unit = (Unit) object;
 							state.getPlayer(unit.getControllingPlayerID())
-									.removeUnitFromSquad(unit.getID());
+									.removeUnit(unit.getID());
 						}
 					}
 				}
@@ -977,7 +1010,7 @@ public class Map {
 						Wall wall = (Wall) object;
 						newContent[i][j] = wall.copy(wall.getID());
 					} else {
-						System.err.println("WARNING: Unknown MapFeature type found while copying content!");
+						System.out.println("WARNING: Unknown MapFeature type found while copying content!");
 					}
 				} else if (object != null && object instanceof Unit) {
 					// Or if we are dealing with a Unit
@@ -992,7 +1025,7 @@ public class Map {
 						Soldier soldier = (Soldier) object;
 						newContent[i][j] = soldier.copy(soldier.getID());
 					} else {
-						System.err.println("WARNING: Unknown Unit type found while copying content!");
+						System.out.println("WARNING: Unknown Unit type found while copying content!");
 					}
 				}
 				// Otherwise just leave this null
@@ -1020,7 +1053,7 @@ public class Map {
 				}
 				// Check if it's a unit and belongs to this player
 				else if (object instanceof Unit && ((Unit) object).getControllingPlayerID() == player.getID()) {
-					player.addUnitToSquad(object.getID());
+					player.addUnit(object.getID());
 				}
 			}
 		}
@@ -1037,8 +1070,10 @@ public class Map {
 	 */
 	protected boolean attackLocation(MapLocation location, int damage) {
 		// Check if the location is on the map
-		if (!(isXonMap(location.getX()) && isYonMap(location.getY())))
+		if (!(isXonMap(location.getX()) && isYonMap(location.getY()))) {
+			System.out.println("WARNING: Unable to attack, location not on map.");
 			return false;
+		}
 		int position = toPosition(location);
 		// Get the map feature on this position
 		MapFeature feature = (MapFeature) mapContent[position][Constants.MAP_INTERNAL_FEATURE_INDEX];

@@ -99,38 +99,32 @@ public class HunterKillerRules
 			if (order instanceof BaseOrder) {
 				BaseOrder baseOrder = (BaseOrder) order;
 				// Try to spawn the Unit
-				if (!spawnUnit(map, actingPlayer, baseOrder.getOrderType(), failures))
-					failCount++;
+				baseOrder.setAccepted(spawnUnit(map, actingPlayer, baseOrder.getOrderType(), failures));
 			} else if (order instanceof UnitOrder) {
 				UnitOrder unitOrder = (UnitOrder) order;
 				switch (unitOrder.getOrderType()) {
 				case ROTATE_CLOCKWISE:
 					// Try to rotate the unit east
-					if (!rotateUnit(map, unitOrder.getObjectID(), Rotation.CLOCKWISE, failures))
-						failCount++;
+					unitOrder.setAccepted(rotateUnit(map, unitOrder.getObjectID(), Rotation.CLOCKWISE, failures));
 					break;
 				case ROTATE_COUNTER_CLOCKWISE:
 					// Try to rotate the unit west
-					if (!rotateUnit(map, unitOrder.getObjectID(), Rotation.COUNTER_CLOCKWISE, failures))
-						failCount++;
+					unitOrder.setAccepted(rotateUnit(map, unitOrder.getObjectID(), Rotation.COUNTER_CLOCKWISE, failures));
 					break;
 				case MOVE_NORTH:
 				case MOVE_EAST:
 				case MOVE_SOUTH:
 				case MOVE_WEST:
 					// Try to move the unit
-					if (!moveUnit(map, unitOrder, failures))
-						failCount++;
+					unitOrder.setAccepted(moveUnit(map, unitOrder, failures));
 					break;
 				case ATTACK:
 					// Try to execute the ordered attack
-					if (!attackLocation(state, actingPlayer, unitOrder, failures))
-						failCount++;
+					unitOrder.setAccepted(attackLocation(state, actingPlayer, unitOrder, failures));
 					break;
 				case ATTACK_SPECIAL:
 					// Try to execute the ordered attack
-					if (!attackSpecial(map, actingPlayer, unitOrder, failures))
-						failCount++;
+					unitOrder.setAccepted(attackSpecial(map, actingPlayer, unitOrder, failures));
 					break;
 				default:
 					failures.append(String.format("WARNING: Unsupported UnitOrderType (%s).%n", unitOrder.getOrderType()));
@@ -142,7 +136,22 @@ public class HunterKillerRules
 																									.getName()));
 				failCount++;
 			}
+
+			// Check if our order was accepted or not
+			if (!order.isAccepted())
+				failCount++;
 		}
+
+		/*
+		 * if (failCount > 0) {
+		 * System.out.printf( "P(%d)R(%d): %d orders ignored, Reasons:%n%s%n",
+		 * action.getActingPlayerID(),
+		 * state.getCurrentRound(),
+		 * failCount,
+		 * failures.toString());
+		 * }
+		 */
+
 		// Return the action as accepted, but add a count of how many orders failed, if any did.
 		return new Result(true, false, null, "Action accepted", failCount > 0 ? String.format(	"%d orders ignored, Reasons:%n%s",
 																								failCount,
@@ -216,7 +225,7 @@ public class HunterKillerRules
 				spawnSuccess = map.place(map.toPosition(spawnlocation), unit);
 				// Add the unit to the Player's squad if successfully spawned and update it's Field-of-View
 				if (spawnSuccess) {
-					player.addUnitToSquad(unit.getID());
+					player.addUnit(unit.getID());
 					unit.updateFieldOfView(map.getFieldOfView(unit));
 				}
 			} else {
@@ -366,26 +375,22 @@ public class HunterKillerRules
 		Unit targetUnit = map.getUnitAtLocation(targetLocation);
 		if (unit instanceof Infected && targetUnit != null && targetUnit.getHpCurrent() <= 0 && unit.getSpecialAttackCooldown() == 0
 			&& attackSuccess) {
-			// Remove the dead unit
 			Unit deadUnit = map.getUnitAtLocation(targetLocation);
-			attackSuccess = map.remove(map.toPosition(targetLocation), deadUnit);
-			if (attackSuccess) {
-				// Award points to the player
-				awardPointsForUnitDeath(player, deadUnit);
-				// Remove the unit from it's owners squad
-				state.getPlayer(deadUnit.getControllingPlayerID())
-						.removeUnitFromSquad(deadUnit.getID());
-				// Spawn a new Infected, on the same team as the Infected that performed this attack
-				Infected spawn = new Infected(map.requestNewGameObjectID(), player.getID(), targetLocation, unit.getOrientation());
-				attackSuccess = map.place(map.toPosition(targetLocation), spawn);
-				// Add the newly spawned unit to the player's squad
-				if (attackSuccess) {
-					player.addUnitToSquad(spawn.getID());
-					spawn.updateFieldOfView(map.getFieldOfView(spawn));
-					// If we executed the special action, start the cooldown
-					unit.startCooldown();
-				}
-			}
+			// Remove the dead unit from it's owners squad
+			state.getPlayer(deadUnit.getControllingPlayerID())
+					.removeUnit(deadUnit.getID());
+			// Remove the dead unit from the map
+			map.remove(map.toPosition(targetLocation), deadUnit);
+			// Award points to the player
+			awardPointsForUnitDeath(player, deadUnit);
+			// Spawn a new Infected, on the same team as the Infected that performed this attack
+			Infected spawn = new Infected(map.requestNewGameObjectID(), player.getID(), targetLocation, unit.getOrientation());
+			map.place(map.toPosition(targetLocation), spawn);
+			// Add the newly spawned unit to the player's squad
+			player.addUnit(spawn.getID());
+			spawn.updateFieldOfView(map.getFieldOfView(spawn));
+			// If we executed the special action, start the cooldown
+			unit.startCooldown();
 		}
 		// Otherwise, check if there was a Unit on the targeted location, and if it is currently dead
 		else if (targetUnit != null && targetUnit.getHpCurrent() <= 0) {
@@ -446,7 +451,11 @@ public class HunterKillerRules
 		} else if (object instanceof Medic) {
 			// The special attack of a medic heals a unit for an amount
 			Unit target = (Unit) map.getMapContent()[map.toPosition(attackOrder.getTargetLocation())][Constants.MAP_INTERNAL_UNIT_INDEX];
-			if (target != null) {
+			if (target == null) {
+				failures.append(String.format(	"Special Attack Failure: No Unit found on target location (%s).%n",
+												attackOrder.getTargetLocation()));
+				return false;
+			} else {
 				target.increaseHP(Constants.MEDIC_SPECIAL_HEAL);
 				attackSuccess = true;
 			}
@@ -484,8 +493,8 @@ public class HunterKillerRules
 	 */
 	private void awardPointsForUnitDeath(Player player, Unit killedUnit) {
 		// Only award points if the unit did not belong to the player itself
-		if (player.getSquadIDs()
-					.contains(killedUnit.getID()))
+		if (player.getUnitIDs()
+					.contains(killedUnit.getID()) || killedUnit.getControllingPlayerID() == player.getID())
 			return;
 
 		if (killedUnit instanceof Soldier) {

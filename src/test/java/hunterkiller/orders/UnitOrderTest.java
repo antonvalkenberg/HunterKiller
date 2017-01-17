@@ -114,7 +114,7 @@ public class UnitOrderTest {
 		Player activePlayer = state.getPlayer(state.getActivePlayerID());
 		// Select the unit
 		Unit unit = (Unit) state.getMap()
-								.getObject(activePlayer.getSquadIDs()
+								.getObject(activePlayer.getUnitIDs()
 														.get(0));
 
 		// Situation before rotation:
@@ -143,7 +143,7 @@ public class UnitOrderTest {
 
 		// Refresh unit reference
 		unit = (Unit) state.getMap()
-							.getObject(activePlayer.getSquadIDs()
+							.getObject(activePlayer.getUnitIDs()
 													.get(0));
 		Direction post_UnitOrientation = unit.getOrientation();
 		HashSet<MapLocation> post_UnitFoV = unit.getFieldOfView();
