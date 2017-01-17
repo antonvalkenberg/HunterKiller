@@ -2,7 +2,6 @@ package hunterkiller;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import junit.framework.Assert;
 import net.codepoke.ai.GameRules.Result;
 import net.codepoke.ai.challenge.hunterkiller.Constants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
@@ -137,20 +136,6 @@ public class HunterKillerRulesTest {
 											.getScore();
 		// Make sure the player was awarded the correct score amount
 		assertEquals(Constants.SOLDIER_SCORE, (post_ActivePlayerScore - pre_ActivePlayerScore));
-	}
-
-	/**
-	 * Tests a Base reaching 0 or less health points, and any effects that should result from this. This method tests
-	 * the following things:
-	 * <ul>
-	 * <li>That the Base is removed from the Map and replaced by a Space.</li>
-	 * <li>That the Player is informed of it's Base being destroyed.</li>
-	 * <li>That the Player's Units are removed from the map.</li>
-	 * </ul>
-	 */
-	@Test
-	public void testBaseDestruction() {
-		Assert.fail("Not yet implemented");
 	}
 
 	// endregion
