@@ -25,6 +25,8 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
 
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.BinaryHeap;
+import com.badlogic.gdx.utils.BinaryHeap.Node;
 import com.badlogic.gdx.utils.IntArray;
 
 /**
@@ -873,6 +875,50 @@ public class Map {
 		return newMap;
 	}
 
+	public IntArray findPath(MapLocation from, MapLocation to) {
+
+		BinaryHeap<PathNode> open = new BinaryHeap<PathNode>(mapWidth * mapHeight, false);
+		PathNode[] nodes = new PathNode[mapWidth * mapHeight];
+		IntArray path = new IntArray();
+
+		int rootPosition = toPosition(from);
+		int targetPosition = toPosition(to);
+
+		PathNode root = new PathNode(0);
+		root.position = rootPosition;
+		nodes[rootPosition] = root;
+		root.parent = null;
+		root.pathCost = 0;
+
+		open.add(root, 0);
+
+		while (open.size > 0) {
+			PathNode node = open.pop();
+			if (node.position == targetPosition) {
+				while (node != root) {
+					path.add(node.position);
+					node = node.parent;
+				}
+				break;
+			}
+			node.closed = true;
+
+			MapLocation nodeLocation = toLocation(node.position);
+			for (Direction move : Direction.values()) {
+				// Check if this move is possible
+				if (!isMovePossible(nodeLocation, move))
+					continue;
+
+				addNode(nodes, open, node, getLocationInDirection(nodeLocation, move, 1), 1, to);
+			}
+
+		}
+
+		path.reverse();
+
+		return path;
+	}
+
 	// endregion
 
 	// region Overridden methods
@@ -1096,7 +1142,56 @@ public class Map {
 
 	// endregion
 
+	// region Private methods
+
+	private void addNode(PathNode[] constructed, BinaryHeap<PathNode> open, PathNode parent, MapLocation location, int cost,
+			MapLocation target) {
+		// Get the position of the current location
+		int locationPosition = toPosition(location);
+
+		// Block expansion by walls.
+		MapFeature feature = getFeatureAtLocation(location);
+		if (feature instanceof Wall && !((Wall) feature).isDestructible())
+			return;
+
+		int pathCost = parent.pathCost + cost;
+		float score = pathCost + MapLocation.getManhattanDist(target, location);
+
+		PathNode node = constructed[locationPosition];
+		if (node != null) { // Node already encountered for this run.
+			if (!node.closed && pathCost < node.pathCost) { // Node isn't closed and new cost is lower.
+				// Update the existing node.
+				open.setValue(node, score);
+				node.parent = parent;
+				node.pathCost = pathCost;
+			}
+		} else {
+			// Use node from the cache or create a new one.
+			if (node == null) {
+				node = new PathNode(0);
+				node.position = locationPosition;
+				constructed[locationPosition] = node;
+			}
+			open.add(node, score);
+			node.parent = parent;
+			node.pathCost = pathCost;
+		}
+	}
+
+	// endregion
+
 	// region Inner classes
+
+	private class PathNode
+			extends Node {
+		int position, pathCost;
+		boolean closed;
+		PathNode parent;
+
+		public PathNode(float value) {
+			super(value);
+		}
+	}
 
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	public class BlocksLight

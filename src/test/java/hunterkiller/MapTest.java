@@ -199,6 +199,11 @@ public class MapTest {
 		assertFalse(initialState.isDone());
 	}
 
+	@Test
+	public void testFindPath() {
+
+	}
+
 	// endregion
 
 }
