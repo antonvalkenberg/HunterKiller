@@ -24,10 +24,10 @@ public class Infected
 	 * Constructs a new instance of an Infected on the specified location on the Map, facing the
 	 * specified direction.
 	 * 
-	 * {@link Infected#Infected(int, int, MapLocation, int, int, Direction, int, int, int, int, int, int, int)}
+	 * {@link Infected#Infected(int, MapLocation, int, int, Direction, int, int, int, int, int, int, int)}
 	 */
-	public Infected(int id, int spawningPlayerID, MapLocation mapLocation, Direction facing) {
-		this(id, spawningPlayerID, mapLocation, Constants.INFECTED_MAX_HP, Constants.INFECTED_MAX_HP, facing, Constants.INFECTED_FOV_RANGE,
+	public Infected(int spawningPlayerID, MapLocation mapLocation, Direction facing) {
+		this(spawningPlayerID, mapLocation, Constants.INFECTED_MAX_HP, Constants.INFECTED_MAX_HP, facing, Constants.INFECTED_FOV_RANGE,
 				Constants.INFECTED_FOV_ANGLE, Constants.INFECTED_ATTACK_RANGE, Constants.INFECTED_ATTACK_DAMAGE, 0,
 				Constants.INFECTED_SPAWN_COST, Constants.INFECTED_SCORE);
 	}
@@ -35,8 +35,6 @@ public class Infected
 	/**
 	 * Constructs a new instance of Infected.
 	 * 
-	 * @param id
-	 *            The Infected's unique identifier.
 	 * @param spawningPlayerID
 	 *            The ID of the Player that spawned this Infected.
 	 * @param mapLocation
@@ -62,9 +60,9 @@ public class Infected
 	 * @param score
 	 *            The score the Infected is worth when defeated
 	 */
-	public Infected(int id, int spawningPlayerID, MapLocation mapLocation, int maxHP, int currentHP, Direction facing, int fovRange,
-					int fovAngle, int attckRange, int attckDmg, int cooldown, int cost, int score) {
-		super(id, spawningPlayerID, UnitType.Infected, mapLocation, maxHP, currentHP, facing, fovRange, fovAngle, attckRange, attckDmg,
+	public Infected(int spawningPlayerID, MapLocation mapLocation, int maxHP, int currentHP, Direction facing, int fovRange, int fovAngle,
+					int attckRange, int attckDmg, int cooldown, int cost, int score) {
+		super(spawningPlayerID, UnitType.Infected, mapLocation, maxHP, currentHP, facing, fovRange, fovAngle, attckRange, attckDmg,
 				cooldown, cost, score);
 	}
 
@@ -73,18 +71,14 @@ public class Infected
 	// region Overridden methods
 
 	@Override
-	public Infected copy(int id) {
-		Infected newI = new Infected(id, this.getControllingPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(),
+	public Infected copy() {
+		Infected newI = new Infected(this.getControllingPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(),
 										this.getOrientation(), this.getFieldOfViewRange(), this.getFieldOfViewAngle(),
 										this.getAttackRange(), this.getAttackDamage(), this.getSpecialAttackCooldown(),
 										this.getSpawnCost(), this.getScoreWorth());
+		newI.setID(this.getID());
 		newI.updateFieldOfView(this.getFieldOfView());
 		return newI;
-	}
-
-	@Override
-	public Infected copy() {
-		return this.copy(this.getID());
 	}
 
 	/**

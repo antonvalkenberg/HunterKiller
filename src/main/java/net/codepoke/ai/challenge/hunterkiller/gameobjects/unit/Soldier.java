@@ -24,10 +24,10 @@ public class Soldier
 	 * Constructs a new instance of a Soldier on the specified location on the Map, facing the
 	 * specified direction.
 	 * 
-	 * {@link Soldier#Soldier(int, int, MapLocation, int, int, Direction, int, int, int, int, int, int, int)}
+	 * {@link Soldier#Soldier(int, MapLocation, int, int, Direction, int, int, int, int, int, int, int)}
 	 */
-	public Soldier(int id, int spawningPlayerID, MapLocation mapLocation, Direction facing) {
-		this(id, spawningPlayerID, mapLocation, Constants.SOLDIER_MAX_HP, Constants.SOLDIER_MAX_HP, facing, Constants.SOLDIER_FOV_RANGE,
+	public Soldier(int spawningPlayerID, MapLocation mapLocation, Direction facing) {
+		this(spawningPlayerID, mapLocation, Constants.SOLDIER_MAX_HP, Constants.SOLDIER_MAX_HP, facing, Constants.SOLDIER_FOV_RANGE,
 				Constants.SOLDIER_FOV_ANGLE, Constants.SOLDIER_ATTACK_RANGE, Constants.SOLDIER_ATTACK_DAMAGE, 0,
 				Constants.SOLDIER_SPAWN_COST, Constants.SOLDIER_SCORE);
 	}
@@ -35,8 +35,6 @@ public class Soldier
 	/**
 	 * Constructs a new instance of Soldier.
 	 * 
-	 * @param id
-	 *            The Soldier's unique identifier.
 	 * @param spawningPlayerID
 	 *            The ID of the Player that spawned this Soldier.
 	 * @param mapLocation
@@ -62,9 +60,9 @@ public class Soldier
 	 * @param score
 	 *            The score the Soldier is worth when defeated
 	 */
-	public Soldier(int id, int spawningPlayerID, MapLocation mapLocation, int maxHP, int currentHP, Direction facing, int fovRange,
-					int fovAngle, int attckRange, int attckDmg, int cooldown, int cost, int score) {
-		super(id, spawningPlayerID, UnitType.Soldier, mapLocation, maxHP, currentHP, facing, fovRange, fovAngle, attckRange, attckDmg,
+	public Soldier(int spawningPlayerID, MapLocation mapLocation, int maxHP, int currentHP, Direction facing, int fovRange, int fovAngle,
+					int attckRange, int attckDmg, int cooldown, int cost, int score) {
+		super(spawningPlayerID, UnitType.Soldier, mapLocation, maxHP, currentHP, facing, fovRange, fovAngle, attckRange, attckDmg,
 				cooldown, cost, score);
 	}
 
@@ -73,17 +71,13 @@ public class Soldier
 	// region Overridden methods
 
 	@Override
-	public Soldier copy(int id) {
-		Soldier newS = new Soldier(id, this.getControllingPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(),
+	public Soldier copy() {
+		Soldier newS = new Soldier(this.getControllingPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(),
 									this.getOrientation(), this.getFieldOfViewRange(), this.getFieldOfViewAngle(), this.getAttackRange(),
 									this.getAttackDamage(), this.getSpecialAttackCooldown(), this.getSpawnCost(), this.getScoreWorth());
+		newS.setID(this.getID());
 		newS.updateFieldOfView(this.getFieldOfView());
 		return newS;
-	}
-
-	@Override
-	public Soldier copy() {
-		return this.copy(this.getID());
 	}
 
 	/**

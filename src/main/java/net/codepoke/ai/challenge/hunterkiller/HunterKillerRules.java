@@ -30,6 +30,8 @@ import com.badlogic.gdx.utils.Array;
 public class HunterKillerRules
 		implements GameRules<HunterKillerState, HunterKillerAction> {
 
+	private static final boolean DEBUG = false;
+
 	/**
 	 * Handles the specified action. Also ends the player's turn and checks for a completed game
 	 * state.
@@ -143,15 +145,13 @@ public class HunterKillerRules
 				failCount++;
 		}
 
-		/*
-		 * if (failCount > 0) {
-		 * System.out.printf( "P(%d)R(%d): %d orders ignored, Reasons:%n%s%n",
-		 * action.getActingPlayerID(),
-		 * state.getCurrentRound(),
-		 * failCount,
-		 * failures.toString());
-		 * }
-		 */
+		if (failCount > 0 && DEBUG) {
+			System.out.printf(	"P(%d)R(%d): %d orders ignored, Reasons:%n%s%n",
+								action.getActingPlayerID(),
+								state.getCurrentRound(),
+								failCount,
+								failures.toString());
+		}
 
 		// Return the action as accepted, but add a count of how many orders failed, if any did.
 		return new Result(true, false, null, "Action accepted", failCount > 0 ? String.format(	"%d orders ignored, Reasons:%n%s",
@@ -210,18 +210,20 @@ public class HunterKillerRules
 				Unit unit;
 				switch (spawnType) {
 				case SPAWN_INFECTED:
-					unit = new Infected(map.requestNewGameObjectID(), player.getID(), spawnlocation, spawnDirection);
+					unit = new Infected(player.getID(), spawnlocation, spawnDirection);
 					break;
 				case SPAWN_MEDIC:
-					unit = new Medic(map.requestNewGameObjectID(), player.getID(), spawnlocation, spawnDirection);
+					unit = new Medic(player.getID(), spawnlocation, spawnDirection);
 					break;
 				case SPAWN_SOLDIER:
-					unit = new Soldier(map.requestNewGameObjectID(), player.getID(), spawnlocation, spawnDirection);
+					unit = new Soldier(player.getID(), spawnlocation, spawnDirection);
 					break;
 				default:
 					failures.append(String.format("Spawn Failure: Unsupported BaseOrderType (%s).%n", spawnType));
 					return false;
 				}
+				// Register the unit
+				map.registerGameObject(unit);
 				// Place the unit on the map
 				spawnSuccess = map.place(map.toPosition(spawnlocation), unit);
 				// Add the unit to the Player's squad if successfully spawned and update it's Field-of-View
@@ -370,26 +372,34 @@ public class HunterKillerRules
 		// Several conditions need to hold: (in order of most likely to break out of the statement)
 		// - An Infected was the source of the attack
 		// - There is a unit on the targeted location
-		// - The unit is now dead
+		// - The target is not an Infected
+		// - The target is now dead
 		// - The Infected's special attack is not on cooldown
 		// - The attack succeeded
 		Unit targetUnit = map.getUnitAtLocation(targetLocation);
-		if (unit instanceof Infected && targetUnit != null && targetUnit.getHpCurrent() <= 0 && unit.getSpecialAttackCooldown() == 0
-			&& attackSuccess) {
+		if (unit instanceof Infected && targetUnit != null && !(targetUnit instanceof Infected) && targetUnit.getHpCurrent() <= 0
+			&& unit.getSpecialAttackCooldown() == 0 && attackSuccess) {
+
 			Unit deadUnit = map.getUnitAtLocation(targetLocation);
-			// Remove the dead unit from it's owners squad
+			// Remove the dead unit from it's owner
 			state.getPlayer(deadUnit.getControllingPlayerID())
 					.removeUnit(deadUnit.getID());
+
 			// Remove the dead unit from the map
-			map.remove(map.toPosition(targetLocation), deadUnit);
+			map.unregisterGameObject(deadUnit);
+
 			// Award points to the player
 			awardPointsForUnitDeath(player, deadUnit);
+
 			// Spawn a new Infected, on the same team as the Infected that performed this attack
-			Infected spawn = new Infected(map.requestNewGameObjectID(), player.getID(), targetLocation, unit.getOrientation());
-			map.place(map.toPosition(targetLocation), spawn);
-			// Add the newly spawned unit to the player's squad
+			Infected spawn = new Infected(player.getID(), targetLocation, unit.getOrientation());
+			map.registerGameObject(spawn);
+			map.place(targetLocation, spawn);
+
+			// Add the newly spawned unit to the player
 			player.addUnit(spawn.getID());
 			spawn.updateFieldOfView(map.getFieldOfView(spawn));
+
 			// If we executed the special action, start the cooldown
 			unit.startCooldown();
 		}

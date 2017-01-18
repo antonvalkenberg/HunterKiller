@@ -47,26 +47,24 @@ public abstract class MapFeature
 	/**
 	 * Constructs a new instance of a MapFeature with default HP.
 	 * 
-	 * {@link MapFeature#MapFeature(int, MapLocation, int, int, boolean, boolean, boolean)}
+	 * {@link MapFeature#MapFeature(MapLocation, int, int, boolean, boolean, boolean)}
 	 */
-	public MapFeature(int id, MapLocation mapLocation, boolean destructible, boolean blockingLOS, boolean walkable) {
-		this(id, mapLocation, Constants.MAPFEATURE_DEFAULT_HP, destructible, blockingLOS, walkable);
+	public MapFeature(MapLocation mapLocation, boolean destructible, boolean blockingLOS, boolean walkable) {
+		this(mapLocation, Constants.MAPFEATURE_DEFAULT_HP, destructible, blockingLOS, walkable);
 	}
 
 	/**
 	 * Constructs a new instance of a MapFeature.
 	 * 
-	 * {@link MapFeature#MapFeature(int, MapLocation, int, int, boolean, boolean, boolean)}
+	 * {@link MapFeature#MapFeature(MapLocation, int, int, boolean, boolean, boolean)}
 	 */
-	public MapFeature(int id, MapLocation mapLocation, int maxHP, boolean destructible, boolean blockingLOS, boolean walkable) {
-		this(id, mapLocation, maxHP, maxHP, destructible, blockingLOS, walkable);
+	public MapFeature(MapLocation mapLocation, int maxHP, boolean destructible, boolean blockingLOS, boolean walkable) {
+		this(mapLocation, maxHP, maxHP, destructible, blockingLOS, walkable);
 	}
 
 	/**
 	 * Constructs a new instance of a MapFeature.
 	 * 
-	 * @param id
-	 *            The MapFeature's unique identifier.
 	 * @param mapLocation
 	 *            The MapFeature's location on the Map.
 	 * @param maxHP
@@ -80,8 +78,8 @@ public abstract class MapFeature
 	 * @param walkable
 	 *            Whether or not Units can move over the MapFeature.
 	 */
-	public MapFeature(int id, MapLocation mapLocation, int maxHP, int currentHP, boolean destructible, boolean blockingLOS, boolean walkable) {
-		super(id, mapLocation, maxHP, currentHP);
+	public MapFeature(MapLocation mapLocation, int maxHP, int currentHP, boolean destructible, boolean blockingLOS, boolean walkable) {
+		super(mapLocation, maxHP, currentHP);
 		isDestructible = destructible;
 		isBlockingLOS = blockingLOS;
 		isWalkable = walkable;

@@ -11,11 +11,14 @@ import net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerRules;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerStateFactory;
+import net.codepoke.ai.challenge.hunterkiller.Map;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.MapSetup;
 import net.codepoke.ai.challenge.hunterkiller.Player;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Door;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
 
@@ -401,7 +404,7 @@ public class UnitOrderTest {
 	 */
 	@Test
 	public void testAttack() {
-		// Re-create the map using the smaller maps for attacking
+		// Re-create the map using the smaller map for attacking
 		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMapAttack, playerNames, "nonRandomSections");
 
 		MapLocation unitLocation = new MapLocation(1, 0);
@@ -462,7 +465,7 @@ public class UnitOrderTest {
 	 */
 	@Test
 	public void testSpecialAttackSoldier() {
-		// Re-create the map using the maps for the soldier's special attack
+		// Re-create the map using the map for the soldier's special attack
 		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMapSpecialSoldier, playerNames, "nonRandomSections");
 
 		MapLocation unitLocation = new MapLocation(2, 1);
@@ -544,7 +547,7 @@ public class UnitOrderTest {
 	 */
 	@Test
 	public void testSpecialAttackMedic() {
-		// Re-create the map using the maps for the soldier's special attack
+		// Re-create the map using the map for the medic's special attack
 		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMapSpecialMedic, playerNames, "nonRandomSections");
 
 		MapLocation unitLocation = new MapLocation(3, 0);
@@ -601,9 +604,10 @@ public class UnitOrderTest {
 	 * </ul>
 	 */
 	@Test
-	public void testSpecialAttackInfected() {
-		// Re-create the map using the maps for the soldier's special attack
+	public void testFailSpecialAttackInfected() {
+		// Re-create the map using the map for the infected's special attack
 		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMapSpecialInfected, playerNames, "nonRandomSections");
+		Map map = state.getMap();
 
 		MapLocation unitLocation = new MapLocation(1, 0);
 		MapLocation targetLocation = new MapLocation(2, 1);
@@ -611,16 +615,18 @@ public class UnitOrderTest {
 		// Get the Infected we want to give the order to
 		Unit unit = state.getMap()
 							.getUnitAtLocation(unitLocation);
-		// Make sure it's facing the direction so that it's owner has the target in it's field-of-view
-		unit.setOrientation(Direction.EAST);
+		// Move the unit south, since it has an attack range of only 1
+		unitLocation = new MapLocation(1, 1);
+		map.move(unitLocation, unit);
+
 		// Save the other player's ID
 		int pre_TargetUnitPlayerID = state.getMap()
 											.getUnitAtLocation(targetLocation)
 											.getControllingPlayerID();
 
 		// Situation before attack:
-		// B I _ _
-		// _ _ I B
+		// B _ _ _
+		// _ I I B
 
 		// Create an order to attack the target location
 		HunterKillerAction specialAttackAction = new HunterKillerAction(state);
@@ -652,8 +658,9 @@ public class UnitOrderTest {
 	 */
 	@Test
 	public void testInfectedTrigger() {
-		// Re-create the map using the maps for the soldier's special attack
+		// Re-create the map using the map for the infected's special attack
 		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMapSpecialInfected, playerNames, "nonRandomSections");
+		Map map = state.getMap();
 
 		MapLocation unitLocation = new MapLocation(1, 0);
 		MapLocation targetLocation = new MapLocation(2, 1);
@@ -661,23 +668,26 @@ public class UnitOrderTest {
 		// Get the acting player
 		Player actingPlayer = state.getPlayer(state.getActivePlayerID());
 		// Get the Infected we want to give the order to
-		Unit unit = state.getMap()
-							.getUnitAtLocation(unitLocation);
+		Unit unit = map.getUnitAtLocation(unitLocation);
 		// Move the unit south, since it has an attack range of only 1
 		unitLocation = new MapLocation(1, 1);
-		state.getMap()
-				.move(unitLocation, unit);
+		map.move(unitLocation, unit);
 
 		// Get the unit at the target location
-		Unit pre_TargetUnit = state.getMap()
-									.getUnitAtLocation(targetLocation);
-		int pre_TargetUnitID = pre_TargetUnit.getID();
-		// Reduce it's health so that an Infected's attack will kill it
-		pre_TargetUnit.reduceHP(pre_TargetUnit.getHpCurrent() - Constants.INFECTED_ATTACK_DAMAGE);
+		Unit tempUnit = map.getUnitAtLocation(targetLocation);
+		// We need to replace this unit, because an infected's special won't trigger off of another Infected unit
+		map.unregisterGameObject(tempUnit);
+		// Create a new Soldier, with just enough health to die to an Infected's attack
+		Soldier pre_TargetUnit = new Soldier(0, targetLocation, Constants.SOLDIER_MAX_HP, Constants.INFECTED_ATTACK_DAMAGE, Direction.WEST,
+												Constants.SOLDIER_FOV_RANGE, Constants.SOLDIER_FOV_ANGLE, Constants.SOLDIER_ATTACK_RANGE,
+												Constants.SOLDIER_ATTACK_DAMAGE, Constants.SOLDIER_COOLDOWN, Constants.SOLDIER_SPAWN_COST,
+												Constants.SOLDIER_SCORE);
+		map.registerGameObject(pre_TargetUnit);
+		map.place(targetLocation, pre_TargetUnit);
 
 		// Situation before attack:
 		// B _ _ _
-		// _ I I B
+		// _ I S B
 
 		// Create an order to attack the target location
 		HunterKillerAction attackAction = new HunterKillerAction(state);
@@ -698,8 +708,8 @@ public class UnitOrderTest {
 		Unit post_TargetUnit = state.getMap()
 									.getUnitAtLocation(targetLocation);
 
-		// Make sure the Unit at the target location has a different ID
-		assertTrue(pre_TargetUnitID != post_TargetUnit.getID());
+		// Make sure the Unit is an Infected
+		assertTrue(post_TargetUnit instanceof Infected);
 		// Make sure the Unit at the target location belongs to the same player
 		assertEquals(actingPlayer.getID(), post_TargetUnit.getControllingPlayerID());
 		// Make sure the Infected's cooldown has started

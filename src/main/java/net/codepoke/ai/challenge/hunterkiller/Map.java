@@ -7,6 +7,7 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import net.codepoke.ai.challenge.hunterkiller.LineOfSight.BlocksLightFunction;
 import net.codepoke.ai.challenge.hunterkiller.LineOfSight.GetDistanceFunction;
 import net.codepoke.ai.challenge.hunterkiller.LineOfSight.SetVisibleFunction;
@@ -18,7 +19,6 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Floor;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.MapFeature;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Space;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Wall;
-import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
@@ -39,6 +39,7 @@ import com.badlogic.gdx.utils.IntArray;
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
+@Getter
 public class Map {
 
 	// region Properties
@@ -51,40 +52,34 @@ public class Map {
 	/**
 	 * The height of this map.
 	 */
-	@Getter
 	private int mapHeight;
 
 	/**
 	 * The width of this map.
 	 */
-	@Getter
 	private int mapWidth;
 
 	/**
 	 * This is the internal representation. See {@link Map} for details.
 	 */
-	@Getter
+	@Setter
 	private GameObject[][] mapContent;
 
 	/**
 	 * Collection of objects present on this map, indexed by ID.
 	 */
+	@Setter
 	private Array<GameObject> objects;
 
 	/**
 	 * A temporary storage for IDs that are currently not being owned by an object.
 	 */
+	@Setter
 	private IntArray idBuffer;
-
-	/**
-	 * A counter that records the latest ID given out to a game object.
-	 */
-	private int internalObjectIDCounter;
 
 	/**
 	 * The line-of-sight implementation that is used on this map.
 	 */
-	@Getter
 	private transient LineOfSight lineOfSight;
 
 	// endregion
@@ -112,10 +107,8 @@ public class Map {
 		// Map will have (width * height) positions
 		mapContent = new GameObject[width * height][Constants.MAP_INTERNAL_LAYERS];
 		// Create new collections for our ID->Object lookup and ID buffer
-		objects = new Array<GameObject>();
+		objects = new Array<GameObject>(true, width * height);
 		idBuffer = new IntArray();
-		// Reset the Object ID counter
-		internalObjectIDCounter = -1;
 		// Create the classes required for line-of-sight
 		lineOfSight = new LineOfSight(new BlocksLight(), new SetVisible(), new GetManhattanDistance());
 	}
@@ -372,7 +365,7 @@ public class Map {
 			return false;
 		}
 		// Remove the object
-		success = remove(toPosition(object.getLocation()), object);
+		success = remove(object.getLocation(), object);
 		// Only continue with placement if removal was successful
 		if (success)
 			success = place(targetPosition, object);
@@ -630,7 +623,7 @@ public class Map {
 	 */
 	public GameObject getObject(int objectID) {
 		// Make sure this ID doesn't go out of bounds of our objects-collection.
-		if (objects.size < objectID)
+		if (objects.size <= objectID)
 			return null;
 		return objects.get(objectID);
 	}
@@ -718,33 +711,34 @@ public class Map {
 	}
 
 	/**
-	 * Returns the next available ID for a new game object. Note: this method returns an ID from the ID-buffer if any
-	 * are available.
-	 */
-	public int requestIDForNewGameObject() {
-		// Check the ID-buffer has any available IDs
-		if (idBuffer.size > 0) {
-			return idBuffer.pop();
-		} else {
-			// Return a new ID
-			internalObjectIDCounter++;
-			return internalObjectIDCounter;
-		}
-	}
-
-	/**
 	 * Alert the map that an object wants to join the map's collection of objects.
 	 * 
 	 * @param object
 	 *            The object that needs to be registered.
 	 */
 	public void registerGameObject(GameObject object) {
+		int objectID = -1;
+		// Check the ID-buffer has any available IDs
+		if (idBuffer.size > 0) {
+			objectID = idBuffer.pop();
+		} else {
+			// Return a new ID
+			objectID = objects.size;
+			// Make sure the collection can hold this new ID
+			objects.setSize(objectID + 1);
+		}
+
+		// Assign the object it's ID
+		object.setID(objectID);
+
 		// Set the object into our object collection
-		objects.set(object.getID(), object);
+		objects.set(objectID, object);
 	}
 
 	/**
-	 * Alert the map that this object is no longer present and that it's ID can be added to the buffer array.
+	 * Alert the map that this object should be removed and that it's ID can be added to the buffer array.
+	 * 
+	 * Note: this method calls {@link Map#remove(MapLocation, GameObject)}.
 	 * 
 	 * @param object
 	 *            The object that can be unregistered.
@@ -754,6 +748,8 @@ public class Map {
 		objects.set(object.getID(), null);
 		// Add this ID to the buffer
 		idBuffer.add(object.getID());
+		// Remove the object from the map content
+		remove(object.getLocation(), object);
 	}
 
 	/**
@@ -773,23 +769,106 @@ public class Map {
 	}
 
 	/**
-	 * Creates a deep copy of this map.
+	 * Places an object at a location on the map.
 	 * 
-	 * @return
+	 * {@link Map#place(int, GameObject)}
+	 */
+	public boolean place(MapLocation location, GameObject object) {
+		return place(toPosition(location), object);
+	}
+
+	/**
+	 * Removes an object from a location on the map.
+	 * 
+	 * {@link Map#remove(int, GameObject)}
+	 */
+	public boolean remove(MapLocation location, GameObject object) {
+		return remove(toPosition(location), object);
+	}
+
+	/**
+	 * Places a {@link GameObject} on the map.
+	 * 
+	 * @param position
+	 *            The position on the map to place the object at.
+	 * @param object
+	 *            The object to place.
+	 * @return Whether or not the placement was successful.
+	 */
+	public boolean place(int position, GameObject object) {
+		// Check which layer the object needs to be at
+		int layer = -1;
+		if (object instanceof MapFeature)
+			layer = Constants.MAP_INTERNAL_FEATURE_INDEX;
+		else if (object instanceof Unit)
+			layer = Constants.MAP_INTERNAL_UNIT_INDEX;
+		else {
+			System.out.println("WARNING: Unable to place object on map, unknown type");
+			return false;
+		}
+		// Check if there isn't already an object at the specified position
+		if (mapContent[position][layer] != null) {
+			System.out.println("WARNING: Unable to place object on map, space occupied");
+			return false;
+		}
+		// Place the object
+		object.setLocation(toLocation(position));
+		mapContent[position][layer] = object;
+		return true;
+	}
+
+	/**
+	 * Removes a {@link GameObject} from the map.
+	 * 
+	 * @param position
+	 *            The position on the map to remove the object from.
+	 * @param object
+	 *            The object to remove.
+	 * @return Whether or not the removal was successful.
+	 */
+	public boolean remove(int position, GameObject object) {
+		// Check which layer the object should be at
+		int layer = -1;
+		if (object instanceof MapFeature)
+			layer = Constants.MAP_INTERNAL_FEATURE_INDEX;
+		else if (object instanceof Unit)
+			layer = Constants.MAP_INTERNAL_UNIT_INDEX;
+		else {
+			System.out.println("WARNING: Unable to remove object from map, unknown type");
+			return false;
+		}
+		// Check if there is an object to remove
+		if (mapContent[position][layer] == null) {
+			System.out.println("WARNING: Unable to remove object from map, space is empty");
+			return false;
+		}
+		// Check if the object to remove has the same ID as the object currently at that position
+		if (mapContent[position][layer].getID() != object.getID()) {
+			System.out.println("WARNING: Unable to remove object from map, no matching object found");
+			return false;
+		}
+		// Remove the object
+		object.setLocation(Constants.GAMEOBJECT_NOT_PLACED);
+		mapContent[position][layer] = null;
+		return true;
+	}
+
+	/**
+	 * Creates a deep copy of this map.
 	 */
 	public Map copy() {
 		// Create a new map
 		Map newMap = new Map(this.name, this.mapWidth, this.mapHeight);
-		// Deep copy the map content
-		GameObject[][] content = copyMapContent();
+
+		// Deep copy the map content & objects
+		Array<GameObject> newObjects = new Array<GameObject>(this.objects.size);
+		newObjects.size = this.objects.size; // Force size so OoB checks don't crash when we directly set the content
+		GameObject[][] newContent = copyMapContent(newObjects);
+
 		// Set some things
-		newMap.setObjectIDCounter(this.internalObjectIDCounter);
-		newMap.setMapContent(content);
-
-		// TODO do this in copyMapContent
-		newMap.objects = new Array<GameObject>(objects);
-		newMap.idBuffer = new IntArray(idBuffer);
-
+		newMap.setMapContent(newContent);
+		newMap.setObjects(newObjects);
+		newMap.setIdBuffer(new IntArray(idBuffer));
 		// Return the created map
 		return newMap;
 	}
@@ -853,73 +932,6 @@ public class Map {
 	// region Protected methods
 
 	/**
-	 * Places a {@link GameObject} on the map.
-	 * 
-	 * @param position
-	 *            The position on the map to place the object at.
-	 * @param object
-	 *            The object to place.
-	 * @return Whether or not the placement was successful.
-	 */
-	protected boolean place(int position, GameObject object) {
-		// Check which layer the object needs to be at
-		int layer = -1;
-		if (object instanceof MapFeature)
-			layer = Constants.MAP_INTERNAL_FEATURE_INDEX;
-		else if (object instanceof Unit)
-			layer = Constants.MAP_INTERNAL_UNIT_INDEX;
-		else {
-			System.out.println("WARNING: Unable to place object on map, unknown type");
-			return false;
-		}
-		// Check if there isn't already an object at the specified position
-		if (mapContent[position][layer] != null) {
-			System.out.println("WARNING: Unable to place object on map, space occupied");
-			return false;
-		}
-		// Place the object
-		object.setLocation(toLocation(position));
-		mapContent[position][layer] = object;
-		return true;
-	}
-
-	/**
-	 * Removes a {@link GameObject} from the map.
-	 * 
-	 * @param position
-	 *            The position on the map to remove the object from.
-	 * @param object
-	 *            The object to remove.
-	 * @return Whether or not the removal was successful.
-	 */
-	protected boolean remove(int position, GameObject object) {
-		// Check which layer the object should be at
-		int layer = -1;
-		if (object instanceof MapFeature)
-			layer = Constants.MAP_INTERNAL_FEATURE_INDEX;
-		else if (object instanceof Unit)
-			layer = Constants.MAP_INTERNAL_UNIT_INDEX;
-		else {
-			System.out.println("WARNING: Unable to remove object from map, unknown type");
-			return false;
-		}
-		// Check if there is an object to remove
-		if (mapContent[position][layer] == null) {
-			System.out.println("WARNING: Unable to remove object from map, space is empty");
-			return false;
-		}
-		// Check if the object to remove has the same ID as the object currently at that position
-		if (mapContent[position][layer].getID() != object.getID()) {
-			System.out.println("WARNING: Unable to remove object from map, no matching object found");
-			return false;
-		}
-		// Remove the object
-		object.setLocation(Constants.GAMEOBJECT_NOT_PLACED);
-		mapContent[position][layer] = null;
-		return true;
-	}
-
-	/**
 	 * Ticks the map forward, this means that we should check the {@link GameObject}s on the map to
 	 * see if any should be removed. This method also updates the field-of-view of any surviving {@link Unit}s.
 	 * 
@@ -928,7 +940,8 @@ public class Map {
 	 */
 	protected void tick(HunterKillerState state) {
 		// Check our object collection for 'dead' objects
-		for (GameObject object : objects) {
+		for (int i = 0; i < objects.size; i++) {
+			GameObject object = objects.get(i);
 			// Check if there is anything there
 			if (object != null) {
 				// If the '.tick' method returns true, that indicates that the object should be removed
@@ -936,15 +949,13 @@ public class Map {
 					// Get this object's position on the map
 					int mapPosition = toPosition(object.getLocation());
 
-					// Delete the object
-					remove(mapPosition, object);
 					// Unregister the object
 					unregisterGameObject(object);
 
 					// If the object is a Base, replace it with a Space-tile
 					if (object instanceof Base) {
 						// Create a new Space object
-						Space space = new Space(requestIDForNewGameObject(), toLocation(mapPosition));
+						Space space = new Space(toLocation(mapPosition));
 						// Register the object
 						registerGameObject(space);
 						// Place it on the map
@@ -960,8 +971,6 @@ public class Map {
 							Unit unit = (Unit) getObject(id);
 							// Check if the Unit is still around (might have died this same tick)
 							if (unit != null) {
-								// Delete the Unit from this map
-								remove(toPosition(unit.getLocation()), unit);
 								// Unregister the Unit
 								unregisterGameObject(unit);
 							}
@@ -1010,73 +1019,22 @@ public class Map {
 	}
 
 	/**
-	 * Set the content of this Map.
-	 * 
-	 * @param content
-	 *            The content of the {@link Map}.
-	 */
-	public void setMapContent(GameObject[][] content) {
-		this.mapContent = content;
-	}
-
-	/**
-	 * Set the object ID counter to a specific number. Mainly used for copy method.
-	 * 
-	 * @param counter
-	 *            The number the counter should be set to.
-	 */
-	protected void setObjectIDCounter(int counter) {
-		this.internalObjectIDCounter = counter;
-	}
-
-	/**
 	 * Creates a deep copy of this map's content.
 	 * 
 	 * @return
 	 */
-	protected GameObject[][] copyMapContent() {
+	protected GameObject[][] copyMapContent(Array<GameObject> objects) {
 		int positions = this.mapWidth * this.mapHeight;
 		// Create a new content array
 		GameObject[][] newContent = new GameObject[positions][Constants.MAP_INTERNAL_LAYERS];
 		for (int i = 0; i < positions; i++) {
 			for (int j = 0; j < Constants.MAP_INTERNAL_LAYERS; j++) {
 				GameObject object = this.mapContent[i][j];
-				// Check if we are dealing with a MapFeature
-				if (object != null && object instanceof MapFeature) {
-					// Maintain the original ID here, because we also copy the counters in the map.
-					if (object instanceof Base) {
-						Base base = (Base) object;
-						newContent[i][j] = base.copy(base.getID());
-					} else if (object instanceof Door) {
-						Door door = (Door) object;
-						newContent[i][j] = door.copy(door.getID());
-					} else if (object instanceof Floor) {
-						Floor floor = (Floor) object;
-						newContent[i][j] = floor.copy(floor.getID());
-					} else if (object instanceof Space) {
-						Space space = (Space) object;
-						newContent[i][j] = space.copy(space.getID());
-					} else if (object instanceof Wall) {
-						Wall wall = (Wall) object;
-						newContent[i][j] = wall.copy(wall.getID());
-					} else {
-						System.out.println("WARNING: Unknown MapFeature type found while copying content!");
-					}
-				} else if (object != null && object instanceof Unit) {
-					// Or if we are dealing with a Unit
-					if (object instanceof Infected) {
-						// Maintain the original ID here, because we also copy the counters in the map.
-						Infected infected = (Infected) object;
-						newContent[i][j] = infected.copy(infected.getID());
-					} else if (object instanceof Medic) {
-						Medic medic = (Medic) object;
-						newContent[i][j] = medic.copy(medic.getID());
-					} else if (object instanceof Soldier) {
-						Soldier soldier = (Soldier) object;
-						newContent[i][j] = soldier.copy(soldier.getID());
-					} else {
-						System.out.println("WARNING: Unknown Unit type found while copying content!");
-					}
+				// Check if there is anything on this position
+				if (object != null) {
+					GameObject copy = object.copy();
+					objects.set(copy.getID(), copy);
+					newContent[i][j] = copy;
 				}
 				// Otherwise just leave this null
 			}

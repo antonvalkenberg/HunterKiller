@@ -21,13 +21,11 @@ public class Floor
 	/**
 	 * Constructs a new instance of a Floor.
 	 * 
-	 * @param id
-	 *            The Floor's unique identifier.
 	 * @param mapLocation
 	 *            The Floor's location on the Map.
 	 */
-	public Floor(int id, MapLocation mapLocation) {
-		super(id, mapLocation, Constants.FLOOR_DESTRUCTIBLE, Constants.FLOOR_BLOCKS_LOS, Constants.FLOOR_WALKABLE);
+	public Floor(MapLocation mapLocation) {
+		super(mapLocation, Constants.FLOOR_DESTRUCTIBLE, Constants.FLOOR_BLOCKS_LOS, Constants.FLOOR_WALKABLE);
 	}
 
 	// endregion
@@ -35,13 +33,10 @@ public class Floor
 	// region Overridden methods
 
 	@Override
-	public Floor copy(int id) {
-		return new Floor(id, this.getLocation());
-	}
-
-	@Override
 	public Floor copy() {
-		return this.copy(this.getID());
+		Floor newF = new Floor(this.getLocation());
+		newF.setID(this.getID());
+		return newF;
 	}
 
 	@Override

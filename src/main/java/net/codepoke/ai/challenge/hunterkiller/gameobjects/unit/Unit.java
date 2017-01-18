@@ -28,7 +28,8 @@ import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class Unit
-		extends GameObject implements Controlled {
+		extends GameObject
+		implements Controlled {
 
 	// region Properties
 
@@ -95,30 +96,27 @@ public abstract class Unit
 	/**
 	 * Constructs a new instance of a Unit with default HP.
 	 * 
-	 * {@link Unit#Unit(int, int, UnitType, MapLocation, int, int, Direction, int, int, int, int, int, int, int)}
+	 * {@link Unit#Unit(int, UnitType, MapLocation, int, int, Direction, int, int, int, int, int, int, int)}
 	 */
-	public Unit(int id, int spawningPlayerID, UnitType unitType, MapLocation mapLocation, Direction facing, int fovRange, int fovAngle,
+	public Unit(int spawningPlayerID, UnitType unitType, MapLocation mapLocation, Direction facing, int fovRange, int fovAngle,
 				int attckRange, int attckDmg, int cooldown, int cost, int score) {
-		this(id, spawningPlayerID, unitType, mapLocation, Constants.UNIT_DEFAULT_HP, facing, fovRange, fovAngle, attckRange, attckDmg,
+		this(spawningPlayerID, unitType, mapLocation, Constants.UNIT_DEFAULT_HP, facing, fovRange, fovAngle, attckRange, attckDmg,
 				cooldown, cost, score);
 	}
 
 	/**
 	 * Constructs a new instance of a Unit with full health.
 	 * 
-	 * {@link Unit#Unit(int, int, UnitType, MapLocation, int, int, Direction, int, int, int, int, int, int, int)}
+	 * {@link Unit#Unit(int, UnitType, MapLocation, int, int, Direction, int, int, int, int, int, int, int)}
 	 */
-	public Unit(int id, int spawningPlayerID, UnitType unitType, MapLocation mapLocation, int maxHP, Direction facing, int fovRange,
-				int fovAngle, int attckRange, int attckDmg, int cooldown, int cost, int score) {
-		this(id, spawningPlayerID, unitType, mapLocation, maxHP, maxHP, facing, fovRange, fovAngle, attckRange, attckDmg, cooldown, cost,
-				score);
+	public Unit(int spawningPlayerID, UnitType unitType, MapLocation mapLocation, int maxHP, Direction facing, int fovRange, int fovAngle,
+				int attckRange, int attckDmg, int cooldown, int cost, int score) {
+		this(spawningPlayerID, unitType, mapLocation, maxHP, maxHP, facing, fovRange, fovAngle, attckRange, attckDmg, cooldown, cost, score);
 	}
 
 	/**
 	 * Constructs a new instance of a Unit.
 	 * 
-	 * @param id
-	 *            The Unit's unique identifier.
 	 * @param spawningPlayerID
 	 *            The ID of the Player that spawned this Unit.
 	 * @param unitType
@@ -146,9 +144,9 @@ public abstract class Unit
 	 * @param score
 	 *            The score the Unit is worth.
 	 */
-	public Unit(int id, int spawningPlayerID, UnitType unitType, MapLocation mapLocation, int maxHP, int currentHP, Direction facing,
-				int fovRange, int fovAngle, int attckRange, int attckDmg, int cooldown, int cost, int score) {
-		super(id, mapLocation, maxHP, currentHP);
+	public Unit(int spawningPlayerID, UnitType unitType, MapLocation mapLocation, int maxHP, int currentHP, Direction facing, int fovRange,
+				int fovAngle, int attckRange, int attckDmg, int cooldown, int cost, int score) {
+		super(mapLocation, maxHP, currentHP);
 		controllingPlayerID = spawningPlayerID;
 		type = unitType;
 		orientation = facing;

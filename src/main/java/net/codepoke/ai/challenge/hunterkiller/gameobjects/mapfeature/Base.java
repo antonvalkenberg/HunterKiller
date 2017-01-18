@@ -25,7 +25,8 @@ import net.codepoke.ai.challenge.hunterkiller.orders.BaseOrder;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Base
-		extends MapFeature implements Controlled {
+		extends MapFeature
+		implements Controlled {
 
 	// region Properties
 
@@ -47,10 +48,10 @@ public class Base
 	/**
 	 * Constructs a new instance of a Base with default values.
 	 * 
-	 * {@link Base#Base(int, MapLocation, MapLocation, int, int, boolean, boolean, boolean)}
+	 * {@link Base#Base(MapLocation, MapLocation, int, int, boolean, boolean, boolean)}
 	 */
-	public Base(int id, int playerID, MapLocation mapLocation, MapLocation spawnLocation) {
-		this(id, playerID, mapLocation, spawnLocation, Constants.BASE_MAX_HP, Constants.BASE_DESTRUCTIBLE, Constants.BASE_BLOCKING_LOS,
+	public Base(int playerID, MapLocation mapLocation, MapLocation spawnLocation) {
+		this(playerID, mapLocation, spawnLocation, Constants.BASE_MAX_HP, Constants.BASE_DESTRUCTIBLE, Constants.BASE_BLOCKING_LOS,
 				Constants.BASE_WALKABLE);
 	}
 
@@ -58,18 +59,16 @@ public class Base
 	 * Constructs a new instance of a Base with a specific HP, and uses default values for other
 	 * values.
 	 * 
-	 * {@link Base#Base(int, MapLocation, MapLocation, int, int, boolean, boolean, boolean)}
+	 * {@link Base#Base(MapLocation, MapLocation, int, int, boolean, boolean, boolean)}
 	 */
-	public Base(int id, int playerID, MapLocation mapLocation, MapLocation spawnLocation, int maxHP, boolean destructible,
-				boolean blockingLOS, boolean walkable) {
-		this(id, playerID, mapLocation, spawnLocation, maxHP, maxHP, destructible, blockingLOS, walkable);
+	public Base(int playerID, MapLocation mapLocation, MapLocation spawnLocation, int maxHP, boolean destructible, boolean blockingLOS,
+				boolean walkable) {
+		this(playerID, mapLocation, spawnLocation, maxHP, maxHP, destructible, blockingLOS, walkable);
 	}
 
 	/**
 	 * Constructs a new instance of a Base.
 	 * 
-	 * @param id
-	 *            The Base's unique identifier.
 	 * @param controllingPlayerID
 	 *            The ID of the player that controls this Base.
 	 * @param mapLocation
@@ -87,9 +86,9 @@ public class Base
 	 * @param walkable
 	 *            Whether or not Units can move over the Base.
 	 */
-	public Base(int id, int playerID, MapLocation mapLocation, MapLocation spawnLocation, int maxHP, int currentHP, boolean destructible,
+	public Base(int playerID, MapLocation mapLocation, MapLocation spawnLocation, int maxHP, int currentHP, boolean destructible,
 				boolean blockingLOS, boolean walkable) {
-		super(id, mapLocation, maxHP, currentHP, destructible, blockingLOS, walkable);
+		super(mapLocation, maxHP, currentHP, destructible, blockingLOS, walkable);
 		this.controllingPlayerID = playerID;
 		this.spawnLocation = new MapLocation(spawnLocation.getX(), spawnLocation.getY());
 	}
@@ -152,14 +151,11 @@ public class Base
 	// region Overridden methods
 
 	@Override
-	public Base copy(int id) {
-		return new Base(id, controllingPlayerID, this.getLocation(), spawnLocation, this.getHpMax(), this.getHpCurrent(),
-						this.isDestructible(), this.isBlockingLOS(), this.isWalkable());
-	}
-
-	@Override
 	public Base copy() {
-		return this.copy(this.getID());
+		Base newB = new Base(controllingPlayerID, this.getLocation(), spawnLocation, this.getHpMax(), this.getHpCurrent(),
+								this.isDestructible(), this.isBlockingLOS(), this.isWalkable());
+		newB.setID(this.getID());
+		return newB;
 	}
 
 	@Override

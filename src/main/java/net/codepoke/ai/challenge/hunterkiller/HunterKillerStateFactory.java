@@ -300,19 +300,29 @@ public class HunterKillerStateFactory
 			switch (tile) {
 			// Straightforward MapFeatures
 			case DOOR_CLOSED:
-				map.place(mapPosition, new Door(map.requestNewGameObjectID(), location));
+				Door door = new Door(location);
+				map.registerGameObject(door);
+				map.place(mapPosition, door);
 				break;
 			case DOOR_OPEN:
-				map.place(mapPosition, new Door(map.requestNewGameObjectID(), location, Constants.DOOR_OPEN_ROUNDS));
+				Door openDoor = new Door(location, Constants.DOOR_OPEN_ROUNDS);
+				map.registerGameObject(openDoor);
+				map.place(mapPosition, openDoor);
 				break;
 			case FLOOR:
-				map.place(mapPosition, new Floor(map.requestNewGameObjectID(), location));
+				Floor floor = new Floor(location);
+				map.registerGameObject(floor);
+				map.place(mapPosition, floor);
 				break;
 			case SPACE:
-				map.place(mapPosition, new Space(map.requestNewGameObjectID(), location));
+				Space space = new Space(location);
+				map.registerGameObject(space);
+				map.place(mapPosition, space);
 				break;
 			case WALL:
-				map.place(mapPosition, new Wall(map.requestNewGameObjectID(), location));
+				Wall wall = new Wall(location);
+				map.registerGameObject(wall);
+				map.place(mapPosition, wall);
 				break;
 			// Units and Bases
 			case INFECTED:
@@ -320,7 +330,8 @@ public class HunterKillerStateFactory
 			case SOLDIER:
 			case BASE:
 				// Always place a Floor under a Unit
-				Floor tempFloor = new Floor(map.requestNewGameObjectID(), location);
+				Floor tempFloor = new Floor(location);
+				map.registerGameObject(tempFloor);
 				map.place(mapPosition, tempFloor);
 
 				// Determine to which player-ID the Unit/Base will be assigned
@@ -329,16 +340,23 @@ public class HunterKillerStateFactory
 				int playerID = sectionPlayerIDMap.get(sectionIndex, -1);
 
 				if (!ignoreUnitAndBase && tile == TileType.INFECTED) {
-					map.place(mapPosition, new Infected(map.requestNewGameObjectID(), playerID, location,
-														Constants.UNIT_DEFAULT_ORIENTATION));
+					Infected infected = new Infected(playerID, location, Constants.UNIT_DEFAULT_ORIENTATION);
+					map.registerGameObject(infected);
+					map.place(mapPosition, infected);
+
 				} else if (!ignoreUnitAndBase && tile == TileType.MEDIC) {
-					map.place(mapPosition, new Medic(map.requestNewGameObjectID(), playerID, location, Constants.UNIT_DEFAULT_ORIENTATION));
+					Medic medic = new Medic(playerID, location, Constants.UNIT_DEFAULT_ORIENTATION);
+					map.registerGameObject(medic);
+					map.place(mapPosition, medic);
+
 				} else if (!ignoreUnitAndBase && tile == TileType.SOLDIER) {
-					map.place(	mapPosition,
-								new Soldier(map.requestNewGameObjectID(), playerID, location, Constants.UNIT_DEFAULT_ORIENTATION));
+					Soldier soldier = new Soldier(playerID, location, Constants.UNIT_DEFAULT_ORIENTATION);
+					map.registerGameObject(soldier);
+					map.place(mapPosition, soldier);
+
 				} else if (!ignoreUnitAndBase) {
 					// Remove the Floor
-					map.remove(mapPosition, tempFloor);
+					map.unregisterGameObject(tempFloor);
 					// For Bases, we also need to determine the location of where they spawn Units.
 					// This location is always adjacent to the base, in a predefined direction.
 					// Initialise the spawn location with the location for the base defined in the FourPatch (section
@@ -372,7 +390,9 @@ public class HunterKillerStateFactory
 					}
 
 					// Now that we have defined our spawn location, we can create the Base
-					map.place(mapPosition, new Base(map.requestNewGameObjectID(), playerID, location, spawnLocation));
+					Base base = new Base(playerID, location, spawnLocation);
+					map.registerGameObject(base);
+					map.place(mapPosition, base);
 				}
 				break;
 			default:

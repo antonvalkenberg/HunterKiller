@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import net.codepoke.ai.challenge.hunterkiller.Constants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
@@ -26,7 +27,8 @@ public abstract class GameObject {
 	 * The GameObject's ID, assigned to them by the {@link net.codepoke.ai.challenge.hunterkiller.Map
 	 * Map}.
 	 */
-	private int ID;
+	@Setter
+	private int ID = -1;
 
 	/**
 	 * The location on the Map.
@@ -50,26 +52,24 @@ public abstract class GameObject {
 	/**
 	 * Constructs a new instance of a GameObject with default HP.
 	 * 
-	 * {@link GameObject#GameObject(int, MapLocation, int, int)}
+	 * {@link GameObject#GameObject(MapLocation, int, int)}
 	 */
-	public GameObject(int id, MapLocation mapLocation) {
-		this(id, mapLocation, Constants.GAMEOBJECT_DEFAULT_HP);
+	public GameObject(MapLocation mapLocation) {
+		this(mapLocation, Constants.GAMEOBJECT_DEFAULT_HP);
 	}
 
 	/**
 	 * Constructs a new instance of a GameObject at full health.
 	 * 
-	 * {@link GameObject#GameObject(int, MapLocation, int, int)}
+	 * {@link GameObject#GameObject(MapLocation, int, int)}
 	 */
-	public GameObject(int id, MapLocation mapLocation, int maxHP) {
-		this(id, mapLocation, maxHP, maxHP);
+	public GameObject(MapLocation mapLocation, int maxHP) {
+		this(mapLocation, maxHP, maxHP);
 	}
 
 	/**
 	 * Constructs a new instance of a GameObject.
 	 * 
-	 * @param id
-	 *            The GameObject's unique identifier.
 	 * @param mapLocation
 	 *            The GameObject's location on the Map.
 	 * @param maxHP
@@ -77,23 +77,13 @@ public abstract class GameObject {
 	 * @param currentHP
 	 *            The current amount of health points this GameObject has.
 	 */
-	public GameObject(int id, MapLocation mapLocation, int maxHP, int currentHP) {
-		ID = id;
+	public GameObject(MapLocation mapLocation, int maxHP, int currentHP) {
 		location = new MapLocation(mapLocation.getX(), mapLocation.getY());
 		hpMax = maxHP;
 		hpCurrent = currentHP;
 	}
 
 	// endregion
-
-	/**
-	 * Creates a copy of this GameObject with a new ID.
-	 * 
-	 * @param id
-	 *            A unique identifier for this object
-	 * @return A GameObject that is a copy of this object
-	 */
-	public abstract GameObject copy(int id);
 
 	/**
 	 * Creates a copy of this GameObject.

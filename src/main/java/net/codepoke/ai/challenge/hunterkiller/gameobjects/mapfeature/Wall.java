@@ -21,13 +21,11 @@ public class Wall
 	/**
 	 * Constructs a new instance of a Wall.
 	 * 
-	 * @param id
-	 *            the Wall's unique identifier.
 	 * @param mapLocation
 	 *            The Wall's location on the Map.
 	 */
-	public Wall(int id, MapLocation mapLocation) {
-		super(id, mapLocation, Constants.WALL_DESTRUCTIBLE, Constants.WALL_BLOCKS_LOS, Constants.WALL_WALKABLE);
+	public Wall(MapLocation mapLocation) {
+		super(mapLocation, Constants.WALL_DESTRUCTIBLE, Constants.WALL_BLOCKS_LOS, Constants.WALL_WALKABLE);
 	}
 
 	// endregion
@@ -35,13 +33,10 @@ public class Wall
 	// region Overridden methods
 
 	@Override
-	public Wall copy(int id) {
-		return new Wall(id, this.getLocation());
-	}
-
-	@Override
 	public Wall copy() {
-		return this.copy(this.getID());
+		Wall newW = new Wall(this.getLocation());
+		newW.setID(this.getID());
+		return newW;
 	}
 
 	@Override

@@ -21,13 +21,11 @@ public class Space
 	/**
 	 * Constructs a new instance of Space.
 	 * 
-	 * @param id
-	 *            The Space's unique identifier.
 	 * @param mapLocation
 	 *            The Space's location on the Map.
 	 */
-	public Space(int id, MapLocation mapLocation) {
-		super(id, mapLocation, Constants.SPACE_DESTRUCTIBLE, Constants.SPACE_BLOCKS_LOS, Constants.SPACE_WALKABLE);
+	public Space(MapLocation mapLocation) {
+		super(mapLocation, Constants.SPACE_DESTRUCTIBLE, Constants.SPACE_BLOCKS_LOS, Constants.SPACE_WALKABLE);
 	}
 
 	// endregion
@@ -35,13 +33,10 @@ public class Space
 	// region Overridden methods
 
 	@Override
-	public Space copy(int id) {
-		return new Space(id, this.getLocation());
-	}
-
-	@Override
 	public Space copy() {
-		return this.copy(this.getID());
+		Space newS = new Space(this.getLocation());
+		newS.setID(this.getID());
+		return newS;
 	}
 
 	@Override

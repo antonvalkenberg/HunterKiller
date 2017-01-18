@@ -24,10 +24,10 @@ public class Medic
 	 * Constructs a new instance of a Medic on the specified location on the Map, facing the specified
 	 * direction.
 	 * 
-	 * {@link Medic#Medic(int, int, MapLocation, int, int, Direction, int, int, int, int, int, int, int)}
+	 * {@link Medic#Medic(int, MapLocation, int, int, Direction, int, int, int, int, int, int, int)}
 	 */
-	public Medic(int id, int spawningPlayerID, MapLocation mapLocation, Direction facing) {
-		this(id, spawningPlayerID, mapLocation, Constants.MEDIC_MAX_HP, Constants.MEDIC_MAX_HP, facing, Constants.MEDIC_FOV_RANGE,
+	public Medic(int spawningPlayerID, MapLocation mapLocation, Direction facing) {
+		this(spawningPlayerID, mapLocation, Constants.MEDIC_MAX_HP, Constants.MEDIC_MAX_HP, facing, Constants.MEDIC_FOV_RANGE,
 				Constants.MEDIC_FOV_ANGLE, Constants.MEDIC_ATTACK_RANGE, Constants.MEDIC_ATTACK_DAMAGE, 0, Constants.MEDIC_SPAWN_COST,
 				Constants.MEDIC_SCORE);
 	}
@@ -35,8 +35,6 @@ public class Medic
 	/**
 	 * Constructs a new instance of Medic.
 	 * 
-	 * @param id
-	 *            The Medic's unique identifier.
 	 * @param spawningPlayerID
 	 *            The ID of the Player that spawned this Medic.
 	 * @param mapLocation
@@ -62,10 +60,10 @@ public class Medic
 	 * @param score
 	 *            The score the Medic is worth when defeated
 	 */
-	public Medic(int id, int spawningPlayerID, MapLocation mapLocation, int maxHP, int currentHP, Direction facing, int fovRange,
-					int fovAngle, int attckRange, int attckDmg, int cooldown, int cost, int score) {
-		super(id, spawningPlayerID, UnitType.Medic, mapLocation, maxHP, currentHP, facing, fovRange, fovAngle, attckRange, attckDmg,
-				cooldown, cost, score);
+	public Medic(int spawningPlayerID, MapLocation mapLocation, int maxHP, int currentHP, Direction facing, int fovRange, int fovAngle,
+					int attckRange, int attckDmg, int cooldown, int cost, int score) {
+		super(spawningPlayerID, UnitType.Medic, mapLocation, maxHP, currentHP, facing, fovRange, fovAngle, attckRange, attckDmg, cooldown,
+				cost, score);
 	}
 
 	// endregion
@@ -73,17 +71,13 @@ public class Medic
 	// region Overridden methods
 
 	@Override
-	public Medic copy(int id) {
-		Medic newM = new Medic(id, this.getControllingPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(),
+	public Medic copy() {
+		Medic newM = new Medic(this.getControllingPlayerID(), this.getLocation(), this.getHpMax(), this.getHpCurrent(),
 								this.getOrientation(), this.getFieldOfViewRange(), this.getFieldOfViewAngle(), this.getAttackRange(),
 								this.getAttackDamage(), this.getSpecialAttackCooldown(), this.getSpawnCost(), this.getScoreWorth());
+		newM.setID(this.getID());
 		newM.updateFieldOfView(this.getFieldOfView());
 		return newM;
-	}
-
-	@Override
-	public Medic copy() {
-		return this.copy(this.getID());
 	}
 
 	/**

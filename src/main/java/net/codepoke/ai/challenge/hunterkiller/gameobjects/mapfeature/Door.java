@@ -36,24 +36,22 @@ public class Door
 	/**
 	 * Constructs a new instance of a Door.
 	 * 
-	 * {@link Door#Door(int, MapLocation, int)}
+	 * {@link Door#Door(MapLocation, int)}
 	 */
-	public Door(int id, MapLocation mapLocation) {
-		this(id, mapLocation, 0);
+	public Door(MapLocation mapLocation) {
+		this(mapLocation, 0);
 	}
 
 	/**
 	 * Constructs a new instance of a Door with a specified time before it closes.
 	 * 
-	 * @param id
-	 *            The Door's unique identifier.
 	 * @param mapLocation
 	 *            The Door's location of the Map.
 	 * @param timeToClose
 	 *            Amount of rounds before the Door closes.
 	 */
-	public Door(int id, MapLocation mapLocation, int timeToClose) {
-		super(id, mapLocation, Constants.DOOR_DESTRUCTIBLE, timeToClose <= 0, Constants.DOOR_WALKABLE);
+	public Door(MapLocation mapLocation, int timeToClose) {
+		super(mapLocation, Constants.DOOR_DESTRUCTIBLE, timeToClose <= 0, Constants.DOOR_WALKABLE);
 		openTimer = timeToClose;
 	}
 
@@ -128,13 +126,10 @@ public class Door
 	}
 
 	@Override
-	public Door copy(int id) {
-		return new Door(id, this.getLocation(), openTimer);
-	}
-
-	@Override
 	public Door copy() {
-		return this.copy(this.getID());
+		Door newD = new Door(this.getLocation(), openTimer);
+		newD.setID(this.getID());
+		return newD;
 	}
 
 	@Override

@@ -145,7 +145,7 @@ public class BaseOrderTest {
 	 * Test that a spawn order fails if the player does not have enough resources.
 	 */
 	@Test
-	public void testSpawnResourceFail() {
+	public void testFailSpawnLowResource() {
 		// Set some values of things before the order
 		Player activePlayer = state.getPlayer(state.getActivePlayerID());
 		Base base = (Base) state.getMap()
@@ -176,7 +176,7 @@ public class BaseOrderTest {
 	 * Test that a spawn order fails if the spawn location is currently occupied by a Unit.
 	 */
 	@Test
-	public void testSpawnLocationOccupied() {
+	public void testFailSpawnLocationOccupied() {
 		// Re-create the State with the map that is setup to fail.
 		state = HunterKillerStateFactory.generateInitialStateFromPremade(failMap, playerNames, "nonRandomSections");
 

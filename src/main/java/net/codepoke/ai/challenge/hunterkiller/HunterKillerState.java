@@ -156,6 +156,7 @@ public class HunterKillerState
 				}
 			}
 		}
+
 		// Do a tick on the map after each player's turn
 		map.tick(this);
 	}
@@ -194,7 +195,8 @@ public class HunterKillerState
 
 	@Override
 	public void prepare(int activePlayerID) {
-		// TODO Remove info from other players from state.
+		// TODO We need to remove anything that belongs to another player, and is not in the active player's FoV
+
 	}
 
 	// endregion
