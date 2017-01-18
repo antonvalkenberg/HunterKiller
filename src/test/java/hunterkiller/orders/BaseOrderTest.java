@@ -1,6 +1,3 @@
-/**
- * 
- */
 package hunterkiller.orders;
 
 import static org.junit.Assert.assertEquals;

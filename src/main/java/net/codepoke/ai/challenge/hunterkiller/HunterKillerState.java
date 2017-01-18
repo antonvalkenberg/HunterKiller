@@ -1,10 +1,14 @@
 package net.codepoke.ai.challenge.hunterkiller;
 
+import java.util.HashSet;
+
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.codepoke.ai.AIUtility;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 import net.codepoke.ai.challenge.hunterkiller.orders.NullMove;
 import net.codepoke.ai.states.HiddenState;
 import net.codepoke.ai.states.SequentialState;
@@ -195,8 +199,25 @@ public class HunterKillerState
 
 	@Override
 	public void prepare(int activePlayerID) {
-		// TODO We need to remove anything that belongs to another player, and is not in the active player's FoV
+		// We need to remove any units that belong to another player, and are not in the active player's FoV
+		GameObject[][] mapContent = map.getMapContent();
+		HashSet<MapLocation> playerFoV = players[activePlayerID].getCombinedFieldOfView(map);
 
+		// Go through each position on the map
+		for (int i = 0; i < mapContent.length; i++) {
+			// Check if this location lies outside of the player's field-of-view
+			if (!playerFoV.contains(map.toLocation(i))) {
+				// Check if there is a unit there
+				if (mapContent[i][Constants.MAP_INTERNAL_UNIT_INDEX] != null) {
+					// Check if that unit belongs to another player
+					Unit unit = (Unit) mapContent[i][Constants.MAP_INTERNAL_UNIT_INDEX];
+					if (unit.getControllingPlayerID() != activePlayerID) {
+						// Remove the unit from the map
+						map.unregisterGameObject(unit);
+					}
+				}
+			}
+		}
 	}
 
 	// endregion
