@@ -875,15 +875,24 @@ public class Map {
 		return newMap;
 	}
 
-	public IntArray findPath(MapLocation from, MapLocation to) {
-
+	/**
+	 * Returns an ordered {@link Array} containing the locations that form a path from one location to another. This
+	 * method uses the A* algorithm.
+	 * 
+	 * @param from
+	 *            The location that is the starting point for the search.
+	 * @param to
+	 *            The location that is the target of the search.
+	 */
+	public Array<MapLocation> findPath(MapLocation from, MapLocation to) {
 		BinaryHeap<PathNode> open = new BinaryHeap<PathNode>(mapWidth * mapHeight, false);
 		PathNode[] nodes = new PathNode[mapWidth * mapHeight];
 		IntArray path = new IntArray();
-
+		// Using positions is more convenient with indexing in the 'nodes' array
 		int rootPosition = toPosition(from);
 		int targetPosition = toPosition(to);
 
+		// Start the search at the root node
 		PathNode root = new PathNode(0);
 		root.position = rootPosition;
 		nodes[rootPosition] = root;
@@ -895,6 +904,7 @@ public class Map {
 		while (open.size > 0) {
 			PathNode node = open.pop();
 			if (node.position == targetPosition) {
+				// If we have reached the target, go back and add all parent nodes to the path.
 				while (node != root) {
 					path.add(node.position);
 					node = node.parent;
@@ -905,18 +915,26 @@ public class Map {
 
 			MapLocation nodeLocation = toLocation(node.position);
 			for (Direction move : Direction.values()) {
-				// Check if this move is possible
+				// Check if this move is possible. Note: this causes searches that have a location that cannot be
+				// traversed to not yield a solution.
 				if (!isMovePossible(nodeLocation, move))
 					continue;
 
-				addNode(nodes, open, node, getLocationInDirection(nodeLocation, move, 1), 1, to);
+				MapLocation moveLocation = getLocationInDirection(nodeLocation, move, 1);
+				addNode(nodes, open, node, moveLocation, 1, to);
 			}
 
 		}
 
 		path.reverse();
 
-		return path;
+		// Translate the positions back into MapLocation before returning the path
+		Array<MapLocation> pathLocations = new Array<MapLocation>(true, path.size);
+		for (int i = 0; i < path.size; i++) {
+			pathLocations.add(toLocation(path.get(i)));
+		}
+
+		return pathLocations;
 	}
 
 	// endregion
@@ -1144,12 +1162,29 @@ public class Map {
 
 	// region Private methods
 
+	/**
+	 * Adds a node to the set of searched nodes and checks if this node is part of a path that costs less than the
+	 * current lowest cost.
+	 * 
+	 * @param constructed
+	 *            The collection of nodes that have been visited so far.
+	 * @param open
+	 *            The collection of nodes that still have potential to improve the path.
+	 * @param parent
+	 *            The node that applying a move to resulted in the current location.
+	 * @param location
+	 *            The location that a node should be constructed for.
+	 * @param cost
+	 *            The cost of the move.
+	 * @param target
+	 *            The target location of the search.
+	 */
 	private void addNode(PathNode[] constructed, BinaryHeap<PathNode> open, PathNode parent, MapLocation location, int cost,
 			MapLocation target) {
 		// Get the position of the current location
 		int locationPosition = toPosition(location);
 
-		// Block expansion by walls.
+		// Walls block expansion of the search.
 		MapFeature feature = getFeatureAtLocation(location);
 		if (feature instanceof Wall && !((Wall) feature).isDestructible())
 			return;
@@ -1158,23 +1193,25 @@ public class Map {
 		float score = pathCost + MapLocation.getManhattanDist(target, location);
 
 		PathNode node = constructed[locationPosition];
-		if (node != null) { // Node already encountered for this run.
-			if (!node.closed && pathCost < node.pathCost) { // Node isn't closed and new cost is lower.
+		// Check if this location has already had a node created.
+		if (node != null) {
+			// Check if that node isn't closed and new the cost is lower.
+			if (!node.closed && pathCost < node.pathCost) {
 				// Update the existing node.
 				open.setValue(node, score);
 				node.parent = parent;
 				node.pathCost = pathCost;
 			}
 		} else {
-			// Use node from the cache or create a new one.
-			if (node == null) {
-				node = new PathNode(0);
-				node.position = locationPosition;
-				constructed[locationPosition] = node;
-			}
-			open.add(node, score);
+			// Create a new node
+			node = new PathNode(0);
+			node.position = locationPosition;
 			node.parent = parent;
 			node.pathCost = pathCost;
+
+			constructed[locationPosition] = node;
+
+			open.add(node, score);
 		}
 	}
 

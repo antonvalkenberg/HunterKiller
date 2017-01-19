@@ -9,6 +9,7 @@ import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerStateFactory;
 import net.codepoke.ai.challenge.hunterkiller.Map;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
+import net.codepoke.ai.challenge.hunterkiller.MapSetup;
 import net.codepoke.ai.challenge.hunterkiller.Player;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
@@ -24,6 +25,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.badlogic.gdx.utils.Array;
+
 /**
  * Test class for Map.
  * 
@@ -31,6 +34,12 @@ import org.junit.Test;
  *
  */
 public class MapTest {
+
+	// region Constants
+
+	private static final MapSetup testPathMap = new MapSetup(String.format("B_____%n______%n______%n______%n_█D██_%n_█__█_"));
+
+	// endregion
 
 	// region Properties
 
@@ -200,8 +209,71 @@ public class MapTest {
 	}
 
 	@Test
-	public void testFindPath() {
+	public void testFindPathOpponentSpawn() {
+		// Re-create the map using the map for testing pathfinding
+		String[] playerNames = new String[] { "A", "B" };
+		HunterKillerState state = HunterKillerStateFactory.generateInitialStateFromPremade(testPathMap, playerNames, "nonRandomSections");
+		Map map = state.getMap();
 
+		// State of the map visualised:
+		// B _ _ _ _ _ _ _ _ _ _ _
+		// _ _ _ _ _ _ _ _ _ _ _ _
+		// _ _ _ _ _ _ _ _ _ _ _ _
+		// _ _ _ _ _ _ _ _ _ _ _ _
+		// _ █ D █ █ _ _ █ █ D █ _
+		// _ █ _ _ █ _ _ █ _ _ █ _
+		// _ █ _ _ █ _ _ █ _ _ █ _
+		// _ █ D █ █ _ _ █ █ D █ _
+		// _ _ _ _ _ _ _ _ _ _ _ _
+		// _ _ _ _ _ _ _ _ _ _ _ _
+		// _ _ _ _ _ _ _ _ _ _ _ _
+		// _ _ _ _ _ _ _ _ _ _ _ B
+
+		// Test 1
+		// Ask the map to calculate a path from the Player's base to the opponent's spawn location
+		Player player = state.getPlayer(0);
+		MapLocation baseLocation = map.getObjectLocation(player.getBaseID());
+		Player opponent = state.getPlayer(1);
+		MapLocation oppoLocation = ((Base) map.getObject(opponent.getBaseID())).getSpawnLocation();
+
+		Array<MapLocation> path1 = map.findPath(baseLocation, oppoLocation);
+
+		// Check that the length is correct (specific path can vary)
+		assertEquals(21, path1.size);
+
+		// Test 2
+		// Ask the map to calculate this path (start = '.', target = '*')
+		// B _ _ _ _ _ _ _ _ _ _ _
+		// _ _ _ _ _ _ _ _ _ _ _ _
+		// _ _ _ _ _ _ _ _ _ _ _ _
+		// _ _ _ _ _ _ _ _ _ _ _ _
+		// _ █ D █ █ _ _ █ █ D █ _
+		// . █ _ _ █ _ _ █ * _ █ _
+		// _ █ _ _ █ _ _ █ _ _ █ _
+		// _ █ D █ █ _ _ █ █ D █ _
+		// _ _ _ _ _ _ _ _ _ _ _ _
+		// _ _ _ _ _ _ _ _ _ _ _ _
+		// _ _ _ _ _ _ _ _ _ _ _ _
+		// _ _ _ _ _ _ _ _ _ _ _ B
+		Array<MapLocation> path2 = map.findPath(new MapLocation(0, 5), new MapLocation(8, 5));
+
+		// Check that the length is correct
+		assertEquals(14, path2.size);
+		// Check that the path is correct
+		assertEquals(new MapLocation(0, 4), path2.get(0));
+		assertEquals(new MapLocation(0, 3), path2.get(1));
+		assertEquals(new MapLocation(1, 3), path2.get(2));
+		assertEquals(new MapLocation(2, 3), path2.get(3));
+		assertEquals(new MapLocation(3, 3), path2.get(4));
+		assertEquals(new MapLocation(4, 3), path2.get(5));
+		assertEquals(new MapLocation(5, 3), path2.get(6));
+		assertEquals(new MapLocation(6, 3), path2.get(7));
+		assertEquals(new MapLocation(7, 3), path2.get(8));
+		assertEquals(new MapLocation(8, 3), path2.get(9));
+		assertEquals(new MapLocation(9, 3), path2.get(10));
+		assertEquals(new MapLocation(9, 4), path2.get(11));
+		assertEquals(new MapLocation(9, 5), path2.get(12));
+		assertEquals(new MapLocation(8, 5), path2.get(13));
 	}
 
 	// endregion
