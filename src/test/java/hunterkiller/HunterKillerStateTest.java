@@ -93,7 +93,7 @@ public class HunterKillerStateTest {
 		// _ _ _ _ _ _ _ S
 		// _ _ _ _ M _ _ B
 
-		// The test here is that the Soldier unit that is just above/below the Base, should not be visible for the
+		// The test here is that the Soldier unit that is just above/below the Structure, should not be visible for the
 		// opposing team (note that an Infected has a FoV-range of 4).
 		MapLocation location = new MapLocation(7, 4);
 		int oppoSoldierID = copiedMap.getUnitAtLocation(location)

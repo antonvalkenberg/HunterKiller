@@ -31,24 +31,121 @@ public class Constants {
 	 */
 	public static final boolean MAPFEATURE_DEFAULT_WALKABLE = true;
 
+	// region Structure
+
+	/**
+	 * Structures are not controlled by any player by default.
+	 */
+	public static final int STRUCTURE_NO_CONTROL = -1;
+	/**
+	 * Health points for a structure.
+	 */
+	public static final int STRUCTURE_MAX_HP = 50;
+	/**
+	 * Structures are destructible.
+	 */
+	public static final boolean STRUCTURE_DESTRUCTIBLE = true;
+	/**
+	 * Structures block Line of Sight.
+	 */
+	public static final boolean STRUCTURE_BLOCKING_LOS = true;
+	/**
+	 * Structures can be moved over.
+	 */
+	public static final boolean STRUCTURE_WALKABLE = true;
+	/**
+	 * Structures are capturable.
+	 */
+	public static final boolean STRUCTURE_CAPTURABLE = true;
+	/**
+	 * Structures can spawn units.
+	 */
+	public static final boolean STRUCTURE_ALLOW_SPAWNING = true;
+	/**
+	 * Structures generate resources.
+	 */
+	public static final boolean STRUCTURE_GENERATES_RESOURCE = true;
+	/**
+	 * The default amount of resources a structure generates.
+	 */
+	public static final int STRUCTURE_RESOURCE_GENERATION = 12;
+	/**
+	 * Structures do not generate score points.
+	 */
+	public static final boolean STRUCTURE_GENERATES_SCORE = false;
+	/**
+	 * The default amount of score points a structure generates.
+	 */
+	public static final int STRUCTURE_SCORE_GENERATION = 0;
+	/**
+	 * Structures are not command centers by default.
+	 */
+	public static final boolean STRUCTURE_IS_COMMAND_CENTER = false;
+
 	// region Base
 
 	/**
-	 * Health points for a base.
-	 */
-	public static final int BASE_MAX_HP = 50;
-	/**
-	 * Bases are destructible.
-	 */
-	public static final boolean BASE_DESTRUCTIBLE = true;
-	/**
-	 * Bases block Line of Sight.
-	 */
-	public static final boolean BASE_BLOCKING_LOS = true;
-	/**
-	 * Bases can not be moved over.
+	 * Bases can't be moved over.
 	 */
 	public static final boolean BASE_WALKABLE = false;
+	/**
+	 * Bases can't be captured.
+	 */
+	public static final boolean BASE_CAPTURABLE = false;
+	/**
+	 * Bases are command centers.
+	 */
+	public static final boolean BASE_IS_COMMAND_CENTER = true;
+
+	// endregion
+
+	// region Outpost
+
+	// Nothing different from default
+
+	// endregion
+
+	// region Stronghold
+
+	/**
+	 * Strongholds are tough.
+	 */
+	public static final int STRONGHOLD_MAX_HP = 250;
+	/**
+	 * Strongholds can't spawn units.
+	 */
+	public static final boolean STRONGHOLD_ALLOW_SPAWNING = false;
+	/**
+	 * Strongholds generate more resources than usual.
+	 */
+	public static final int STRONGHOLD_RESOURCE_GENERATION = 25;
+
+	// endregion
+
+	// region Objective
+
+	/**
+	 * Objectives can't be destroyed.
+	 */
+	public static final boolean OBJECTIVE_DESTRUCTIBLE = false;
+	/**
+	 * Objectives can't spawn units.
+	 */
+	public static final boolean OBJECTIVE_ALLOW_SPAWNING = false;
+	/**
+	 * Objectives don't generate resources.
+	 */
+	public static final boolean OBJECTIVE_GENERATES_RESOURCE = false;
+	/**
+	 * Objectives generate score points.
+	 */
+	public static final boolean OBJECTIVE_GENERATES_SCORE = true;
+	/**
+	 * The amount of score points an objective generates.
+	 */
+	public static final int OBJECTIVE_SCORE_GENERATION = 50;
+
+	// endregion
 
 	// endregion
 
@@ -310,13 +407,9 @@ public class Constants {
 	// region Rules
 
 	/**
-	 * The frequency (in rounds) with which resources are awarded to {@link Player}s.
+	 * The frequency (in rounds) with which structures generate resources or points.
 	 */
-	public static final int RULES_RESOURCE_AWARD_FREQUENCY = 3;
-	/**
-	 * The amount of resources awarded to a {@link Player}.
-	 */
-	public static final int RULES_RESOURCE_AWARD_AMOUNT = 12;
+	public static final int RULES_STRUCTURE_GENERATION_FREQUENCY = 5;
 	/**
 	 * The maximum number of rounds a game will have.
 	 */

@@ -4,19 +4,18 @@ import java.util.List;
 
 import net.codepoke.ai.GameRules;
 import net.codepoke.ai.GameRules.Result.Ranking;
-import net.codepoke.ai.challenge.hunterkiller.enums.BaseOrderType;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction.Rotation;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
-import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.MapFeature;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Structure;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Wall;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
-import net.codepoke.ai.challenge.hunterkiller.orders.BaseOrder;
 import net.codepoke.ai.challenge.hunterkiller.orders.HunterKillerOrder;
+import net.codepoke.ai.challenge.hunterkiller.orders.StructureOrder;
 import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
 
 import com.badlogic.gdx.utils.Array;
@@ -30,7 +29,7 @@ import com.badlogic.gdx.utils.Array;
 public class HunterKillerRules
 		implements GameRules<HunterKillerState, HunterKillerAction> {
 
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 
 	/**
 	 * Handles the specified action. Also ends the player's turn and checks for a completed game
@@ -99,10 +98,10 @@ public class HunterKillerRules
 		// Go through the sorted list of orders
 		for (HunterKillerOrder order : orders) {
 			// Check which type of order we are dealing with
-			if (order instanceof BaseOrder) {
-				BaseOrder baseOrder = (BaseOrder) order;
+			if (order instanceof StructureOrder) {
+				StructureOrder structureOrder = (StructureOrder) order;
 				// Try to spawn the Unit
-				baseOrder.setAccepted(spawnUnit(map, actingPlayer, baseOrder.getOrderType(), failures));
+				structureOrder.setAccepted(spawnUnit(map, actingPlayer, structureOrder, failures));
 			} else if (order instanceof UnitOrder) {
 				UnitOrder unitOrder = (UnitOrder) order;
 				switch (unitOrder.getOrderType()) {
@@ -166,19 +165,24 @@ public class HunterKillerRules
 	 *            The map to spawn on.
 	 * @param player
 	 *            The player to spawn a unit for.
-	 * @param spawnType
-	 *            The type of order that was issued.
+	 * @param order
+	 *            The order that was issued.
 	 * @param failures
 	 *            The StringBuilder to append any failures to.
 	 * @return Whether or not the spawning was successful.
 	 */
-	private boolean spawnUnit(Map map, Player player, BaseOrderType spawnType, StringBuilder failures) {
+	private boolean spawnUnit(Map map, Player player, StructureOrder order, StringBuilder failures) {
 		boolean spawnSuccess = false;
-		Base base = (Base) map.getObject(player.getBaseID());
-		MapLocation spawnlocation = base.getSpawnLocation();
+		Structure structure = (Structure) map.getObject(order.objectID);
+		// Make sure this Structure can spawn
+		if (!structure.isAllowsSpawning()) {
+			failures.append(String.format("Spawn Failure: Structure does not allow spawning of units.%n"));
+			return false;
+		}
+		MapLocation spawnlocation = structure.getSpawnLocation();
 		// The direction a unit faces when they spawn will be in line with the direction the spawn location is relative
 		// to the base.
-		Direction spawnDirection = MapLocation.getDirectionTo(base.getLocation(), spawnlocation);
+		Direction spawnDirection = MapLocation.getDirectionTo(structure.getLocation(), spawnlocation);
 		// Make sure we got a direction
 		if (spawnDirection == null) {
 			failures.append(String.format("Spawn Failure: Spawn location is not on a cardinal direction relative to the base.%n"));
@@ -186,7 +190,7 @@ public class HunterKillerRules
 		}
 		// Get the correct costs
 		int spawnCosts = -1;
-		switch (spawnType) {
+		switch (order.getOrderType()) {
 		case SPAWN_INFECTED:
 			spawnCosts = Constants.INFECTED_SPAWN_COST;
 			break;
@@ -197,7 +201,7 @@ public class HunterKillerRules
 			spawnCosts = Constants.SOLDIER_SPAWN_COST;
 			break;
 		default:
-			failures.append(String.format("Spawn Failure: Unsupported BaseOrderType (%s).%n", spawnType));
+			failures.append(String.format("Spawn Failure: Unsupported StructureOrderType (%s).%n", order.getOrderType()));
 			return false;
 		}
 		// Check if the player has enough resources
@@ -208,7 +212,7 @@ public class HunterKillerRules
 				player.setResource(player.resource - spawnCosts);
 				// Create a new Unit of the correct type
 				Unit unit;
-				switch (spawnType) {
+				switch (order.getOrderType()) {
 				case SPAWN_INFECTED:
 					unit = new Infected(player.getID(), spawnlocation, spawnDirection);
 					break;
@@ -219,7 +223,7 @@ public class HunterKillerRules
 					unit = new Soldier(player.getID(), spawnlocation, spawnDirection);
 					break;
 				default:
-					failures.append(String.format("Spawn Failure: Unsupported BaseOrderType (%s).%n", spawnType));
+					failures.append(String.format("Spawn Failure: Unsupported StructureOrderType (%s).%n", order.getOrderType()));
 					return false;
 				}
 				// Register the unit

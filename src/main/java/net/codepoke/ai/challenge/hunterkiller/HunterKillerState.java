@@ -8,10 +8,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.codepoke.ai.AIUtility;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Structure;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 import net.codepoke.ai.challenge.hunterkiller.orders.NullMove;
 import net.codepoke.ai.states.HiddenState;
 import net.codepoke.ai.states.SequentialState;
+
+import com.badlogic.gdx.utils.Array;
 
 /**
  * Class representing the state of the HunterKiller game. In this state one {@link Player} is the
@@ -131,9 +134,9 @@ public class HunterKillerState
 	 * Determines whether or not this state represents a completed game.
 	 */
 	public boolean isDone() {
-		// A game is completed once only 1 base remains, or if we have reached the maximum allowed number of rounds and
-		// the last player has made their move
-		return map.getCurrentBaseCount() == 1
+		// A game is completed once only 1 command center remains, or if we have reached the maximum allowed number of
+		// rounds and the last player has made their move
+		return map.getCurrentCommandCenterCount() == 1
 				|| (currentRound >= Constants.RULES_MAX_GAME_ROUNDS && activePlayerID == players[players.length - 1].getID());
 	}
 
@@ -153,10 +156,17 @@ public class HunterKillerState
 			// Increase round count
 			currentRound++;
 
-			// If the next round-threshold has been reached, award players with new resources
-			if (currentRound % Constants.RULES_RESOURCE_AWARD_FREQUENCY == 0) {
-				for (Player player : players) {
-					player.setResource(player.resource + Constants.RULES_RESOURCE_AWARD_AMOUNT);
+			// If the next round-threshold has been reached, make structures generate things
+			if (currentRound % Constants.RULES_STRUCTURE_GENERATION_FREQUENCY == 0) {
+				Array<GameObject> objects = map.getObjects();
+				for (int i = 0; i < objects.size; i++) {
+					if (objects.get(i) instanceof Structure) {
+						Structure structure = (Structure) objects.get(i);
+						if (structure.isGeneratesResource())
+							structure.awardResourcesToController(this);
+						if (structure.isGeneratesScore())
+							structure.awardScoreToController(this);
+					}
 				}
 			}
 		}

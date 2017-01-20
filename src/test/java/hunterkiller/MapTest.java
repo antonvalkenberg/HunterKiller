@@ -12,11 +12,12 @@ import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.MapSetup;
 import net.codepoke.ai.challenge.hunterkiller.Player;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
+import net.codepoke.ai.challenge.hunterkiller.enums.StructureType;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
-import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Door;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Floor;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Space;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Structure;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Wall;
 
 import org.junit.After;
@@ -132,9 +133,9 @@ public class MapTest {
 
 	@Test
 	public void testMapFeatureCreation() {
-		String mapPatch = String.format("._█%nDBO");
+		String mapPatch = String.format("._█%nDBO%nXPH");
 		// Create a FourPatch to test
-		FourPatch testPatch = new FourPatch(new HunterKillerStateFactory.HunterKillerMapCreation(), mapPatch, 3, 2);
+		FourPatch testPatch = new FourPatch(new HunterKillerStateFactory.HunterKillerMapCreation(), mapPatch, 3, 3);
 		// Setup the players
 		Player[] players = new Player[] { new Player(0, "A", 0), new Player(1, "B", 8) };
 		// Set the spawn direction
@@ -146,8 +147,16 @@ public class MapTest {
 		GameObject[][] content = createdMap.getMapContent();
 		int index = Constants.MAP_INTERNAL_FEATURE_INDEX;
 
-		// Should be 24 positions on the map
-		assertEquals(24, content.length);
+		// Map visualisation:
+		// . _ █ █ _ .
+		// D B O O _ D
+		// X P H H P X
+		// X P H H P X
+		// D _ O O B D
+		// . _ █ █ _ .
+
+		// Should be 36 positions on the map
+		assertEquals(36, content.length);
 
 		// Go through all positions and check if the correct object was created
 		assertTrue(content[0][index] instanceof Space);
@@ -156,42 +165,78 @@ public class MapTest {
 		assertTrue(content[3][index] instanceof Wall);
 		assertTrue(content[4][index] instanceof Floor);
 		assertTrue(content[5][index] instanceof Space);
+
 		assertTrue(content[6][index] instanceof Door); // This door should be closed
-		assertTrue(content[7][index] instanceof Base); // Top-left base
+		assertTrue(content[7][index] instanceof Structure);
 		assertTrue(content[8][index] instanceof Door); // This door should be open
 		assertTrue(content[9][index] instanceof Door); // This door should be open
 		assertTrue(content[10][index] instanceof Floor);
 		assertTrue(content[11][index] instanceof Door); // This door should be closed
-		assertTrue(content[12][index] instanceof Door); // This door should be closed
-		assertTrue(content[13][index] instanceof Floor);
-		assertTrue(content[14][index] instanceof Door); // This door should be open
-		assertTrue(content[15][index] instanceof Door); // This door should be open
-		assertTrue(content[16][index] instanceof Base); // Bottom-right base
-		assertTrue(content[17][index] instanceof Door); // This door should be closed
-		assertTrue(content[18][index] instanceof Space);
-		assertTrue(content[19][index] instanceof Floor);
-		assertTrue(content[20][index] instanceof Wall);
-		assertTrue(content[21][index] instanceof Wall);
-		assertTrue(content[22][index] instanceof Floor); // This is also the spawn point for bottom-right base
-		assertTrue(content[23][index] instanceof Space);
+
+		assertTrue(content[12][index] instanceof Structure);
+		assertTrue(content[13][index] instanceof Structure);
+		assertTrue(content[14][index] instanceof Structure);
+		assertTrue(content[15][index] instanceof Structure);
+		assertTrue(content[16][index] instanceof Structure);
+		assertTrue(content[17][index] instanceof Structure);
+
+		assertTrue(content[18][index] instanceof Structure);
+		assertTrue(content[19][index] instanceof Structure);
+		assertTrue(content[20][index] instanceof Structure);
+		assertTrue(content[21][index] instanceof Structure);
+		assertTrue(content[22][index] instanceof Structure);
+		assertTrue(content[23][index] instanceof Structure);
+
+		assertTrue(content[24][index] instanceof Door); // This door should be closed
+		assertTrue(content[25][index] instanceof Floor);
+		assertTrue(content[26][index] instanceof Door); // This door should be open
+		assertTrue(content[27][index] instanceof Door); // This door should be open
+		assertTrue(content[28][index] instanceof Structure);
+		assertTrue(content[29][index] instanceof Door); // This door should be closed
+
+		assertTrue(content[30][index] instanceof Space);
+		assertTrue(content[31][index] instanceof Floor);
+		assertTrue(content[32][index] instanceof Wall);
+		assertTrue(content[33][index] instanceof Wall);
+		assertTrue(content[34][index] instanceof Floor); // This is also the spawn point for bottom-right base
+		assertTrue(content[35][index] instanceof Space);
+
+		// Check if the correct types of Structures are created
+		assertTrue(((Structure) content[7][index]).getType() == StructureType.Base);
+
+		assertTrue(((Structure) content[12][index]).getType() == StructureType.Objective);
+		assertTrue(((Structure) content[13][index]).getType() == StructureType.Outpost);
+		assertTrue(((Structure) content[14][index]).getType() == StructureType.Stronghold);
+		assertTrue(((Structure) content[15][index]).getType() == StructureType.Stronghold);
+		assertTrue(((Structure) content[16][index]).getType() == StructureType.Outpost);
+		assertTrue(((Structure) content[17][index]).getType() == StructureType.Objective);
+
+		assertTrue(((Structure) content[18][index]).getType() == StructureType.Objective);
+		assertTrue(((Structure) content[19][index]).getType() == StructureType.Outpost);
+		assertTrue(((Structure) content[20][index]).getType() == StructureType.Stronghold);
+		assertTrue(((Structure) content[21][index]).getType() == StructureType.Stronghold);
+		assertTrue(((Structure) content[22][index]).getType() == StructureType.Outpost);
+		assertTrue(((Structure) content[23][index]).getType() == StructureType.Objective);
+
+		assertTrue(((Structure) content[28][index]).getType() == StructureType.Base);
 
 		// Check if the doors are created correctly (open/closed)
-		// Closed door positions: 6, 11, 12, 17
+		// Closed door positions: 6, 11, 24, 29
 		assertFalse(((Door) content[6][index]).isOpen());
 		assertFalse(((Door) content[11][index]).isOpen());
-		assertFalse(((Door) content[12][index]).isOpen());
-		assertFalse(((Door) content[17][index]).isOpen());
-		// Open door positions: 8, 9, 14, 15
+		assertFalse(((Door) content[24][index]).isOpen());
+		assertFalse(((Door) content[29][index]).isOpen());
+		// Open door positions: 8, 9, 26, 27
 		assertTrue(((Door) content[8][index]).isOpen());
 		assertTrue(((Door) content[9][index]).isOpen());
-		assertTrue(((Door) content[14][index]).isOpen());
-		assertTrue(((Door) content[15][index]).isOpen());
+		assertTrue(((Door) content[26][index]).isOpen());
+		assertTrue(((Door) content[27][index]).isOpen());
 
 		// Check if the bases have their spawn locations set correctly
-		int topLeftSpawnPosition = Map.toPosition(((Base) content[7][index]).getSpawnLocation(), createdMap.getMapWidth());
+		int topLeftSpawnPosition = Map.toPosition(((Structure) content[7][index]).getSpawnLocation(), createdMap.getMapWidth());
 		assertEquals(1, topLeftSpawnPosition);
-		int bottomRightSpawnPosition = Map.toPosition(((Base) content[16][index]).getSpawnLocation(), createdMap.getMapWidth());
-		assertEquals(22, bottomRightSpawnPosition);
+		int bottomRightSpawnPosition = Map.toPosition(((Structure) content[28][index]).getSpawnLocation(), createdMap.getMapWidth());
+		assertEquals(34, bottomRightSpawnPosition);
 	}
 
 	@Test
@@ -232,9 +277,9 @@ public class MapTest {
 		// Test 1
 		// Ask the map to calculate a path from the Player's base to the opponent's spawn location
 		Player player = state.getPlayer(0);
-		MapLocation baseLocation = map.getObjectLocation(player.getBaseID());
+		MapLocation baseLocation = map.getObjectLocation(player.getCommandCenterID());
 		Player opponent = state.getPlayer(1);
-		MapLocation oppoLocation = ((Base) map.getObject(opponent.getBaseID())).getSpawnLocation();
+		MapLocation oppoLocation = ((Structure) map.getObject(opponent.getCommandCenterID())).getSpawnLocation();
 
 		Array<MapLocation> path1 = map.findPath(baseLocation, oppoLocation);
 

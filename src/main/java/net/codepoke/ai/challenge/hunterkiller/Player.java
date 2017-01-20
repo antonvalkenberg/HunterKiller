@@ -9,13 +9,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.codepoke.ai.GameRules.Result.Ranking;
-import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Structure;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 
 import com.badlogic.gdx.utils.IntArray;
 
 /**
- * Abstract class representing a player in HunterKiller. A player has a {@link Base} from which they
+ * Abstract class representing a player in HunterKiller. A player has a {@link Structure} from which they
  * can spawn {@link Unit}s, payed for with a currency that is acquired automatically over time. When
  * a player can act during a turn, they create a {@link HunterKillerAction} that contains at most
  * one order per base or unit under their control.
@@ -52,20 +52,19 @@ public class Player
 	protected int resource;
 
 	/**
-	 * The ID of the {@link Base} that is assigned to this player.
+	 * The ID of the {@link Structure} that is this player's command center.
 	 */
-	private int baseID;
+	private int commandCenterID = -1;
 
 	/**
-	 * Whether or not this Player's base exists.
+	 * Collection of IDs of {@link Structure}s that this player controls.
 	 */
-	@Setter
-	private boolean baseExists = false;;
+	private IntArray structureIDs;
 
 	/**
 	 * Collection of IDs of {@link Unit}s that this player controls.
 	 */
-	protected IntArray unitIDs;
+	private IntArray unitIDs;
 
 	/**
 	 * The score this player has accumulated during the game.
@@ -93,6 +92,7 @@ public class Player
 		this.resource = Constants.PLAYER_STARTING_RESOURCE;
 		// Create a new list to store the units into (unordered, educated guess on initial capacity)
 		unitIDs = new IntArray(false, 10);
+		structureIDs = new IntArray(false, 3);
 	}
 
 	// endregion
@@ -105,65 +105,59 @@ public class Player
 	public Player copy() {
 		Player newPlayer = new Player(this.getID(), this.getName(), this.getMapSection());
 
-		// Copy the Base's ID
-		newPlayer.assignBase(this.baseID);
+		// Copy the command center's ID
+		newPlayer.commandCenterID = this.commandCenterID;
+		// Copy all the Structures
+		newPlayer.structureIDs.addAll(this.structureIDs);
 		// Copy all the Units
-		/*
-		 * for (int i = 0; i < this.unitIDs.size; i++) {
-		 * newPlayer.addUnit(this.unitIDs.get(i));
-		 * }
-		 */
 		newPlayer.unitIDs.addAll(this.unitIDs);
 		// Set the resources
 		newPlayer.setResource(this.resource);
 		// Set the score
 		newPlayer.setScore(this.score);
-		// Set base status
-		newPlayer.setBaseExists(this.baseExists);
 
 		return newPlayer;
 	}
 
 	/**
 	 * Returns the combined Field-of-View of the player, in a given state. This Field-of-View is made up of the union of
-	 * all it's Unit's Field-of-View, and it's Base (if that exists).
+	 * all it's Unit's Field-of-View, and it's Structures.
 	 * 
 	 * @param map
 	 *            The {@link Map} to get the field-of-view from.
 	 */
 	public HashSet<MapLocation> getCombinedFieldOfView(Map map) {
 		HashSet<MapLocation> fieldOfViewSet = new HashSet<MapLocation>();
-		// Start with the Base's field of view
-		if (baseExists) {
-			Base base = (Base) map.getObject(baseID);
-			fieldOfViewSet.addAll(map.getAreaAround(base.getLocation(), true));
+		// Start with the Structure field of view
+		for (int i = 0; i < structureIDs.size; i++) {
+			Structure struct = (Structure) map.getObject(structureIDs.get(i));
+			fieldOfViewSet.addAll(map.getFieldOfView(struct));
 		}
-		// Go through our squad
+		// Go through our units
 		for (int i = 0; i < unitIDs.size; i++) {
 			// Get the Unit from the map
 			Unit unit = (Unit) map.getObject(unitIDs.get(i));
-			// Check if the unit isn't dead
-			if (unit.getHpCurrent() > 0) {
-				fieldOfViewSet.addAll(unit.getFieldOfView());
-			}
+			fieldOfViewSet.addAll(unit.getFieldOfView());
 		}
 		// Return the collection
 		return fieldOfViewSet;
 	}
 
 	/**
-	 * Returns this player's {@link Base} on the provided {@link Map}. Note: this method returns null when a Player's
-	 * base no longer exists.
+	 * Returns a collection of {@link Structure}s that this player is currently controlling on the provided {@link Map}.
 	 * 
 	 * @param map
-	 *            The map to get the base from.
+	 *            The map to get the structures from.
 	 */
-	public Base getBase(Map map) {
-		// Check if our base exists
-		if (baseExists)
-			return (Base) map.getObject(baseID);
-		else
-			return null;
+	public List<Structure> getStructures(Map map) {
+		List<Structure> structures = new ArrayList<Structure>();
+		for (int i = 0; i < structureIDs.size; i++) {
+			// Make sure the structure did not get removed just before this call
+			if (map.getObject(structureIDs.get(i)) != null) {
+				structures.add((Structure) map.getObject(structureIDs.get(i)));
+			}
+		}
+		return structures;
 	}
 
 	/**
@@ -175,9 +169,116 @@ public class Player
 	public List<Unit> getUnits(Map map) {
 		List<Unit> units = new ArrayList<Unit>();
 		for (int i = 0; i < unitIDs.size; i++) {
-			units.add((Unit) map.getObject(unitIDs.get(i)));
+			// Make sure the unit did not get removed just before this call
+			if (map.getObject(unitIDs.get(i)) != null) {
+				units.add((Unit) map.getObject(unitIDs.get(i)));
+			}
 		}
 		return units;
+	}
+
+	/**
+	 * Awards a score to this player.
+	 * 
+	 * @param value
+	 *            The value of the score awarded to this player.
+	 */
+	public void awardScore(int value) {
+		score += value;
+	}
+
+	/**
+	 * Awards resources to this player.
+	 * 
+	 * @param amount
+	 *            The amount of resources awarded to this player.
+	 */
+	public void awardResource(int amount) {
+		resource += amount;
+	}
+
+	/**
+	 * Assign a {@link Structure} to be this player's command center.
+	 * 
+	 * @param commandCenter
+	 *            The structure to assign.
+	 */
+	public void assignCommandCenter(Structure commandCenter) {
+		this.commandCenterID = commandCenter.getID();
+	}
+
+	/**
+	 * Adds a Unit to this Player's control.
+	 * 
+	 * @param unitID
+	 *            The ID of the unit to add.
+	 */
+	public void addUnit(int unitID) {
+		unitIDs.add(unitID);
+	}
+
+	/**
+	 * Removes a Unit from this Player's control.
+	 * 
+	 * @param unitID
+	 *            The ID of the unit to remove.
+	 */
+	public void removeUnit(int unitID) {
+		unitIDs.removeValue(unitID);
+	}
+
+	/**
+	 * Adds a Structure to this Player's control.
+	 * 
+	 * @param structureID
+	 *            The ID of the structure to add.
+	 */
+	public void addStructure(int structureID) {
+		structureIDs.add(structureID);
+	}
+
+	/**
+	 * Removes a Structure from this Player's control.
+	 * 
+	 * @param structureID
+	 *            The ID of the structure to remove.
+	 */
+	public void removeStructure(int structureID) {
+		structureIDs.removeValue(structureID);
+	}
+
+	/**
+	 * Inform this Player that it's command center has been destroyed. This method will remove all Unit IDs from the
+	 * player's collection and will half the player's current score. Also any structures that are currently under this
+	 * player's control will be released.
+	 * 
+	 * @param map
+	 *            The map that the game is being played on.
+	 * @param commandCenterID
+	 *            The unique identifier of the {@link Structure} that was destroyed.
+	 */
+	public void informCommandCenterDestroyed(Map map, int commandCenterID) {
+		// Check if the IDs match
+		if (this.commandCenterID == commandCenterID) {
+			// Release all currently controlled structures
+			List<Structure> structures = getStructures(map);
+			for (Structure structure : structures) {
+				structure.setControllingPlayerID(Constants.STRUCTURE_NO_CONTROL);
+			}
+			// Clear our collection of Structure IDs
+			structureIDs.clear();
+
+			// Remove all units
+			List<Unit> units = getUnits(map);
+			for (Unit unit : units) {
+				map.unregisterGameObject(unit);
+			}
+			// Clear collection of Unit IDs
+			unitIDs.clear();
+
+			// Half the player's score
+			this.setScore((int) (this.score / 2f));
+		}
 	}
 
 	// endregion
@@ -209,69 +310,6 @@ public class Player
 	@Override
 	public String toString() {
 		return String.format("%s (ID: %d)", this.name, this.ID);
-	}
-
-	// endregion
-
-	// region Protected methods
-
-	/**
-	 * Assign a {@link Base} to this player.
-	 * 
-	 * @param baseID
-	 *            The ID of the base to assign.
-	 */
-	protected void assignBase(int baseID) {
-		this.baseID = baseID;
-		baseExists = true;
-	}
-
-	/**
-	 * Awards a score to this player.
-	 * 
-	 * @param value
-	 *            The value of the score awarded to this player.
-	 */
-	protected void awardScore(int value) {
-		score += value;
-	}
-
-	/**
-	 * Adds a Unit to this Player's control.
-	 * 
-	 * @param unitID
-	 *            The ID of the unit to add.
-	 */
-	protected void addUnit(int unitID) {
-		unitIDs.add(unitID);
-	}
-
-	/**
-	 * Removes a Unit from this Player's control.
-	 * 
-	 * @param unitID
-	 *            The ID of the unit to remove.
-	 */
-	protected void removeUnit(int unitID) {
-		unitIDs.removeValue(unitID);
-	}
-
-	/**
-	 * Inform this Player that it's Base has been destroyed. This method will remove all Unit IDs from the player's
-	 * collection and will half the player's current score.
-	 * 
-	 * @param baseID
-	 *            The unique identifier of the {@link Base} that was destroyed.
-	 */
-	protected void informBaseDestroyed(int baseID) {
-		// Check if the IDs match
-		if (this.baseID == baseID) {
-			baseExists = false;
-			// Clear collection of Unit IDs
-			unitIDs.clear();
-			// Half the player's score
-			this.setScore((int) (this.score / 2f));
-		}
 	}
 
 	// endregion

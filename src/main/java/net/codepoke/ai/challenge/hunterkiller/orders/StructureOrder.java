@@ -5,20 +5,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.codepoke.ai.challenge.hunterkiller.Constants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
-import net.codepoke.ai.challenge.hunterkiller.enums.BaseOrderType;
-import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
+import net.codepoke.ai.challenge.hunterkiller.enums.StructureOrderType;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Structure;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 
 /**
- * Class representing a {@link HunterKillerOrder} performed by a {@link Base}. Currently, the base
- * can only spawn {@link Unit}s.
+ * Class representing a {@link HunterKillerOrder} performed by a {@link Structure}. Currently, structures
+ * can only be ordered to spawn {@link Unit}s.
  * 
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class BaseOrder
+public class StructureOrder
 		extends HunterKillerOrder {
 
 	// region Properties
@@ -26,7 +26,7 @@ public class BaseOrder
 	/**
 	 * The type of order.
 	 */
-	private BaseOrderType orderType;
+	private StructureOrderType orderType;
 
 	// endregion
 
@@ -35,9 +35,9 @@ public class BaseOrder
 	/**
 	 * Constructs a new instance.
 	 * 
-	 * {@link BaseOrder#BaseOrder(Base, BaseOrderType, int)}
+	 * {@link StructureOrder#StructureOrder(Structure, StructureOrderType, int)}
 	 */
-	public BaseOrder(Base base, BaseOrderType type) {
+	public StructureOrder(Structure base, StructureOrderType type) {
 		super(base, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX);
 		this.orderType = type;
 	}
@@ -45,15 +45,15 @@ public class BaseOrder
 	/**
 	 * Constructs a new instance.
 	 * 
-	 * @param base
-	 *            The base this order is for.
+	 * @param structure
+	 *            The structure this order is for.
 	 * @param type
 	 *            The type of order.
 	 * @param actionIndex
 	 *            The index this order has in the {@link HunterKillerAction}.
 	 */
-	public BaseOrder(Base base, BaseOrderType type, int actionIndex) {
-		super(base, actionIndex);
+	public StructureOrder(Structure structure, StructureOrderType type, int actionIndex) {
+		super(structure, actionIndex);
 		this.orderType = type;
 	}
 

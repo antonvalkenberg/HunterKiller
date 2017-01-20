@@ -38,11 +38,13 @@ public abstract class GameObject {
 	/**
 	 * The maximum amount of health points for this object.
 	 */
+	@Setter
 	private int hpMax = Constants.GAMEOBJECT_DEFAULT_HP;
 
 	/**
 	 * The amount of health points this object currently has.
 	 */
+	@Setter
 	private int hpCurrent = hpMax;
 
 	// endregion

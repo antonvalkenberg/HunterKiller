@@ -18,12 +18,21 @@ public enum TileType {
 	SOLDIER('S'),
 	MEDIC('M'),
 	INFECTED('I'),
-	BASE('B');
+	BASE('B'),
+	OBJECTIVE('X'),
+	OUTPOST('P'),
+	STRONGHOLD('H');
 
 	public char txt;
 
 	public static TileType valueOf(char c) {
 		switch (c) {
+		case 'H':
+			return STRONGHOLD;
+		case 'P':
+			return OUTPOST;
+		case 'X':
+			return OBJECTIVE;
 		case 'B':
 			return BASE;
 		case 'I':

@@ -1,5 +1,7 @@
 package net.codepoke.ai.challenge.hunterkiller;
 
+import java.util.Random;
+
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -29,6 +31,11 @@ public class MapLocation {
 	 * The location's Y coordinate.
 	 */
 	private int y;
+
+	/**
+	 * A random number generator.
+	 */
+	private static Random r = new Random();
 
 	// endregion
 
@@ -113,7 +120,8 @@ public class MapLocation {
 
 	/**
 	 * Returns the {@link Direction} that the target location is in, relative to the origin. Note:
-	 * This method currently only checks in cardinal directions.
+	 * This method currently only checks in cardinal directions. Also: it will return a random cardinal direction when
+	 * the origin and target are the same location.
 	 * 
 	 * @param origin
 	 *            The location that is the viewpoint.
@@ -123,8 +131,10 @@ public class MapLocation {
 	 */
 	public static Direction getDirectionTo(MapLocation origin, MapLocation target) {
 		// Check that the points are not the same
-		if (origin.equals(target))
-			return null;
+		if (origin.equals(target)) {
+			// Return a random direction
+			return Direction.values()[r.nextInt(Direction.values().length)];
+		}
 
 		// Get the differences in coordinates
 		int dX = origin.getX() - target.getX();

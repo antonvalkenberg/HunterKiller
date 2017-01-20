@@ -9,11 +9,12 @@ import net.codepoke.ai.Generator;
 import net.codepoke.ai.challenge.hunterkiller.FourPatch.DataCreation;
 import net.codepoke.ai.challenge.hunterkiller.FourPatch.Sections;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
+import net.codepoke.ai.challenge.hunterkiller.enums.StructureType;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
-import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Door;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Floor;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Space;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Structure;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Wall;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
@@ -238,7 +239,7 @@ public class HunterKillerStateFactory
 		 */
 		private static Direction patchBaseSpawnDirection;
 		/**
-		 * The amount of tiles/squares Units are spawned away from the Base.
+		 * The amount of tiles/squares Units are spawned away from the Structure.
 		 */
 		private static final int SPAWN_DISTANCE_FROM_BASE = 1;
 
@@ -289,8 +290,9 @@ public class HunterKillerStateFactory
 			int sectionIndex = section.ordinal();
 
 			// Some documentation about what happens in the following switch-case:
-			// The MapFeature objects are mostly straightforward (except Base, see below).
-			// The Unit objects + Base object are slightly more complicated, because the section index affects them:
+			// The MapFeature objects are mostly straightforward (except Structure, see below).
+			// The Unit objects + Structure object are slightly more complicated, because the section index affects
+			// them:
 			// - If the section index appears in our section-playerID map, actual Units/Bases need to be created.
 			// - Otherwise they should be ignored.
 			boolean ignoreUnitAndBase = !sectionPlayerIDMap.containsKey(sectionIndex);
@@ -323,6 +325,22 @@ public class HunterKillerStateFactory
 				Wall wall = new Wall(location);
 				map.registerGameObject(wall);
 				map.place(mapPosition, wall);
+				break;
+			case OBJECTIVE:
+				Structure objective = new Structure(location, StructureType.Objective);
+				map.registerGameObject(objective);
+				map.place(mapPosition, objective);
+				break;
+			case STRONGHOLD:
+				Structure stronghold = new Structure(location, StructureType.Stronghold);
+				map.registerGameObject(stronghold);
+				map.place(mapPosition, stronghold);
+				break;
+			case OUTPOST:
+				Structure outpost = new Structure(location, StructureType.Outpost);
+				outpost.setSpawnLocation(location);
+				map.registerGameObject(outpost);
+				map.place(mapPosition, outpost);
 				break;
 			// Units and Bases
 			case INFECTED:
@@ -368,8 +386,7 @@ public class HunterKillerStateFactory
 						// Already initialised it for our patch-section, break out
 						break;
 					case A_H:
-						// Section 2 (top right of map), spawns in opposite direction when COUNTER_CLOCKWISE or
-						// CLOCKWISE
+						// Section 2 (top right of map), spawns in opposite direction when EAST or WEST
 						if (patchBaseSpawnDirection == Direction.NORTH || patchBaseSpawnDirection == Direction.SOUTH) {
 							// spawning in same direction, so break out
 							break;
@@ -389,8 +406,10 @@ public class HunterKillerStateFactory
 						break;
 					}
 
-					// Now that we have defined our spawn location, we can create the Base
-					Base base = new Base(playerID, location, spawnLocation);
+					// Now that we have defined our spawn location, we can create the base
+					Structure base = new Structure(location, StructureType.Base);
+					base.setControllingPlayerID(playerID);
+					base.setSpawnLocation(spawnLocation);
 					map.registerGameObject(base);
 					map.place(mapPosition, base);
 				}

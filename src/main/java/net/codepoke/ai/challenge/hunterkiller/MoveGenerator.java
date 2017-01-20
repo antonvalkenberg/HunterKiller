@@ -4,17 +4,17 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import net.codepoke.ai.challenge.hunterkiller.enums.BaseOrderType;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
+import net.codepoke.ai.challenge.hunterkiller.enums.StructureOrderType;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitOrderType;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitType;
-import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Structure;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Wall;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
-import net.codepoke.ai.challenge.hunterkiller.orders.BaseOrder;
 import net.codepoke.ai.challenge.hunterkiller.orders.HunterKillerOrder;
+import net.codepoke.ai.challenge.hunterkiller.orders.StructureOrder;
 import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
 
 /**
@@ -27,28 +27,29 @@ import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
 public class MoveGenerator {
 
 	/**
-	 * Returns a list containing all legal orders for a base in the current state. For a list of all types of orders
-	 * available to a Base, see {@link BaseOrderType}.
+	 * Returns a list containing all legal orders for a structure in the current state. For a list of all types of
+	 * orders
+	 * available to a Structure, see {@link StructureOrderType}.
 	 * 
 	 * @param state
 	 *            The current {@link HunterKillerState} of the game.
-	 * @param base
-	 *            The {@link Base} to receive legal orders for.
+	 * @param structure
+	 *            The {@link Structure} to receive legal orders for.
 	 */
-	public static List<BaseOrder> getAllLegalOrders(HunterKillerState state, Base base) {
+	public static List<StructureOrder> getAllLegalOrders(HunterKillerState state, Structure structure) {
 		// Create a list to write to
-		List<BaseOrder> orders = new ArrayList<BaseOrder>();
+		List<StructureOrder> orders = new ArrayList<StructureOrder>();
 
-		// Check if the base can spawn anything
-		if (!base.canSpawn(state)) {
+		// Check if the structure can spawn anything
+		if (!structure.canSpawn(state)) {
 			// If not, return now because nothing can be spawned
 			return orders;
 		}
 
-		// Check for each unit type if the base can spawn it
+		// Check for each unit type if the structure can spawn it
 		for (UnitType type : UnitType.values()) {
-			if (base.canSpawn(type, state))
-				orders.add(base.spawn(type));
+			if (structure.canSpawn(type, state))
+				orders.add(structure.spawn(type));
 		}
 
 		// Return the list of legal orders

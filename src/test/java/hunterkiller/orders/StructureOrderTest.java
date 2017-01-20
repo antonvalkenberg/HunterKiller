@@ -15,10 +15,10 @@ import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.MapSetup;
 import net.codepoke.ai.challenge.hunterkiller.Player;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitType;
-import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Structure;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
-import net.codepoke.ai.challenge.hunterkiller.orders.BaseOrder;
+import net.codepoke.ai.challenge.hunterkiller.orders.StructureOrder;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -27,7 +27,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * This class tests orders for a Base. Current tests:
+ * This class tests orders for a Structure. Current tests:
  * <ul>
  * <li>Correct spawn (infected)</li>
  * <li>Faulty spawn due to insufficient funds</li>
@@ -37,7 +37,7 @@ import org.junit.Test;
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
-public class BaseOrderTest {
+public class StructureOrderTest {
 
 	// region Constants
 
@@ -93,13 +93,13 @@ public class BaseOrderTest {
 		Player activePlayer = state.getPlayer(state.getActivePlayerID());
 		int beforePlayerResource = activePlayer.getResource();
 		int beforePlayerSquadSize = activePlayer.getUnitIDs().size;
-		Base base = (Base) state.getMap()
-								.getObject(activePlayer.getBaseID());
+		Structure base = (Structure) state.getMap()
+											.getObject(activePlayer.getCommandCenterID());
 		MapLocation spawnLocation = base.getSpawnLocation();
 
 		// Create a base-order to spawn an infected for the active player
 		HunterKillerAction spawnInfectedAction = new HunterKillerAction(state);
-		BaseOrder order = base.spawn(UnitType.Infected);
+		StructureOrder order = base.spawn(UnitType.Infected);
 		spawnInfectedAction.addOrder(order);
 
 		// Make the game logic execute the action
@@ -145,13 +145,13 @@ public class BaseOrderTest {
 	public void testFailSpawnLowResource() {
 		// Set some values of things before the order
 		Player activePlayer = state.getPlayer(state.getActivePlayerID());
-		Base base = (Base) state.getMap()
-								.getObject(activePlayer.getBaseID());
+		Structure base = (Structure) state.getMap()
+											.getObject(activePlayer.getCommandCenterID());
 		MapLocation spawnLocation = base.getSpawnLocation();
 
 		// Create a base-order to spawn an infected for the active player
 		HunterKillerAction spawnInfectedAction = new HunterKillerAction(state);
-		BaseOrder order = base.spawn(UnitType.Infected);
+		StructureOrder order = base.spawn(UnitType.Infected);
 		spawnInfectedAction.addOrder(order);
 
 		// Now set the player's resource to an amount that is not enough to spawn an infected unit
@@ -181,12 +181,12 @@ public class BaseOrderTest {
 		Player activePlayer = state.getPlayer(state.getActivePlayerID());
 		int pre_PlayerSquadSize = activePlayer.getUnitIDs().size;
 		int pre_PlayerResources = activePlayer.getResource();
-		Base base = (Base) state.getMap()
-								.getObject(activePlayer.getBaseID());
+		Structure base = (Structure) state.getMap()
+											.getObject(activePlayer.getCommandCenterID());
 
 		// Create a base-order to spawn an infected for the active player
 		HunterKillerAction spawnInfectedAction = new HunterKillerAction(state);
-		BaseOrder order = base.spawn(UnitType.Infected);
+		StructureOrder order = base.spawn(UnitType.Infected);
 		spawnInfectedAction.addOrder(order);
 
 		// Make the game logic execute the action

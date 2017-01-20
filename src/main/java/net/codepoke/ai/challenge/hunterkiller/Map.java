@@ -12,12 +12,13 @@ import net.codepoke.ai.challenge.hunterkiller.LineOfSight.BlocksLightFunction;
 import net.codepoke.ai.challenge.hunterkiller.LineOfSight.GetDistanceFunction;
 import net.codepoke.ai.challenge.hunterkiller.LineOfSight.SetVisibleFunction;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
+import net.codepoke.ai.challenge.hunterkiller.enums.StructureType;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
-import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Base;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Door;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Floor;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.MapFeature;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Space;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Structure;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Wall;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
@@ -617,6 +618,18 @@ public class Map {
 	}
 
 	/**
+	 * Returns a collection of locations that are in the Structure's field-of-view.
+	 * 
+	 * @param structure
+	 *            The {@link Structure}.
+	 * @return
+	 */
+	public HashSet<MapLocation> getFieldOfView(Structure structure) {
+		// Return the area directly around the structure
+		return new HashSet<MapLocation>(getAreaAround(structure.getLocation(), true));
+	}
+
+	/**
 	 * Returns the object with the specified ID. If no such object can be found, null is returned.
 	 * 
 	 * @param objectID
@@ -676,16 +689,13 @@ public class Map {
 	}
 
 	/**
-	 * Returns the number of {@link Base}s on the map. Used to determine if the game has ended. (Note:
-	 * game ends when only 1 base remains)
-	 * 
-	 * @return
+	 * Returns the number of {@link Structure}s on the map that are command centers. Used to determine if the game has
+	 * ended. (Note: game ends when exactly 1 command center remains, or the maximum amount of rounds is reached)
 	 */
-	public int getCurrentBaseCount() {
-		// Bases are MapFeatures
+	public int getCurrentCommandCenterCount() {
 		int count = 0;
 		for (GameObject object : objects) {
-			if (object != null && object instanceof Base)
+			if (object != null && object instanceof Structure && ((Structure) object).isCommandCenter())
 				count++;
 		}
 		return count;
@@ -1016,32 +1026,25 @@ public class Map {
 					// Unregister the object
 					unregisterGameObject(object);
 
-					// If the object is a Base, replace it with a Space-tile
-					if (object instanceof Base) {
+					// If the object is a Structure, replace it with a Space-tile
+					if (object instanceof Structure) {
+						Structure structure = (Structure) object;
+						Player player = state.getPlayer(structure.getControllingPlayerID());
+						// Check if the structure was a command center
+						if (structure.isCommandCenter()) {
+							// Tell the Player that was controlling the Structure that it's gone
+							player.informCommandCenterDestroyed(this, structure.getID());
+						} else {
+							// Tell the Player to remove the structure from it's list
+							player.removeStructure(structure.getID());
+						}
+
 						// Create a new Space object
 						Space space = new Space(toLocation(mapPosition));
 						// Register the object
 						registerGameObject(space);
 						// Place it on the map
 						place(mapPosition, space);
-
-						Base base = (Base) object;
-						Player player = state.getPlayer(base.getControllingPlayerID());
-
-						// Remove all of the Player's Units
-						IntArray unitIDs = player.getUnitIDs();
-						for (int k = 0; k < unitIDs.size; k++) {
-							int id = unitIDs.get(k);
-							Unit unit = (Unit) getObject(id);
-							// Check if the Unit is still around (might have died this same tick)
-							if (unit != null) {
-								// Unregister the Unit
-								unregisterGameObject(unit);
-							}
-						}
-
-						// Tell the Player that was controlling the Base that it's gone
-						player.informBaseDestroyed(base.getID());
 					}
 					// If the object is a Unit, tell it's Player to remove it
 					if (object instanceof Unit) {
@@ -1108,20 +1111,26 @@ public class Map {
 	}
 
 	/**
-	 * Assigns the Base and all Units a player controls to that player. Note: this method is used
+	 * Assigns Structures and all Units a player controls to that player. Note: this method is used
 	 * right after the map and players have been created and can safely be ignored.
 	 * 
 	 * @param player
 	 *            The {@link Player} to assign objects to.
 	 */
 	protected void assignObjectsToPlayer(Player player) {
-		// Check for Bases and Units
+		// Check for Structures and Units
 		for (GameObject object : objects) {
 			// Check if there is anything there
 			if (object != null) {
-				// Check if it's a base and belongs to this player
-				if (object instanceof Base && ((Base) object).getControllingPlayerID() == player.getID()) {
-					player.assignBase(object.getID());
+				// Check if it's a structure
+				if (object instanceof Structure) {
+					Structure structure = (Structure) object;
+					// Check if it's a base and is controlled by this player
+					if (structure.getType() == StructureType.Base && structure.getControllingPlayerID() == player.getID()) {
+						player.assignCommandCenter(structure);
+						player.addStructure(structure.getID());
+					}
+					// Other types are capturable and not controlled by any player at the start of the game
 				}
 				// Check if it's a unit and belongs to this player
 				else if (object instanceof Unit && ((Unit) object).getControllingPlayerID() == player.getID()) {
