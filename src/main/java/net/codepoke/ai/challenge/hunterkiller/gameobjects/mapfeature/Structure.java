@@ -109,6 +109,7 @@ public class Structure
 			isCapturable = Constants.BASE_CAPTURABLE;
 			setWalkable(Constants.BASE_WALKABLE);
 			isCommandCenter = Constants.BASE_IS_COMMAND_CENTER;
+			resourceGeneration = Constants.BASE_RESOURCE_GENERATION;
 			break;
 		case Objective:
 			setDestructible(Constants.OBJECTIVE_DESTRUCTIBLE);

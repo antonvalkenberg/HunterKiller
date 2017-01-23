@@ -1,5 +1,6 @@
 package net.codepoke.ai.challenge.hunterkiller;
 
+import lombok.Setter;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.MapFeature;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
@@ -96,6 +97,11 @@ public class Constants {
 	 * Bases are command centers.
 	 */
 	public static final boolean BASE_IS_COMMAND_CENTER = true;
+	/**
+	 * Bases generate the default amount of resources.
+	 */
+	@Setter
+	public static int BASE_RESOURCE_GENERATION = STRUCTURE_RESOURCE_GENERATION;
 
 	// endregion
 

@@ -63,19 +63,22 @@ public class HunterKillerStateFactory
 					int qHeight = Integer.parseInt(optionsLine1[1]);
 					Direction spawnDirection = Direction.parse(optionsLine1[2]);
 
-					// If there is a second line of settings, it will contain the starting resources
-					int startingResources = -1;
+					// Check if there is a second line of settings
 					if (p.matcher(mapLines[1])
 							.find()) {
-						// Second line is the amount of starting resources for players
+						// Second line is the amount of starting resources for players and the base resource-generation
 						String[] optionsLine2 = mapLines[1].split(" ");
-						startingResources = Integer.parseInt(optionsLine2[0]);
+						int startingResources = Integer.parseInt(optionsLine2[0]);
+						int baseResourceGeneration = Integer.parseInt(optionsLine2[1]);
 						rawMapData = rawMapData.substring(rawMapData.indexOf(mapLines[2]));
-					} else {
-						rawMapData = rawMapData.substring(rawMapData.indexOf(mapLines[1]));
-					}
 
-					MAP_ROTATION.add(new MapSetup(mapFile.getName(), rawMapData, qWidth, qHeight, spawnDirection, startingResources));
+						MAP_ROTATION.add(new MapSetup(mapFile.getName(), rawMapData, qWidth, qHeight, spawnDirection, startingResources,
+														baseResourceGeneration));
+					} else {
+
+						rawMapData = rawMapData.substring(rawMapData.indexOf(mapLines[1]));
+						MAP_ROTATION.add(new MapSetup(mapFile.getName(), rawMapData, qWidth, qHeight, spawnDirection));
+					}
 				} else {
 					// Assume the whole map needs to be copied and we can use defaults.
 					MAP_ROTATION.add(new MapSetup(mapFile.getName(), rawMapData));
@@ -177,6 +180,9 @@ public class HunterKillerStateFactory
 		for (int i = 0; i < players.length; i++) {
 			players[i] = new Player(i, playerNames[i], playerSections.get(i), premade.startingResources);
 		}
+
+		// Set the resource generation of bases
+		Constants.setBASE_RESOURCE_GENERATION(premade.baseResourceGeneration);
 
 		// Construct the map
 		Map map = constructMap(premade, players);

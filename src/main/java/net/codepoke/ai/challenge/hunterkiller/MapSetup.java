@@ -40,6 +40,10 @@ public class MapSetup {
 	 * The amount of resources players start the game with.
 	 */
 	int startingResources = Constants.PLAYER_STARTING_RESOURCE;
+	/**
+	 * The amount of resources the player's bases generate each time.
+	 */
+	int baseResourceGeneration = Constants.BASE_RESOURCE_GENERATION;
 
 	public MapSetup(String mapData) {
 		this.mapData = mapData;
@@ -54,13 +58,19 @@ public class MapSetup {
 		this.name = name;
 	}
 
-	public MapSetup(String name, String mapData, int quadrantAWidth, int quadrantAHeight, Direction spawnDirection, int startingResources) {
+	public MapSetup(String name, String mapData, int quadrantAWidth, int quadrantAHeight, Direction spawnDirection) {
 		this.name = name;
 		this.mapData = mapData;
 		this.quadrantAWidth = quadrantAWidth;
 		this.quadrantAHeight = quadrantAHeight;
 		this.spawnDirection = spawnDirection;
+	}
+
+	public MapSetup(String name, String mapData, int quadrantAWidth, int quadrantAHeight, Direction spawnDirection, int startingResources,
+					int baseResourceGeneration) {
+		this(name, mapData, quadrantAWidth, quadrantAHeight, spawnDirection);
 		this.startingResources = startingResources;
+		this.baseResourceGeneration = baseResourceGeneration;
 	}
 
 }
