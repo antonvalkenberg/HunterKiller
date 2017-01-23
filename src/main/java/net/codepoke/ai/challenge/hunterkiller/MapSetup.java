@@ -36,6 +36,10 @@ public class MapSetup {
 	 * The {@link Direction} to which the base spawns it's {@link Unit}s.
 	 */
 	Direction spawnDirection = Direction.SOUTH;
+	/**
+	 * The amount of resources players start the game with.
+	 */
+	int startingResources = Constants.PLAYER_STARTING_RESOURCE;
 
 	public MapSetup(String mapData) {
 		this.mapData = mapData;
@@ -50,12 +54,13 @@ public class MapSetup {
 		this.name = name;
 	}
 
-	public MapSetup(String name, String mapData, int quadrantAWidth, int quadrantAHeight, Direction spawnDirection) {
+	public MapSetup(String name, String mapData, int quadrantAWidth, int quadrantAHeight, Direction spawnDirection, int startingResources) {
 		this.name = name;
 		this.mapData = mapData;
 		this.quadrantAWidth = quadrantAWidth;
 		this.quadrantAHeight = quadrantAHeight;
 		this.spawnDirection = spawnDirection;
+		this.startingResources = startingResources;
 	}
 
 }

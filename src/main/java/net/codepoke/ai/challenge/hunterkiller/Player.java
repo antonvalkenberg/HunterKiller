@@ -84,15 +84,26 @@ public class Player
 	 *            The player's name.
 	 * @param mapSection
 	 *            The section assigned to this player during map construction.
+	 * @param startingResources
+	 *            The amount of resources a player starts the game with.
 	 */
-	public Player(int id, String name, int mapSection) {
+	public Player(int id, String name, int mapSection, int startingResources) {
 		this.ID = id;
 		this.name = name;
 		this.mapSection = mapSection;
-		this.resource = Constants.PLAYER_STARTING_RESOURCE;
+		this.resource = startingResources;
 		// Create a new list to store the units into (unordered, educated guess on initial capacity)
 		unitIDs = new IntArray(false, 10);
 		structureIDs = new IntArray(false, 3);
+	}
+
+	/**
+	 * Constructs a new player with a default amount of resources.
+	 * 
+	 * {@link Player#Player(int, String, int, int)}
+	 */
+	public Player(int id, String name, int mapSection) {
+		this(id, name, mapSection, Constants.PLAYER_STARTING_RESOURCE);
 	}
 
 	// endregion

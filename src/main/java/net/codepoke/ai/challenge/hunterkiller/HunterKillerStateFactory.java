@@ -53,16 +53,29 @@ public class HunterKillerStateFactory
 				String rawMapData = IOUtils.toString(mapFile.toURI());
 
 				String[] mapLines = rawMapData.split(FourPatch.NEWLINE_SEPARATOR);
+
+				// Check if we have any lines of settings
 				if (p.matcher(mapLines[0])
 						.find()) {
 					// First line is the size/orientation
-					String[] options = mapLines[0].split(" ");
-					int qWidth = Integer.parseInt(options[0]);
-					int qHeight = Integer.parseInt(options[1]);
-					Direction spawnDirection = Direction.parse(options[2]);
+					String[] optionsLine1 = mapLines[0].split(" ");
+					int qWidth = Integer.parseInt(optionsLine1[0]);
+					int qHeight = Integer.parseInt(optionsLine1[1]);
+					Direction spawnDirection = Direction.parse(optionsLine1[2]);
 
-					rawMapData = rawMapData.substring(rawMapData.indexOf(mapLines[1]));
-					MAP_ROTATION.add(new MapSetup(mapFile.getName(), rawMapData, qWidth, qHeight, spawnDirection));
+					// If there is a second line of settings, it will contain the starting resources
+					int startingResources = -1;
+					if (p.matcher(mapLines[1])
+							.find()) {
+						// Second line is the amount of starting resources for players
+						String[] optionsLine2 = mapLines[1].split(" ");
+						startingResources = Integer.parseInt(optionsLine2[0]);
+						rawMapData = rawMapData.substring(rawMapData.indexOf(mapLines[2]));
+					} else {
+						rawMapData = rawMapData.substring(rawMapData.indexOf(mapLines[1]));
+					}
+
+					MAP_ROTATION.add(new MapSetup(mapFile.getName(), rawMapData, qWidth, qHeight, spawnDirection, startingResources));
 				} else {
 					// Assume the whole map needs to be copied and we can use defaults.
 					MAP_ROTATION.add(new MapSetup(mapFile.getName(), rawMapData));
@@ -162,7 +175,7 @@ public class HunterKillerStateFactory
 		// Load the players
 		Player[] players = new Player[playerNames.length];
 		for (int i = 0; i < players.length; i++) {
-			players[i] = new Player(i, playerNames[i], playerSections.get(i));
+			players[i] = new Player(i, playerNames[i], playerSections.get(i), premade.startingResources);
 		}
 
 		// Construct the map
