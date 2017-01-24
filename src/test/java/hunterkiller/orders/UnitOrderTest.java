@@ -617,7 +617,7 @@ public class UnitOrderTest {
 							.getUnitAtLocation(unitLocation);
 		// Move the unit south, since it has an attack range of only 1
 		unitLocation = new MapLocation(1, 1);
-		map.move(unitLocation, unit);
+		map.move(unitLocation, unit, new StringBuilder());
 
 		// Save the other player's ID
 		int pre_TargetUnitPlayerID = state.getMap()
@@ -671,7 +671,7 @@ public class UnitOrderTest {
 		Unit unit = map.getUnitAtLocation(unitLocation);
 		// Move the unit south, since it has an attack range of only 1
 		unitLocation = new MapLocation(1, 1);
-		map.move(unitLocation, unit);
+		map.move(unitLocation, unit, new StringBuilder());
 
 		// Get the unit at the target location
 		Unit tempUnit = map.getUnitAtLocation(targetLocation);

@@ -273,31 +273,11 @@ public abstract class Unit
 	 *            The {@link Map} the unit is on.
 	 */
 	public UnitOrder move(Direction direction, Map map) {
-		UnitOrderType type;
-		// Determine the correct order-type for the direction
-		switch (direction) {
-		case EAST:
-			type = UnitOrderType.MOVE_EAST;
-			break;
-		case NORTH:
-			type = UnitOrderType.MOVE_NORTH;
-			break;
-		case SOUTH:
-			type = UnitOrderType.MOVE_SOUTH;
-			break;
-		case WEST:
-			type = UnitOrderType.MOVE_WEST;
-			break;
-		default:
-			System.err.println(String.format("WARNING: Unsupported movement direction: %s", direction));
-			return null;
-		}
-
 		// Get the location that is in the provided direction
 		MapLocation targetLocation = map.getAdjacentLocationInDirection(getLocation(), direction);
 
 		// Return the UnitOrder
-		return new UnitOrder(this, type, targetLocation);
+		return new UnitOrder(this, UnitOrderType.MOVE, targetLocation);
 	}
 
 	/**

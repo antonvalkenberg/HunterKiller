@@ -161,7 +161,8 @@ public class Structure
 	// region Public methods
 
 	/**
-	 * Whether or not this structure can spawn anything in the current game state.
+	 * Whether or not this structure can spawn anything in the current game state. This method checks if this structure
+	 * allows the spawning of units, and if the spawn location is traversable.
 	 * 
 	 * @param state
 	 *            The current game state.
@@ -170,18 +171,41 @@ public class Structure
 		// Get the current map
 		Map map = state.getMap();
 		// Check if the spawn location is traversable
-		return this.allowsSpawning && map.isTraversable(spawnLocation);
+		return this.allowsSpawning && map.isTraversable(spawnLocation, new StringBuilder());
 	}
 
 	/**
-	 * Whether or not the specified type of unit can be spawned by this structure.
+	 * Whether or not the specified type of order can be executed by this structure.
+	 * Calls {@link Structure#canSpawn(HunterKillerState, UnitType)}.
 	 * 
-	 * @param unitType
-	 *            The type of unit.
 	 * @param state
 	 *            The current state of the game.
+	 * @param type
+	 *            The type of order.
 	 */
-	public boolean canSpawn(UnitType unitType, HunterKillerState state) {
+	public boolean canExecute(HunterKillerState state, StructureOrderType type) {
+		switch (type) {
+		case SPAWN_INFECTED:
+			return canSpawn(state, UnitType.Infected);
+		case SPAWN_MEDIC:
+			return canSpawn(state, UnitType.Medic);
+		case SPAWN_SOLDIER:
+			return canSpawn(state, UnitType.Soldier);
+		default:
+			return false;
+		}
+	}
+
+	/**
+	 * Whether or not the specified type of unit can be spawned by this structure. This method checks if this structure
+	 * allows the spawning of units, and if the player controlling this structure has enough resources available.
+	 * 
+	 * @param state
+	 *            The current state of the game.
+	 * @param unitType
+	 *            The type of unit.
+	 */
+	public boolean canSpawn(HunterKillerState state, UnitType unitType) {
 		// Get the player's resource
 		int playerResource = state.getPlayer(controllingPlayerID)
 									.getResource();

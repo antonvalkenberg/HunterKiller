@@ -3,7 +3,6 @@ package net.codepoke.ai.challenge.hunterkiller;
 import java.util.Random;
 
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
@@ -16,7 +15,6 @@ import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
  *
  */
 @Getter
-@EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MapLocation {
 
@@ -168,6 +166,19 @@ public class MapLocation {
 	@Override
 	public String toString() {
 		return String.format("[%d,%d]", x, y);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof MapLocation))
+			return false;
+		MapLocation oL = (MapLocation) o;
+		return this.x == oL.x && this.y == oL.y;
+	}
+
+	@Override
+	public int hashCode() {
+		return 41 ^ x ^ y;
 	}
 
 	// endregion

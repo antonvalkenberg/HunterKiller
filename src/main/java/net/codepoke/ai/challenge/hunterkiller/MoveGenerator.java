@@ -48,7 +48,7 @@ public class MoveGenerator {
 
 		// Check for each unit type if the structure can spawn it
 		for (UnitType type : UnitType.values()) {
-			if (structure.canSpawn(type, state))
+			if (structure.canSpawn(state, type))
 				orders.add(structure.spawn(type));
 		}
 

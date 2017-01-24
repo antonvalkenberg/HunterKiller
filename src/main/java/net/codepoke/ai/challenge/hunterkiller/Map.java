@@ -234,14 +234,6 @@ public class Map {
 	}
 
 	/**
-	 * Whether or not the specified location is traversable. This method does not print the reasons why it returns
-	 * false. See {@link Map#isTraversable(MapLocation, boolean)}.
-	 */
-	public boolean isTraversable(MapLocation location) {
-		return isTraversable(location, false);
-	}
-
-	/**
 	 * Whether or not the specified location is traversable. This method checks:
 	 * <ul>
 	 * <li>If the {@link MapLocation} is on the map</li>
@@ -251,34 +243,41 @@ public class Map {
 	 * 
 	 * @param location
 	 *            The location to check.
-	 * @param printFailReasons
-	 *            Whether or not reasons for failure should be printed.
+	 * @param failureReasons
+	 *            StringBuilder containing the reason(s) why the location is not traversable, if any.
 	 * @return Boolean value indicating if the location is traversable.
 	 */
-	public boolean isTraversable(MapLocation location, boolean printFailReasons) {
+	public boolean isTraversable(MapLocation location, StringBuilder failureReasons) {
 		int locationPosition = toPosition(location);
+
 		// Check if the coordinates exist
 		boolean validX = isXonMap(location.getX());
-		if (!validX && printFailReasons)
-			System.out.printf("WARNING: Location not traversable, X-coordinate is not on the map (%d).%n", location.getX());
+		if (!validX) {
+			failureReasons.append(String.format("Location not traversable, X-coordinate is not on the map (%d).%n", location.getX()));
+			return false;
+		}
 		boolean validY = isYonMap(location.getY());
-		if (!validY && printFailReasons)
-			System.out.printf("WARNING: Location not traversable, Y-coordinate is not on the map (%d).%n", location.getY());
+		if (!validY) {
+			failureReasons.append(String.format("Location not traversable, Y-coordinate is not on the map (%d).%n", location.getY()));
+			return false;
+		}
 
 		// There is a unit on a square if the content of the unit layer is not null
 		boolean unitPresent = mapContent[locationPosition][Constants.MAP_INTERNAL_UNIT_INDEX] != null;
-		if (unitPresent && printFailReasons)
-			System.out.println("WARNING: Location not traversable, Unit present.");
+		if (unitPresent) {
+			failureReasons.append(String.format("Location not traversable, Unit present.%n"));
+			return false;
+		}
 
 		// A feature can be walked on/over if it is walkable, derp
 		boolean featureWalkable = ((MapFeature) mapContent[locationPosition][Constants.MAP_INTERNAL_FEATURE_INDEX]).isWalkable();
-		if (!featureWalkable && printFailReasons)
-			System.out.println("WARNING: Location not traversable, MapFeature is not walkable.");
+		if (!featureWalkable) {
+			failureReasons.append(String.format("Location not traversable, MapFeature is not walkable.%n"));
+			return false;
+		}
 
-		// Define walkable
-		boolean walkable = !unitPresent && featureWalkable;
-		// Traversable if all three are true
-		return validX && validY && walkable;
+		// If we got here, all is good
+		return true;
 	}
 
 	/**
@@ -289,41 +288,40 @@ public class Map {
 	 *            The location to move from.
 	 * @param move
 	 *            The action the unit is attempting to make.
-	 * @return
+	 * @param failureReasons
+	 *            StringBuilder containing the reason(s) why the order is not possible, if any.
 	 */
-	public boolean isMovePossible(MapLocation fromLocation, UnitOrder move) {
+	public boolean isMovePossible(MapLocation fromLocation, UnitOrder move, StringBuilder failureReasons) {
 		// Make sure that there is a unit on the origin location
 		if (mapContent[toPosition(fromLocation)][Constants.MAP_INTERNAL_UNIT_INDEX] == null) {
-			System.out.printf("WARNING: Move not possible, no Unit on origin location (%s).%n", fromLocation);
-			return false;
-		}
-		// Make sure that the unit that is trying to move is actually at the location they are trying to move from
-		if (move.getObjectID() != ((Unit) mapContent[toPosition(fromLocation)][Constants.MAP_INTERNAL_UNIT_INDEX]).getID()) {
-			System.out.printf(	"WARNING: Move not possible, subject Unit (ID: %d) is not on origin location (%s).%n",
-								move.getObjectID(),
-								fromLocation);
+			failureReasons.append(String.format("Move not possible, no Unit on origin location (%s).%n", fromLocation));
 			return false;
 		}
 
-		// Switch on the type of move described in the UnitOrder
-		switch (move.getOrderType()) {
-		case MOVE_NORTH:
-			return isMovePossible(fromLocation, Direction.NORTH) && move.getTargetLocation()
-																		.equals(getLocationInDirection(fromLocation, Direction.NORTH, 1));
-		case MOVE_EAST:
-			return isMovePossible(fromLocation, Direction.EAST) && move.getTargetLocation()
-																		.equals(getLocationInDirection(fromLocation, Direction.EAST, 1));
-		case MOVE_SOUTH:
-			return isMovePossible(fromLocation, Direction.SOUTH) && move.getTargetLocation()
-																		.equals(getLocationInDirection(fromLocation, Direction.SOUTH, 1));
-		case MOVE_WEST:
-			return isMovePossible(fromLocation, Direction.WEST) && move.getTargetLocation()
-																		.equals(getLocationInDirection(fromLocation, Direction.WEST, 1));
-		default:
-			// Rest of the UnitActionTypes are not moves, so they should return false
-			System.out.printf("WARNING: Move not possible, unsupported move-order type (%s).%n", move.getOrderType());
+		// Make sure that the unit that is trying to move is actually at the location they are trying to move from
+		if (move.getObjectID() != ((Unit) mapContent[toPosition(fromLocation)][Constants.MAP_INTERNAL_UNIT_INDEX]).getID()) {
+			failureReasons.append(String.format("Move not possible, subject Unit (ID: %d) is not on origin location (%s).%n",
+												move.getObjectID(),
+												fromLocation));
 			return false;
 		}
+
+		// Make sure that a target location is set
+		if (move.getTargetLocation() == null) {
+			failureReasons.append(String.format("Move not possible, no target location set.%n"));
+			return false;
+		}
+
+		// Make sure that the target location in the order is in a supported direction
+		MapLocation targetLocation = move.getTargetLocation();
+		for (Direction direction : Direction.values()) {
+			MapLocation adjacentLocation = getAdjacentLocationInDirection(fromLocation, direction);
+			if (adjacentLocation != null && adjacentLocation.equals(targetLocation)) {
+				// Make sure the adjacent location is traversable
+				return isTraversable(adjacentLocation, failureReasons);
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -342,7 +340,7 @@ public class Map {
 		if (targetLocation == null)
 			return false;
 		// Check if the target location is traversable
-		return isTraversable(targetLocation);
+		return isTraversable(targetLocation, new StringBuilder());
 	}
 
 	/**
@@ -352,19 +350,20 @@ public class Map {
 	 *            The location to place the object on.
 	 * @param object
 	 *            The object to move.
+	 * @param failureReasons
+	 *            StringBuilder containing the reason(s) why the move could not be executed, if any.
 	 * @return Whether or not the move was successful.
 	 */
-	public boolean move(MapLocation targetLocation, GameObject object) {
+	public boolean move(MapLocation targetLocation, GameObject object, StringBuilder failureReasons) {
 		boolean success = false;
 		int targetPosition = toPosition(targetLocation);
 		// Check if the targetLocation is traversable
-		if (!isTraversable(targetLocation)) {
-			System.out.println("WARNING: Unable to move, location not traversable.");
+		if (!isTraversable(targetLocation, failureReasons)) {
 			return false;
 		}
 		// Check if the object is a Unit
 		if (!(object instanceof Unit)) {
-			System.out.println("WARNING: Unable to move, object is not a Unit.");
+			failureReasons.append(String.format("WARNING: Unable to move, object is not a Unit.%n"));
 			return false;
 		}
 		// Remove the object

@@ -131,6 +131,13 @@ public class HunterKillerState
 	}
 
 	/**
+	 * Returns the currently active player.
+	 */
+	public Player getActivePlayer() {
+		return players[activePlayerID];
+	}
+
+	/**
 	 * Determines whether or not this state represents a completed game.
 	 */
 	public boolean isDone() {
@@ -192,6 +199,10 @@ public class HunterKillerState
 		return new HunterKillerState(this);
 	}
 
+	/**
+	 * This method returns the ID of the currently active player. Implementation of
+	 * {@link SequentialState#getCurrentPlayer()}.
+	 */
 	@Override
 	public int getCurrentPlayer() {
 		return activePlayerID;

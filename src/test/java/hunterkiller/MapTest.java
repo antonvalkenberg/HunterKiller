@@ -246,9 +246,6 @@ public class MapTest {
 
 		// Check that the initialState starts in round 1
 		assertEquals(1, initialState.getCurrentRound());
-		// Check that the current player has the starting amount of resource
-		assertEquals(Constants.PLAYER_STARTING_RESOURCE, initialState.getPlayer(initialState.getCurrentPlayer())
-																		.getResource());
 		// Make sure the initial state is not done
 		assertFalse(initialState.isDone());
 	}

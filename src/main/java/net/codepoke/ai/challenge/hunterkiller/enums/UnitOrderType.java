@@ -8,10 +8,7 @@ package net.codepoke.ai.challenge.hunterkiller.enums;
  * <ul>
  * <li>Movement
  * <ul>
- * <li>Move up (North)</li>
- * <li>Move right (East)</li>
- * <li>Move down (South)</li>
- * <li>Move left (West)</li>
+ * <li>Move</li>
  * </ul>
  * </li>
  * <li>Rotation
@@ -33,10 +30,7 @@ package net.codepoke.ai.challenge.hunterkiller.enums;
  */
 public enum UnitOrderType {
 	// If adding a type, don't forget to add it to the documentation list above!
-	MOVE_NORTH,
-	MOVE_EAST,
-	MOVE_SOUTH,
-	MOVE_WEST,
+	MOVE,
 	ROTATE_CLOCKWISE,
 	ROTATE_COUNTER_CLOCKWISE,
 	ATTACK,
