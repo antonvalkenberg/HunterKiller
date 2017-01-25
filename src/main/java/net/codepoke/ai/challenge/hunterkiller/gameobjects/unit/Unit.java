@@ -254,6 +254,13 @@ public abstract class Unit
 	}
 
 	/**
+	 * Whether or not this unit can use it's special attack.
+	 */
+	public boolean canUseSpecialAttack() {
+		return specialAttackCooldown == 0;
+	}
+
+	/**
 	 * Returns an order to rotate this unit.
 	 * 
 	 * @param clockwise

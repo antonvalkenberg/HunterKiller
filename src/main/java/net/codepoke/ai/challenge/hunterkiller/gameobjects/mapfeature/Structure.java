@@ -171,7 +171,7 @@ public class Structure
 		// Get the current map
 		Map map = state.getMap();
 		// Check if the spawn location is traversable
-		return this.allowsSpawning && map.isTraversable(spawnLocation, new StringBuilder());
+		return this.allowsSpawning && map.isTraversable(spawnLocation);
 	}
 
 	/**
@@ -198,7 +198,8 @@ public class Structure
 
 	/**
 	 * Whether or not the specified type of unit can be spawned by this structure. This method checks if this structure
-	 * allows the spawning of units, and if the player controlling this structure has enough resources available.
+	 * allows the spawning of units, if the spawn location is traversable, and if the player controlling this structure
+	 * has enough resources available.
 	 * 
 	 * @param state
 	 *            The current state of the game.
@@ -210,7 +211,8 @@ public class Structure
 		int playerResource = state.getPlayer(controllingPlayerID)
 									.getResource();
 		// Check if the resource amount is at least the cost to spawn the specified unit type
-		return this.allowsSpawning && playerResource >= Unit.getSpawnCost(unitType);
+		return this.allowsSpawning && state.getMap()
+											.isTraversable(spawnLocation) && playerResource >= Unit.getSpawnCost(unitType);
 	}
 
 	/**

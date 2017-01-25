@@ -234,6 +234,13 @@ public class Map {
 	}
 
 	/**
+	 * {@link Map#isTraversable(MapLocation, StringBuilder)}
+	 */
+	public boolean isTraversable(MapLocation location) {
+		return isTraversable(location, new StringBuilder());
+	}
+
+	/**
 	 * Whether or not the specified location is traversable. This method checks:
 	 * <ul>
 	 * <li>If the {@link MapLocation} is on the map</li>
