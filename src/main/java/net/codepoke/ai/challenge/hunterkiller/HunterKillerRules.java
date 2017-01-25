@@ -420,17 +420,20 @@ public class HunterKillerRules
 				return map.isMovePossible(orderObject.getLocation(), unitOrder, failureReasons);
 			}
 
-			// Check if the target location is in the Player's combined field of view
-			if (!activePlayer.getCombinedFieldOfView(map)
-								.contains(targetLocation)) {
-				failureReasons.append(String.format("UnitOrder fail: Target location is not in player's Field-of-View.%n"));
+			// Check if the target location is in the unit's field of view
+			Unit unit = (Unit) orderObject;
+			if (!unit.getFieldOfView()
+						.contains(targetLocation)) {
+				failureReasons.append(String.format("UnitOrder (%d -> Attack %s) fail: Target location is not in unit's Field-of-View.%n",
+													unit.getID(),
+													targetLocation));
 				return false;
 			}
 
 			// Check if the target location is within the Unit's attack range
-			Unit unit = (Unit) orderObject;
 			if (unit.getAttackRange() < MapLocation.getManhattanDist(unit.getLocation(), targetLocation)) {
-				failureReasons.append(String.format("UnitOrder fail: Target location is outside of attack range (range: %d, distance: %d).%n",
+				failureReasons.append(String.format("UnitOrder (Attack %s)  fail: Target location is outside of attack range (range: %d, distance: %d).%n",
+													targetLocation,
 													unit.getAttackRange(),
 													MapLocation.getManhattanDist(unit.getLocation(), targetLocation)));
 				return false;

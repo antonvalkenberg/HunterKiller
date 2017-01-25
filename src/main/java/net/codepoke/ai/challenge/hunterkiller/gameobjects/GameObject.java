@@ -87,6 +87,8 @@ public abstract class GameObject {
 
 	// endregion
 
+	// region Public methods
+
 	/**
 	 * Creates a copy of this GameObject.
 	 */
@@ -139,5 +141,14 @@ public abstract class GameObject {
 			this.hpCurrent += amount;
 		}
 	}
+
+	/**
+	 * Whether or not this object is damaged.
+	 */
+	public boolean isDamaged() {
+		return this.getHpCurrent() < this.getHpMax();
+	}
+
+	// endregion
 
 }

@@ -11,7 +11,9 @@ import net.codepoke.ai.challenge.hunterkiller.Constants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import net.codepoke.ai.challenge.hunterkiller.Map;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
+import net.codepoke.ai.challenge.hunterkiller.Player;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
+import net.codepoke.ai.challenge.hunterkiller.enums.Direction.Rotation;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitOrderType;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitType;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.Controlled;
@@ -254,6 +256,13 @@ public abstract class Unit
 	}
 
 	/**
+	 * Whether or not the specified location is within this unit's attack range.
+	 */
+	public boolean isWithinAttackRange(MapLocation location) {
+		return MapLocation.getManhattanDist(this.getLocation(), location) <= getAttackRange();
+	}
+
+	/**
 	 * Whether or not this unit can use it's special attack.
 	 */
 	public boolean canUseSpecialAttack() {
@@ -269,6 +278,16 @@ public abstract class Unit
 	public UnitOrder rotate(boolean clockwise) {
 		UnitOrderType type = clockwise ? UnitOrderType.ROTATE_CLOCKWISE : UnitOrderType.ROTATE_COUNTER_CLOCKWISE;
 		return new UnitOrder(this, type);
+	}
+
+	/**
+	 * Returns an order to rotate this unit.
+	 * 
+	 * @param rotation
+	 *            The rotation to order for the unit.
+	 */
+	public UnitOrder rotate(Rotation rotation) {
+		return rotate(rotation == Rotation.CLOCKWISE);
 	}
 
 	/**
@@ -328,6 +347,14 @@ public abstract class Unit
 	@Override
 	public boolean tick(HunterKillerState state) {
 		return this.getHpCurrent() <= 0;
+	}
+
+	/**
+	 * Whether or not this unit is being controlled by the specified player.
+	 */
+	@Override
+	public boolean isControlledBy(Player player) {
+		return this.controllingPlayerID == player.getID();
 	}
 
 	// endregion

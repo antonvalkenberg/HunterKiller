@@ -261,6 +261,13 @@ public class Structure
 		}
 	}
 
+	/**
+	 * Whether or not this structure is being controlled by any player.
+	 */
+	public boolean isUnderControl() {
+		return controllingPlayerID != Constants.STRUCTURE_NO_CONTROL;
+	}
+
 	// endregion
 
 	// region Overridden methods
@@ -300,6 +307,14 @@ public class Structure
 		// TODO check correctly for different types
 
 		return "" + TileType.BASE.txt;
+	}
+
+	/**
+	 * Whether or not this structure is being controlled by the specified player.
+	 */
+	@Override
+	public boolean isControlledBy(Player player) {
+		return this.controllingPlayerID == player.getID();
 	}
 
 	// endregion

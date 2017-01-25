@@ -1,6 +1,7 @@
 package net.codepoke.ai.challenge.hunterkiller.enums;
 
 import lombok.AllArgsConstructor;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 
 /**
  * Enumeration of the directions used in HunterKiller. Currently only the cardinal directions are
@@ -110,6 +111,36 @@ public enum Direction {
 			}
 		default:
 			return null;
+		}
+	}
+
+	/**
+	 * Returns the {@link Rotation} required for a Unit to face a specified Direction. Note: this method will return
+	 * null when the target Direction is the same as the Unit's current orientation. When the Unit is facing the
+	 * opposite direction, it will return {@link Rotation#CLOCKWISE}.
+	 * 
+	 * @param unit
+	 *            The Unit to get the correct rotation for.
+	 * @param target
+	 *            The target Direction.
+	 */
+	public static Rotation rotationRequiredToFace(Unit unit, Direction target) {
+		Direction facing = unit.getOrientation();
+		if (target == facing)
+			return null;
+		if (target == facing.getOppositeDirection())
+			return Rotation.CLOCKWISE;
+		switch (facing) {
+		case EAST:
+			return target == NORTH ? Rotation.COUNTER_CLOCKWISE : Rotation.CLOCKWISE;
+		case NORTH:
+			return target == WEST ? Rotation.COUNTER_CLOCKWISE : Rotation.CLOCKWISE;
+		case SOUTH:
+			return target == EAST ? Rotation.COUNTER_CLOCKWISE : Rotation.CLOCKWISE;
+		case WEST:
+			return target == SOUTH ? Rotation.COUNTER_CLOCKWISE : Rotation.CLOCKWISE;
+		default:
+			return Rotation.CLOCKWISE;
 		}
 	}
 

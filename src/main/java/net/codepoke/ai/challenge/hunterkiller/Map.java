@@ -52,6 +52,8 @@ public class Map {
 	 */
 	public String name;
 
+	public int currentTick;
+
 	/**
 	 * The height of this map.
 	 */
@@ -107,10 +109,11 @@ public class Map {
 		this.name = name;
 		mapWidth = width;
 		mapHeight = height;
+		currentTick = 1;
 		// Map will have (width * height) positions
 		mapContent = new GameObject[width * height][Constants.MAP_INTERNAL_LAYERS];
 		// Create new collections for our ID->Object lookup and ID buffer
-		objects = new Array<GameObject>(true, width * height);
+		objects = new Array<GameObject>(true, width * height, GameObject.class);
 		idBuffer = new IntArray();
 		// Create the classes required for line-of-sight
 		lineOfSight = new LineOfSight(new BlocksLight(), new SetVisible(), new GetManhattanDistance());
@@ -877,9 +880,10 @@ public class Map {
 	public Map copy() {
 		// Create a new map
 		Map newMap = new Map(this.name, this.mapWidth, this.mapHeight);
+		newMap.currentTick = this.currentTick;
 
 		// Deep copy the map content & objects
-		Array<GameObject> newObjects = new Array<GameObject>(this.objects.size);
+		Array<GameObject> newObjects = new Array<GameObject>(true, this.objects.size, GameObject.class);
 		newObjects.size = this.objects.size; // Force size so OoB checks don't crash when we directly set the content
 		GameObject[][] newContent = copyMapContent(newObjects);
 
@@ -1019,6 +1023,7 @@ public class Map {
 	 *            The current state of the game.
 	 */
 	protected void tick(HunterKillerState state) {
+		currentTick++;
 		// Check our object collection for 'dead' objects
 		for (int i = 0; i < objects.size; i++) {
 			GameObject object = objects.get(i);
