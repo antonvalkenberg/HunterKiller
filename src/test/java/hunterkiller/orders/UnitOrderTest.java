@@ -549,16 +549,21 @@ public class UnitOrderTest {
 	public void testSpecialAttackMedic() {
 		// Re-create the map using the map for the medic's special attack
 		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMapSpecialMedic, playerNames, "nonRandomSections");
+		Map map = state.getMap();
 
 		MapLocation unitLocation = new MapLocation(3, 0);
 		MapLocation targetLocation = new MapLocation(1, 0);
 
 		// Get the Medic we want to give the order to
-		Unit unit = state.getMap()
-							.getUnitAtLocation(unitLocation);
-		Unit affectedUnit = state.getMap()
-									.getUnitAtLocation(targetLocation);
+		Unit unit = map.getUnitAtLocation(unitLocation);
+		// Units are initially created on the map facing NORTH, but we want our Medic to face WEST towards the Soldier
+		unit.setOrientation(Direction.WEST);
+		// Make sure the map updates the field-of-view, because we changed a unit's orientation.
+		// Note: this is normally handled by the HunterKillerRules if executed through an order, but we skipped that.
+		map.updateFieldOfView();
 
+		// Get the Soldier we want to heal
+		Unit affectedUnit = map.getUnitAtLocation(targetLocation);
 		// Set the Soldier's health to a lower amount, so we can see the effect of the heal
 		affectedUnit.reduceHP(affectedUnit.getHpCurrent() - 1);
 		int pre_TargetUnitHealth = affectedUnit.getHpCurrent();

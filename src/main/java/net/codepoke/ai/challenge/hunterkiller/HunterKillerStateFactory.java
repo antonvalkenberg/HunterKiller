@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Random;
 import java.util.regex.Pattern;
 
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.codepoke.ai.Generator;
 import net.codepoke.ai.challenge.hunterkiller.FourPatch.DataCreation;
@@ -33,6 +34,7 @@ import com.badlogic.gdx.utils.IntIntMap;
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class HunterKillerStateFactory
 		implements Generator<HunterKillerState> {
 
