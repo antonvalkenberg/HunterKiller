@@ -304,9 +304,18 @@ public class Structure
 
 	@Override
 	public String toString() {
-		// TODO check correctly for different types
-
-		return "" + TileType.BASE.txt;
+		switch (type) {
+		case Base:
+			return "" + TileType.BASE.txt;
+		case Objective:
+			return "" + TileType.OBJECTIVE.txt;
+		case Outpost:
+			return "" + TileType.OUTPOST.txt;
+		case Stronghold:
+			return "" + TileType.STRONGHOLD.txt;
+		default:
+			return "?";
+		}
 	}
 
 	/**
