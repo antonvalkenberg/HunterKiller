@@ -67,7 +67,6 @@ public class MapLocation {
 	 *            The X-coordinate of location 2.
 	 * @param y2
 	 *            The Y-coordinate of location 2.
-	 * @return
 	 */
 	public static double getEuclideanDist(int x1, int y1, int x2, int y2) {
 		return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
@@ -80,7 +79,6 @@ public class MapLocation {
 	 *            The first location.
 	 * @param location2
 	 *            The second location.
-	 * @return
 	 */
 	public static double getEuclideanDist(MapLocation location1, MapLocation location2) {
 		return getEuclideanDist(location1.x, location1.y, location2.x, location2.y);
@@ -97,7 +95,6 @@ public class MapLocation {
 	 *            The X-coordinate of location 2.
 	 * @param y2
 	 *            The Y-coordinate of location 2.
-	 * @return
 	 */
 	public static int getManhattanDist(int x1, int y1, int x2, int y2) {
 		return Math.abs(x1 - x2) + Math.abs(y1 - y2);
@@ -110,7 +107,6 @@ public class MapLocation {
 	 *            The first location.
 	 * @param location2
 	 *            The second location.
-	 * @return
 	 */
 	public static int getManhattanDist(MapLocation location1, MapLocation location2) {
 		return getManhattanDist(location1.x, location1.y, location2.x, location2.y);
@@ -125,7 +121,6 @@ public class MapLocation {
 	 *            The location that is the viewpoint.
 	 * @param target
 	 *            The location to get the direction to.
-	 * @return
 	 */
 	public static Direction getDirectionTo(MapLocation origin, MapLocation target) {
 		// Check that the points are not the same

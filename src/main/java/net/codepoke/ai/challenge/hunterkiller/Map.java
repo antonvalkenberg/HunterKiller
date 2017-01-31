@@ -230,7 +230,6 @@ public class Map {
 	 * 
 	 * @param location
 	 *            The location.
-	 * @return
 	 */
 	public boolean isOnMap(MapLocation location) {
 		return isXonMap(location.getX()) && isYonMap(location.getY());
@@ -341,7 +340,6 @@ public class Map {
 	 *            The location the move is from.
 	 * @param direction
 	 *            The direction to move to.
-	 * @return
 	 */
 	public boolean isMovePossible(MapLocation fromLocation, Direction direction) {
 		// Determine the target location
@@ -398,7 +396,6 @@ public class Map {
 	 *            The location to start from.
 	 * @param direction
 	 *            The {@link Direction} to go to.
-	 * @return
 	 */
 	public MapLocation getAdjacentLocationInDirection(MapLocation location, Direction direction) {
 		return getLocationInDirection(location, direction, 1);
@@ -414,7 +411,6 @@ public class Map {
 	 *            The {@link Direction} to go to.
 	 * @param distance
 	 *            The amount of tiles to go.
-	 * @return
 	 */
 	public MapLocation getLocationInDirection(MapLocation location, Direction direction, int distance) {
 		// Check if the distance is not larger than the maximum distance available (on the map) in that direction
@@ -435,7 +431,6 @@ public class Map {
 	 *            The {@link Direction} to go to.
 	 * @param distance
 	 *            The amount of tiles to go.
-	 * @return
 	 */
 	public int getPositionInDirection(int position, Direction direction, int distance) {
 		if (distance < 0)
@@ -468,7 +463,7 @@ public class Map {
 	/**
 	 * Returns the maximum distance of travel there is available before the edge of the map is encountered.
 	 * 
-	 * @param location
+	 * @param origin
 	 *            The location to start from.
 	 * @param direction
 	 *            The direction to travel in.
@@ -529,7 +524,6 @@ public class Map {
 	 *            The centre location.
 	 * @param includeCentre
 	 *            Whether or not the centre location should also be included in the result collection.
-	 * @return
 	 */
 	public List<MapLocation> getAreaAround(MapLocation location, boolean includeCentre) {
 		// Set up a list
@@ -615,7 +609,6 @@ public class Map {
 	 * 
 	 * @param unit
 	 *            The Unit.
-	 * @return
 	 */
 	public HashSet<MapLocation> getFieldOfView(Unit unit) {
 		// Reset any previously computed locations
@@ -631,7 +624,6 @@ public class Map {
 	 * 
 	 * @param structure
 	 *            The {@link Structure}.
-	 * @return
 	 */
 	public HashSet<MapLocation> getFieldOfView(Structure structure) {
 		// Return the area directly around the structure
@@ -674,7 +666,6 @@ public class Map {
 	 * 
 	 * @param location
 	 *            The location to find a unit at.
-	 * @return
 	 */
 	public Unit getUnitAtLocation(MapLocation location) {
 		if (isOnMap(location) && mapContent[toPosition(location)][Constants.MAP_INTERNAL_UNIT_INDEX] != null) {
@@ -688,7 +679,6 @@ public class Map {
 	 * 
 	 * @param location
 	 *            The location to find a map feature at.
-	 * @return
 	 */
 	public MapFeature getFeatureAtLocation(MapLocation location) {
 		if (isOnMap(location)) {
@@ -1098,8 +1088,6 @@ public class Map {
 
 	/**
 	 * Creates a deep copy of this map's content.
-	 * 
-	 * @return
 	 */
 	protected GameObject[][] copyMapContent(Array<GameObject> objects) {
 		int positions = this.mapWidth * this.mapHeight;

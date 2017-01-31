@@ -197,7 +197,6 @@ public abstract class Unit
 	 * 
 	 * @param location
 	 *            The location.
-	 * @return
 	 */
 	public boolean isInFieldOfView(MapLocation location) {
 		// Check internal fov representation

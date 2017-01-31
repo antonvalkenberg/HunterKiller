@@ -147,7 +147,6 @@ public class HunterKillerRules
 	 *            The order to execute.
 	 * @param failureReasons
 	 *            StringBuilder containing any reasons for why the order could not be executed.
-	 * @return The state of the game after executing the order.
 	 */
 	public void executeOrder(HunterKillerState state, HunterKillerOrder order, StringBuilder failureReasons) {
 		// Most orders need to access these things

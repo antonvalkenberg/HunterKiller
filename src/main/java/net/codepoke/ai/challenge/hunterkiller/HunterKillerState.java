@@ -100,8 +100,6 @@ public class HunterKillerState
 
 	/**
 	 * Returns the round number this state is currently in.
-	 * 
-	 * @return
 	 */
 	public int getCurrentRound() {
 		return currentRound;
@@ -109,8 +107,6 @@ public class HunterKillerState
 
 	/**
 	 * Returns the number of players in the game.
-	 * 
-	 * @return
 	 */
 	public int getNumberOfPlayers() {
 		return players.length;

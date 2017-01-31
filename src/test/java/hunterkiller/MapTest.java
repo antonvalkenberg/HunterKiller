@@ -241,8 +241,9 @@ public class MapTest {
 
 	@Test
 	public void testInitialState() {
+		HunterKillerStateFactory factory = new HunterKillerStateFactory();
 		// Create an initial state
-		HunterKillerState initialState = new HunterKillerStateFactory().generateInitialState(new String[] { "playerA", "playerB" }, "");
+		HunterKillerState initialState = factory.generateInitialState(new String[] { "playerA", "playerB" }, "");
 
 		// Check that the initialState starts in round 1
 		assertEquals(1, initialState.getCurrentRound());

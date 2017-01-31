@@ -95,7 +95,7 @@ public class HunterKillerStateFactory
 	// region Public methods
 
 	/**
-	 * Constructs a {@link Map} from a specific {@link PremadeMap}.
+	 * Constructs a {@link Map} from a specific {@link MapSetup}.
 	 * 
 	 * @param premade
 	 *            The type of map to construct.
@@ -268,8 +268,7 @@ public class HunterKillerStateFactory
 		 * Set up the temporary variables that need to be accessed when creating objects on the map.
 		 * 
 		 * @param players
-		 *            The IDs of the players in the game. See
-		 *            {@link HunterKillerStateFactory#constructMap(PremadeMap, IntArray)}.
+		 *            The players in the game.
 		 * @param newMap
 		 *            The map that the objects will be created on.
 		 * @param spawn

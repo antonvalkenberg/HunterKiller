@@ -188,7 +188,7 @@ public class FourPatch {
 	/**
 	 * Create a new FourPatch, where the dimensions of quadrant A are the same as the predefined part.
 	 * 
-	 * {@link FourPatch#FourPatch(String, int, int)}
+	 * {@link FourPatch#FourPatch(DataCreation, String, int, int)}
 	 */
 	public FourPatch(DataCreation creation, String data) {
 		this.data = parseData(data);
@@ -238,7 +238,7 @@ public class FourPatch {
 	}
 
 	/**
-	 * Creates the grid. This method calls {@link DataCreation#create(char, int, int, int)} for each
+	 * Creates the grid. This method calls {@link DataCreation#create(char, int, int, Sections)} for each
 	 * location on the grid.
 	 */
 	public void createGrid() {
