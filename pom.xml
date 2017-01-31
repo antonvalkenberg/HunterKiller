@@ -6,6 +6,10 @@
   <name>HunterKiller</name>
   <description>A squad-based AI challenge in which the players are tasked with eliminating each others bases while ensuring their base remains intact.</description>
   
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  
   <build>  
     <plugins>    
       <plugin>

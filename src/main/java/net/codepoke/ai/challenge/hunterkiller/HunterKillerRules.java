@@ -1,5 +1,6 @@
 package net.codepoke.ai.challenge.hunterkiller;
 
+import java.util.Collections;
 import java.util.List;
 
 import net.codepoke.ai.GameRules;
@@ -94,8 +95,9 @@ public class HunterKillerRules
 
 		// Get the orders contained in the action
 		List<HunterKillerOrder> orders = action.getOrders();
+
 		// Sort the orders by their natural ordering
-		orders.sort(null);
+		Collections.sort(orders);
 
 		// Go through the sorted list of orders
 		for (HunterKillerOrder order : orders) {

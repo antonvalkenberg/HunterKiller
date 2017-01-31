@@ -33,15 +33,15 @@ import com.badlogic.gdx.utils.IntIntMap;
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
-@NoArgsConstructor
 public class HunterKillerStateFactory
 		implements Generator<HunterKillerState> {
 
 	private static final Random r = new Random();
 
-	public static Array<MapSetup> MAP_ROTATION = new Array<MapSetup>();
+	public Array<MapSetup> mapRotation = new Array<MapSetup>();
 
-	static {
+	public HunterKillerStateFactory() {
+
 		// Load in all maps defined in the folder /maps/
 		File maps = new File("maps\\");
 		Pattern p = Pattern.compile("^\\d");
@@ -74,16 +74,16 @@ public class HunterKillerStateFactory
 						int baseResourceGeneration = Integer.parseInt(optionsLine2[1]);
 						rawMapData = rawMapData.substring(rawMapData.indexOf(mapLines[2]));
 
-						MAP_ROTATION.add(new MapSetup(mapFile.getName(), rawMapData, qWidth, qHeight, spawnDirection, startingResources,
+						mapRotation.add(new MapSetup(mapFile.getName(), rawMapData, qWidth, qHeight, spawnDirection, startingResources,
 														baseResourceGeneration));
 					} else {
 
 						rawMapData = rawMapData.substring(rawMapData.indexOf(mapLines[1]));
-						MAP_ROTATION.add(new MapSetup(mapFile.getName(), rawMapData, qWidth, qHeight, spawnDirection));
+						mapRotation.add(new MapSetup(mapFile.getName(), rawMapData, qWidth, qHeight, spawnDirection));
 					}
 				} else {
 					// Assume the whole map needs to be copied and we can use defaults.
-					MAP_ROTATION.add(new MapSetup(mapFile.getName(), rawMapData));
+					mapRotation.add(new MapSetup(mapFile.getName(), rawMapData));
 				}
 			} catch (Exception e) {
 				System.err.println("Error during parsing of file: " + mapFile.getName());
@@ -225,7 +225,7 @@ public class HunterKillerStateFactory
 		if (options == null)
 			options = "";
 		// Select a random premade map to create
-		MapSetup premade = MAP_ROTATION.random();
+		MapSetup premade = mapRotation.random();
 		// Generate the initial state from this premade map
 		return generateInitialStateFromPremade(premade, playerNames, options);
 	}
