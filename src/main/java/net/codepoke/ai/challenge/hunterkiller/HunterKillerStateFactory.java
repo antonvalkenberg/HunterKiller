@@ -33,7 +33,7 @@ import com.badlogic.gdx.utils.IntIntMap;
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
-@NoArgsConstructor()
+@NoArgsConstructor
 public class HunterKillerStateFactory
 		implements Generator<HunterKillerState> {
 
@@ -47,10 +47,11 @@ public class HunterKillerStateFactory
 		Pattern p = Pattern.compile("^\\d");
 
 		for (File mapFile : maps.listFiles()) {
-			// Check if the file isn't a directory
-			if (mapFile.isDirectory())
-				continue;
 			try {
+				// Check if the file isn't a directory
+				if (mapFile.isDirectory())
+					continue;
+
 				String rawMapData = IOUtils.toString(mapFile.toURI());
 
 				String[] mapLines = rawMapData.split(FourPatch.NEWLINE_SEPARATOR);
