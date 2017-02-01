@@ -2,6 +2,7 @@ package hunterkiller.orders;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import hunterkiller.HunterKillerTest;
 
 import java.util.HashSet;
 
@@ -14,7 +15,7 @@ import net.codepoke.ai.challenge.hunterkiller.HunterKillerStateFactory;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.MapSetup;
 import net.codepoke.ai.challenge.hunterkiller.Player;
-import net.codepoke.ai.challenge.hunterkiller.StringExtentions;
+import net.codepoke.ai.challenge.hunterkiller.StringExtensions;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitType;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Structure;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
@@ -38,13 +39,14 @@ import org.junit.Test;
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
-public class StructureOrderTest {
+public class StructureOrderTest
+		extends HunterKillerTest {
 
 	// region Constants
 
-	private static final MapSetup testMap = new MapSetup(StringExtentions.format("B__%n___"));
+	private static final MapSetup testMap = new MapSetup(StringExtensions.format("B__%n___"));
 
-	private static final MapSetup failMap = new MapSetup(StringExtentions.format("B__%nS__"));
+	private static final MapSetup failMap = new MapSetup(StringExtensions.format("B__%nS__"));
 
 	// endregion
 

@@ -37,7 +37,7 @@ public class FourPatch {
 	/**
 	 * Defines this System's newline separator.
 	 */
-	public static final String NEWLINE_SEPARATOR = System.lineSeparator();
+	public static final String NEWLINE_SEPARATOR = "\n";
 
 	/**
 	 * The different sections of the final map.

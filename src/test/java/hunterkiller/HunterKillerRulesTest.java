@@ -11,7 +11,7 @@ import net.codepoke.ai.challenge.hunterkiller.HunterKillerStateFactory;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.MapSetup;
 import net.codepoke.ai.challenge.hunterkiller.Player;
-import net.codepoke.ai.challenge.hunterkiller.StringExtentions;
+import net.codepoke.ai.challenge.hunterkiller.StringExtensions;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitOrderType;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
@@ -34,11 +34,12 @@ import org.junit.Test;
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
-public class HunterKillerRulesTest {
+public class HunterKillerRulesTest
+		extends HunterKillerTest {
 
 	// region Constants
 
-	private static final MapSetup testMapAttack = new MapSetup(StringExtentions.format("BS"));
+	private static final MapSetup testMapAttack = new MapSetup(StringExtensions.format("BS"));
 
 	// endregion
 

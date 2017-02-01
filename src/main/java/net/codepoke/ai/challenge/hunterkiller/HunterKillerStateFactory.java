@@ -2,7 +2,6 @@ package net.codepoke.ai.challenge.hunterkiller;
 
 import java.io.File;
 import java.util.Random;
-import java.util.regex.Pattern;
 
 import lombok.NoArgsConstructor;
 import net.codepoke.ai.Generator;
@@ -20,8 +19,9 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
 
-import org.apache.commons.io.IOUtils;
-
+import com.badlogic.gdx.Files.FileType;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.IntIntMap;
@@ -41,10 +41,8 @@ public class HunterKillerStateFactory
 	public Array<MapSetup> mapRotation = new Array<MapSetup>();
 
 	public HunterKillerStateFactory() {
-
 		// Load in all maps defined in the folder /maps/
 		File maps = new File("maps\\");
-		Pattern p = Pattern.compile("^\\d");
 
 		for (File mapFile : maps.listFiles()) {
 			try {
@@ -52,13 +50,14 @@ public class HunterKillerStateFactory
 				if (mapFile.isDirectory())
 					continue;
 
-				String rawMapData = IOUtils.toString(mapFile.toURI());
+				FileHandle fileH = Gdx.files.getFileHandle(mapFile.getAbsolutePath(), FileType.Absolute);
+				String rawMapData = fileH.readString()
+											.replace("\r\n", "\n");
 
 				String[] mapLines = rawMapData.split(FourPatch.NEWLINE_SEPARATOR);
 
 				// Check if we have any lines of settings
-				if (p.matcher(mapLines[0])
-						.find()) {
+				if (Character.isDigit(mapLines[0].charAt(0))) {
 					// First line is the size/orientation
 					String[] optionsLine1 = mapLines[0].split(" ");
 					int qWidth = Integer.parseInt(optionsLine1[0]);
@@ -66,8 +65,7 @@ public class HunterKillerStateFactory
 					Direction spawnDirection = Direction.parse(optionsLine1[2]);
 
 					// Check if there is a second line of settings
-					if (p.matcher(mapLines[1])
-							.find()) {
+					if (Character.isDigit(mapLines[1].charAt(0))) {
 						// Second line is the amount of starting resources for players and the base resource-generation
 						String[] optionsLine2 = mapLines[1].split(" ");
 						int startingResources = Integer.parseInt(optionsLine2[0]);
@@ -149,7 +147,7 @@ public class HunterKillerStateFactory
 		// Check that either 2, 3 or 4 players are provided, other amounts are not supported
 		if (playerNames.length < 2 || playerNames.length > 4) {
 			throw new HunterKillerException(
-											StringExtentions.format("Unsupported amount of players: %d. Only 2, 3 and 4 players are currently supported.",
+											StringExtensions.format("Unsupported amount of players: %d. Only 2, 3 and 4 players are currently supported.",
 																	playerNames.length));
 		}
 
@@ -284,7 +282,7 @@ public class HunterKillerStateFactory
 					sectionPlayerIDMap.put(player.getMapSection(), player.getID());
 				} else {
 					throw new HunterKillerException(
-													StringExtentions.format("Player with ID %d is assigned section %d, which is already assigned to player with ID %d",
+													StringExtensions.format("Player with ID %d is assigned section %d, which is already assigned to player with ID %d",
 																			player.getID(),
 																			player.getMapSection(),
 																			sectionPlayerIDMap.get(player.getMapSection(), -1)));

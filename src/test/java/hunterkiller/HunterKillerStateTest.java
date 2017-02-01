@@ -7,7 +7,7 @@ import net.codepoke.ai.challenge.hunterkiller.HunterKillerStateFactory;
 import net.codepoke.ai.challenge.hunterkiller.Map;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.MapSetup;
-import net.codepoke.ai.challenge.hunterkiller.StringExtentions;
+import net.codepoke.ai.challenge.hunterkiller.StringExtensions;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 
 import org.junit.After;
@@ -27,11 +27,12 @@ import com.badlogic.gdx.utils.Array;
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
-public class HunterKillerStateTest {
+public class HunterKillerStateTest
+		extends HunterKillerTest {
 
 	// region Constants
 
-	private static final MapSetup testMap = new MapSetup(StringExtentions.format("B__M%nS___%n___I"));
+	private static final MapSetup testMap = new MapSetup(StringExtensions.format("B__M%nS___%n___I"));
 
 	// endregion
 

@@ -26,7 +26,8 @@ import org.junit.Test;
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
-public class LineOfSightTest {
+public class LineOfSightTest
+		extends HunterKillerTest {
 
 	// region Properties
 

@@ -160,7 +160,7 @@ public class MapLocation {
 
 	@Override
 	public String toString() {
-		return StringExtentions.format("[%d,%d]", x, y);
+		return StringExtensions.format("[%d,%d]", x, y);
 	}
 
 	@Override
