@@ -262,26 +262,28 @@ public class Map {
 		// Check if the coordinates exist
 		boolean validX = isXonMap(location.getX());
 		if (!validX) {
-			failureReasons.append(String.format("Location not traversable, X-coordinate is not on the map (%d).%n", location.getX()));
+			failureReasons.append(StringExtentions.format(	"Location not traversable, X-coordinate is not on the map (%d).%n",
+															location.getX()));
 			return false;
 		}
 		boolean validY = isYonMap(location.getY());
 		if (!validY) {
-			failureReasons.append(String.format("Location not traversable, Y-coordinate is not on the map (%d).%n", location.getY()));
+			failureReasons.append(StringExtentions.format(	"Location not traversable, Y-coordinate is not on the map (%d).%n",
+															location.getY()));
 			return false;
 		}
 
 		// There is a unit on a square if the content of the unit layer is not null
 		boolean unitPresent = mapContent[locationPosition][Constants.MAP_INTERNAL_UNIT_INDEX] != null;
 		if (unitPresent) {
-			failureReasons.append(String.format("Location not traversable, Unit present.%n"));
+			failureReasons.append(StringExtentions.format("Location not traversable, Unit present.%n"));
 			return false;
 		}
 
 		// A feature can be walked on/over if it is walkable, derp
 		boolean featureWalkable = ((MapFeature) mapContent[locationPosition][Constants.MAP_INTERNAL_FEATURE_INDEX]).isWalkable();
 		if (!featureWalkable) {
-			failureReasons.append(String.format("Location not traversable, MapFeature is not walkable.%n"));
+			failureReasons.append(StringExtentions.format("Location not traversable, MapFeature is not walkable.%n"));
 			return false;
 		}
 
@@ -303,21 +305,21 @@ public class Map {
 	public boolean isMovePossible(MapLocation fromLocation, UnitOrder move, StringBuilder failureReasons) {
 		// Make sure that there is a unit on the origin location
 		if (mapContent[toPosition(fromLocation)][Constants.MAP_INTERNAL_UNIT_INDEX] == null) {
-			failureReasons.append(String.format("Move not possible, no Unit on origin location (%s).%n", fromLocation));
+			failureReasons.append(StringExtentions.format("Move not possible, no Unit on origin location (%s).%n", fromLocation));
 			return false;
 		}
 
 		// Make sure that the unit that is trying to move is actually at the location they are trying to move from
 		if (move.getObjectID() != ((Unit) mapContent[toPosition(fromLocation)][Constants.MAP_INTERNAL_UNIT_INDEX]).getID()) {
-			failureReasons.append(String.format("Move not possible, subject Unit (ID: %d) is not on origin location (%s).%n",
-												move.getObjectID(),
-												fromLocation));
+			failureReasons.append(StringExtentions.format(	"Move not possible, subject Unit (ID: %d) is not on origin location (%s).%n",
+															move.getObjectID(),
+															fromLocation));
 			return false;
 		}
 
 		// Make sure that a target location is set
 		if (move.getTargetLocation() == null) {
-			failureReasons.append(String.format("Move not possible, no target location set.%n"));
+			failureReasons.append(StringExtentions.format("Move not possible, no target location set.%n"));
 			return false;
 		}
 
@@ -371,7 +373,7 @@ public class Map {
 		}
 		// Check if the object is a Unit
 		if (!(object instanceof Unit)) {
-			failureReasons.append(String.format("WARNING: Unable to move, object is not a Unit.%n"));
+			failureReasons.append(StringExtentions.format("WARNING: Unable to move, object is not a Unit.%n"));
 			return false;
 		}
 		// Remove the object

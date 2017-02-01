@@ -10,6 +10,7 @@ import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import net.codepoke.ai.challenge.hunterkiller.Map;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.Player;
+import net.codepoke.ai.challenge.hunterkiller.StringExtentions;
 import net.codepoke.ai.challenge.hunterkiller.enums.StructureOrderType;
 import net.codepoke.ai.challenge.hunterkiller.enums.StructureType;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
@@ -230,7 +231,7 @@ public class Structure
 		case Soldier:
 			return new StructureOrder(this, StructureOrderType.SPAWN_SOLDIER);
 		default:
-			System.err.println(String.format("WARNING: Unsupported unit type: %s", unitType));
+			System.err.println(StringExtentions.format("WARNING: Unsupported unit type: %s", unitType));
 			return null;
 		}
 	}

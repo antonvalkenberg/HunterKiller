@@ -149,8 +149,8 @@ public class HunterKillerStateFactory
 		// Check that either 2, 3 or 4 players are provided, other amounts are not supported
 		if (playerNames.length < 2 || playerNames.length > 4) {
 			throw new HunterKillerException(
-											String.format(	"Unsupported amount of players: %d. Only 2, 3 and 4 players are currently supported.",
-															playerNames.length));
+											StringExtentions.format("Unsupported amount of players: %d. Only 2, 3 and 4 players are currently supported.",
+																	playerNames.length));
 		}
 
 		// Select the map section we will be using for the players
@@ -284,10 +284,10 @@ public class HunterKillerStateFactory
 					sectionPlayerIDMap.put(player.getMapSection(), player.getID());
 				} else {
 					throw new HunterKillerException(
-													String.format(	"Player with ID %d is assigned section %d, which is already assigned to player with ID %d",
-																	player.getID(),
-																	player.getMapSection(),
-																	sectionPlayerIDMap.get(player.getMapSection(), -1)));
+													StringExtentions.format("Player with ID %d is assigned section %d, which is already assigned to player with ID %d",
+																			player.getID(),
+																			player.getMapSection(),
+																			sectionPlayerIDMap.get(player.getMapSection(), -1)));
 				}
 			}
 		}

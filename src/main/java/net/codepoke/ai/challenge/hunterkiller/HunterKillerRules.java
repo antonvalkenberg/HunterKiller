@@ -43,16 +43,16 @@ public class HunterKillerRules
 		// Check to make sure only the active player can perform an action
 		if (action.getActingPlayerID() != state.getCurrentPlayer()) {
 			return new Result(false, false, null, "Invalid action",
-								String.format(	"Player performing the action (ID: %d) is not the active player (ID: %d).",
-												action.getActingPlayerID(),
-												state.getCurrentPlayer()));
+								StringExtentions.format("Player performing the action (ID: %d) is not the active player (ID: %d).",
+														action.getActingPlayerID(),
+														state.getCurrentPlayer()));
 		}
 		// Check to make sure the round numbers match
 		if (action.getCurrentRound() != state.getCurrentRound()) {
 			return new Result(false, false, null, "Invalid action",
-								String.format(	"Round number of the action (%d) did not match the State's (%d).",
-												action.getCurrentRound(),
-												state.getCurrentRound()));
+								StringExtentions.format("Round number of the action (%d) did not match the State's (%d).",
+														action.getCurrentRound(),
+														state.getCurrentRound()));
 		}
 
 		// Perform the action requested by the player
@@ -133,9 +133,9 @@ public class HunterKillerRules
 		}
 
 		// Return the action as accepted, but add a count of how many orders failed, if any did.
-		return new Result(true, false, null, "Action accepted", failCount > 0 ? String.format(	"%d orders ignored, Reasons:%n%s",
-																								failCount,
-																								actionFailures.toString()) : "");
+		return new Result(true, false, null, "Action accepted", failCount > 0 ? StringExtentions.format("%d orders ignored, Reasons:%n%s",
+																										failCount,
+																										actionFailures.toString()) : "");
 	}
 
 	/**
@@ -184,7 +184,7 @@ public class HunterKillerRules
 
 			default:
 				// Getting here means we have come across a type that is not yet implemented
-				failureReasons.append(String.format("StructureOrder fail: Unsupported order type '%s'.%n", type));
+				failureReasons.append(StringExtentions.format("StructureOrder fail: Unsupported order type '%s'.%n", type));
 				return;
 			}
 
@@ -299,7 +299,7 @@ public class HunterKillerRules
 
 				default:
 					// Getting here means we have come across a type that is not yet implemented
-					failureReasons.append(String.format("UnitOrder fail: Unsupported unit type '%s'.%n", unitType));
+					failureReasons.append(StringExtentions.format("UnitOrder fail: Unsupported unit type '%s'.%n", unitType));
 					return;
 
 				}
@@ -307,13 +307,13 @@ public class HunterKillerRules
 
 			default:
 				// Getting here means we have come across a type that is not yet implemented
-				failureReasons.append(String.format("UnitOrder fail: Unsupported order type '%s'.%n", type));
+				failureReasons.append(StringExtentions.format("UnitOrder fail: Unsupported order type '%s'.%n", type));
 				return;
 			}
 		} else {
 			// Getting here means we have come across a type that is not yet implemented
-			failureReasons.append(String.format("Order fail: Unsupported order type '%s'.%n", order.getClass()
-																									.getName()));
+			failureReasons.append(StringExtentions.format("Order fail: Unsupported order type '%s'.%n", order.getClass()
+																												.getName()));
 			return;
 		}
 	}
@@ -337,7 +337,7 @@ public class HunterKillerRules
 		// Check if the object that the order is for still exists
 		GameObject orderObject = map.getObject(order.getObjectID());
 		if (orderObject == null) {
-			failureReasons.append(String.format("Order fail: Could not find object with ID %d.%n", order.getObjectID()));
+			failureReasons.append(StringExtentions.format("Order fail: Could not find object with ID %d.%n", order.getObjectID()));
 			return false;
 		}
 
@@ -347,15 +347,16 @@ public class HunterKillerRules
 
 			// Check if the order-object is a structure
 			if (!(orderObject instanceof Structure)) {
-				failureReasons.append(String.format("StructureOrder fail: Source object is not a Structure (%s).%n", orderObject.getClass()
-																																.getName()));
+				failureReasons.append(StringExtentions.format(	"StructureOrder fail: Source object is not a Structure (%s).%n",
+																orderObject.getClass()
+																			.getName()));
 				return false;
 			}
 
 			Structure structure = (Structure) orderObject;
 			// Check if the structure can spawn any units
 			if (!structure.isAllowsSpawning()) {
-				failureReasons.append(String.format("StructureOrder fail: Structure cannot spawn units.%n"));
+				failureReasons.append(StringExtentions.format("StructureOrder fail: Structure cannot spawn units.%n"));
 				return false;
 			}
 
@@ -368,8 +369,8 @@ public class HunterKillerRules
 			Direction spawnDirection = MapLocation.getDirectionTo(structure.getLocation(), spawnLocation);
 			// Check if a spawn direction can be determined
 			if (spawnDirection == null) {
-				failureReasons.append(String.format("StructureOrder fail: Spawn location (%s) is not on a cardinal direction relative to the structure.%n",
-													spawnLocation));
+				failureReasons.append(StringExtentions.format(	"StructureOrder fail: Spawn location (%s) is not on a cardinal direction relative to the structure.%n",
+																spawnLocation));
 				return false;
 			}
 
@@ -381,14 +382,14 @@ public class HunterKillerRules
 			case SPAWN_SOLDIER:
 				// Check if the player has enough resources to spawn this type
 				if (!structure.canExecute(state, type)) {
-					failureReasons.append(String.format("StructureOrder fail: Insufficient resources available for order of type '%s'.%n",
-														type));
+					failureReasons.append(StringExtentions.format(	"StructureOrder fail: Insufficient resources available for order of type '%s'.%n",
+																	type));
 					return false;
 				}
 				return true;
 			default:
 				// Getting here means we have come across a type that is not yet implemented
-				failureReasons.append(String.format("StructureOrder fail: Unsupported order type '%s'.%n", type));
+				failureReasons.append(StringExtentions.format("StructureOrder fail: Unsupported order type '%s'.%n", type));
 				return false;
 			}
 
@@ -397,8 +398,8 @@ public class HunterKillerRules
 
 			// Check if the order-object is a unit
 			if (!(orderObject instanceof Unit)) {
-				failureReasons.append(String.format("UnitOrder fail: Source object is not a Unit (%s).%n", orderObject.getClass()
-																														.getName()));
+				failureReasons.append(StringExtentions.format("UnitOrder fail: Source object is not a Unit (%s).%n", orderObject.getClass()
+																																.getName()));
 				return false;
 			}
 
@@ -412,7 +413,7 @@ public class HunterKillerRules
 
 			// Check if a target for the order has been set
 			if (unitOrder.getTargetLocation() == null) {
-				failureReasons.append(String.format("UnitOrder fail: No target location set.%n"));
+				failureReasons.append(StringExtentions.format("UnitOrder fail: No target location set.%n"));
 				return false;
 			}
 
@@ -425,18 +426,18 @@ public class HunterKillerRules
 			Unit unit = (Unit) orderObject;
 			if (!unit.getFieldOfView()
 						.contains(targetLocation)) {
-				failureReasons.append(String.format("UnitOrder (%d -> Attack %s) fail: Target location is not in unit's Field-of-View.%n",
-													unit.getID(),
-													targetLocation));
+				failureReasons.append(StringExtentions.format(	"UnitOrder (%d -> Attack %s) fail: Target location is not in unit's Field-of-View.%n",
+																unit.getID(),
+																targetLocation));
 				return false;
 			}
 
 			// Check if the target location is within the Unit's attack range
 			if (unit.getAttackRange() < MapLocation.getManhattanDist(unit.getLocation(), targetLocation)) {
-				failureReasons.append(String.format("UnitOrder (Attack %s)  fail: Target location is outside of attack range (range: %d, distance: %d).%n",
-													targetLocation,
-													unit.getAttackRange(),
-													MapLocation.getManhattanDist(unit.getLocation(), targetLocation)));
+				failureReasons.append(StringExtentions.format(	"UnitOrder (Attack %s)  fail: Target location is outside of attack range (range: %d, distance: %d).%n",
+																targetLocation,
+																unit.getAttackRange(),
+																MapLocation.getManhattanDist(unit.getLocation(), targetLocation)));
 				return false;
 			}
 
@@ -447,8 +448,8 @@ public class HunterKillerRules
 			if (type == UnitOrderType.ATTACK_SPECIAL) {
 				// Check if the Unit's special attack has cooled down
 				if (unit.getSpecialAttackCooldown() > 0) {
-					failureReasons.append(String.format("UnitOrder fail: Special attack is still on cooldown (%d round(s) remaining).%n",
-														unit.getSpecialAttackCooldown()));
+					failureReasons.append(StringExtentions.format(	"UnitOrder fail: Special attack is still on cooldown (%d round(s) remaining).%n",
+																	unit.getSpecialAttackCooldown()));
 					return false;
 				}
 
@@ -457,13 +458,13 @@ public class HunterKillerRules
 
 				case Infected:
 					// The special attack of an infected can't actually be ordered, since it triggers on kill
-					failureReasons.append(String.format("UnitOrder fail: An Infected's special attack cannot be ordered.%n"));
+					failureReasons.append(StringExtentions.format("UnitOrder fail: An Infected's special attack cannot be ordered.%n"));
 					return false;
 
 				case Medic:
 					// The special attack of a medic heals a unit for an amount
 					if (map.getUnitAtLocation(targetLocation) == null) {
-						failureReasons.append(String.format("UnitOrder fail: Target location does not contain a Unit to heal.%n"));
+						failureReasons.append(StringExtentions.format("UnitOrder fail: Target location does not contain a Unit to heal.%n"));
 						return false;
 					}
 					return true;
@@ -471,7 +472,7 @@ public class HunterKillerRules
 				case Soldier:
 					// The special of a Soldier can't have a Wall as it's target
 					if (map.getFeatureAtLocation(unitOrder.getTargetLocation()) instanceof Wall) {
-						failureReasons.append(String.format("UnitOrder fail: A Soldier's special attack cannot target a Wall.%n"));
+						failureReasons.append(StringExtentions.format("UnitOrder fail: A Soldier's special attack cannot target a Wall.%n"));
 						return false;
 					}
 					return true;
@@ -483,13 +484,13 @@ public class HunterKillerRules
 			}
 
 			// Getting here means we have come across a type that is not yet implemented
-			failureReasons.append(String.format("UnitOrder fail: Unsupported order type '%s'.%n", type));
+			failureReasons.append(StringExtentions.format("UnitOrder fail: Unsupported order type '%s'.%n", type));
 			return false;
 
 		} else {
 			// Getting here means we have come across a type that is not yet implemented
-			failureReasons.append(String.format("Order fail: Unsupported order type '%s'.%n", order.getClass()
-																									.getName()));
+			failureReasons.append(StringExtentions.format("Order fail: Unsupported order type '%s'.%n", order.getClass()
+																												.getName()));
 			return false;
 		}
 	}

@@ -11,6 +11,7 @@ import net.codepoke.ai.challenge.hunterkiller.Map;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.MapSetup;
 import net.codepoke.ai.challenge.hunterkiller.Player;
+import net.codepoke.ai.challenge.hunterkiller.StringExtentions;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.enums.StructureType;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
@@ -38,7 +39,7 @@ public class MapTest {
 
 	// region Constants
 
-	private static final MapSetup testPathMap = new MapSetup(String.format("B_____%n______%n______%n______%n_█D██_%n_█__█_"));
+	private static final MapSetup testPathMap = new MapSetup(StringExtentions.format("B_____%n______%n______%n______%n_█D██_%n_█__█_"));
 
 	// endregion
 
@@ -133,7 +134,7 @@ public class MapTest {
 
 	@Test
 	public void testMapFeatureCreation() {
-		String mapPatch = String.format("._█%nDBO%nXPH");
+		String mapPatch = StringExtentions.format("._█%nDBO%nXPH");
 		// Create a FourPatch to test
 		FourPatch testPatch = new FourPatch(new HunterKillerStateFactory.HunterKillerMapCreation(), mapPatch, 3, 3);
 		// Setup the players

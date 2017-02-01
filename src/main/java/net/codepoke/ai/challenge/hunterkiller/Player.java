@@ -320,7 +320,7 @@ public class Player
 
 	@Override
 	public String toString() {
-		return String.format("%s (ID: %d)", this.name, this.ID);
+		return StringExtentions.format("%s (ID: %d)", this.name, this.ID);
 	}
 
 	// endregion

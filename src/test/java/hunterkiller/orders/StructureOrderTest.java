@@ -14,6 +14,7 @@ import net.codepoke.ai.challenge.hunterkiller.HunterKillerStateFactory;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.MapSetup;
 import net.codepoke.ai.challenge.hunterkiller.Player;
+import net.codepoke.ai.challenge.hunterkiller.StringExtentions;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitType;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Structure;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
@@ -41,9 +42,9 @@ public class StructureOrderTest {
 
 	// region Constants
 
-	private static final MapSetup testMap = new MapSetup(String.format("B__%n___"));
+	private static final MapSetup testMap = new MapSetup(StringExtentions.format("B__%n___"));
 
-	private static final MapSetup failMap = new MapSetup(String.format("B__%nS__"));
+	private static final MapSetup failMap = new MapSetup(StringExtentions.format("B__%nS__"));
 
 	// endregion
 

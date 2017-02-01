@@ -463,7 +463,7 @@ public class LineOfSight {
 		float delta = Math.abs(facingAngle - angle);
 
 		// DEBUG
-		// System.out.println(String.format("Origin %s | Location %s | Angle %+4.2f | Facing %+4.2f | Half-Limit %+4.2f | Delta %+4.2f",
+		// System.out.println(StringExtentions.format("Origin %s | Location %s | Angle %+4.2f | Facing %+4.2f | Half-Limit %+4.2f | Delta %+4.2f",
 		// mapOrigin, new MapLocation(x, y), angle, facingAngle, halfAngleLimit, delta));
 
 		// Check if the difference is within our limit

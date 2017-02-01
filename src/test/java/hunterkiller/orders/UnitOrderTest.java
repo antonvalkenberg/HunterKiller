@@ -15,6 +15,7 @@ import net.codepoke.ai.challenge.hunterkiller.Map;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.MapSetup;
 import net.codepoke.ai.challenge.hunterkiller.Player;
+import net.codepoke.ai.challenge.hunterkiller.StringExtentions;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Door;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
@@ -49,19 +50,19 @@ public class UnitOrderTest {
 
 	// region Constants
 
-	private static final MapSetup testMap = new MapSetup(String.format("B_S%n___"));
+	private static final MapSetup testMap = new MapSetup(StringExtentions.format("B_S%n___"));
 
-	private static final MapSetup testMapDoor = new MapSetup(String.format("B___%n_S__%n█D██%n█__█"));
+	private static final MapSetup testMapDoor = new MapSetup(StringExtentions.format("B___%n_S__%n█D██%n█__█"));
 
-	private static final MapSetup testMapBlocked = new MapSetup(String.format("B_S%n__S"));
+	private static final MapSetup testMapBlocked = new MapSetup(StringExtentions.format("B_S%n__S"));
 
-	private static final MapSetup testMapAttack = new MapSetup(String.format("BS"));
+	private static final MapSetup testMapAttack = new MapSetup(StringExtentions.format("BS"));
 
-	private static final MapSetup testMapSpecialSoldier = new MapSetup(String.format("B__%n__S"));
+	private static final MapSetup testMapSpecialSoldier = new MapSetup(StringExtentions.format("B__%n__S"));
 
-	private static final MapSetup testMapSpecialMedic = new MapSetup(String.format("BS_M%n____"));
+	private static final MapSetup testMapSpecialMedic = new MapSetup(StringExtentions.format("BS_M%n____"));
 
-	private static final MapSetup testMapSpecialInfected = new MapSetup(String.format("BI"));
+	private static final MapSetup testMapSpecialInfected = new MapSetup(StringExtentions.format("BI"));
 
 	// endregion
 
