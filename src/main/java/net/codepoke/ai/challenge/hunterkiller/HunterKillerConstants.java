@@ -385,10 +385,6 @@ public class HunterKillerConstants {
 	 */
 	public static final int SOLDIER_SCORE = 25;
 	/**
-	 * The range of the Soldier's special attack.
-	 */
-	public static final int SOLDIER_SPECIAL_RANGE = 3;
-	/**
 	 * The damage of the Soldier's special attack.
 	 */
 	public static final int SOLDIER_SPECIAL_DAMAGE = 3;

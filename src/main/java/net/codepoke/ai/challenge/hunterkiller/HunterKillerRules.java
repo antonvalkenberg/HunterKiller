@@ -332,7 +332,6 @@ public class HunterKillerRules
 	public boolean isOrderPossible(HunterKillerState state, HunterKillerOrder order, StringBuilder failureReasons) {
 		// Most orders need to access these things
 		Map map = state.getMap();
-		Player activePlayer = state.getActivePlayer();
 
 		// Check if the object that the order is for still exists
 		GameObject orderObject = map.getObject(order.getObjectID());
