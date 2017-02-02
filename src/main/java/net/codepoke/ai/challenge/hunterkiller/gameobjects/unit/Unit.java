@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.codepoke.ai.challenge.hunterkiller.Constants;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import net.codepoke.ai.challenge.hunterkiller.Map;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
@@ -49,42 +49,42 @@ public abstract class Unit
 	 * The Direction the Unit is facing.
 	 */
 	@Setter
-	private Direction orientation = Constants.UNIT_DEFAULT_ORIENTATION;
+	private Direction orientation = HunterKillerConstants.UNIT_DEFAULT_ORIENTATION;
 
 	/**
 	 * The range (in squares) of the Unit's Field of View.
 	 */
-	private int fieldOfViewRange = Constants.UNIT_DEFAULT_FOV_RANGE;
+	private int fieldOfViewRange = HunterKillerConstants.UNIT_DEFAULT_FOV_RANGE;
 
 	/**
 	 * The angle (in degrees) of the Unit's Field of View.
 	 */
-	private int fieldOfViewAngle = Constants.UNIT_DEFAULT_FOV_ANGLE;
+	private int fieldOfViewAngle = HunterKillerConstants.UNIT_DEFAULT_FOV_ANGLE;
 
 	/**
 	 * The range (in squares) of the Unit's attacks.
 	 */
-	private int attackRange = Constants.UNIT_DEFAULT_ATTACK_RANGE;
+	private int attackRange = HunterKillerConstants.UNIT_DEFAULT_ATTACK_RANGE;
 
 	/**
 	 * The damage the Unit's attacks inflict.
 	 */
-	private int attackDamage = Constants.UNIT_DEFAULT_ATTACK_DAMAGE;
+	private int attackDamage = HunterKillerConstants.UNIT_DEFAULT_ATTACK_DAMAGE;
 
 	/**
 	 * The remaining cool down time (in ticks) of the Unit's special attack.
 	 */
-	private int specialAttackCooldown = Constants.UNIT_DEFAULT_SPECIAL_COOLDOWN;
+	private int specialAttackCooldown = HunterKillerConstants.UNIT_DEFAULT_SPECIAL_COOLDOWN;
 
 	/**
 	 * The cost to spawn an instance of this Unit.
 	 */
-	private int spawnCost = Constants.UNIT_DEFAULT_SPAWN_COST;
+	private int spawnCost = HunterKillerConstants.UNIT_DEFAULT_SPAWN_COST;
 
 	/**
 	 * The score this Unit is worth when defeated by the opposing team.
 	 */
-	private int scoreWorth = Constants.UNIT_DEFAULT_SCORE;
+	private int scoreWorth = HunterKillerConstants.UNIT_DEFAULT_SCORE;
 
 	/**
 	 * The current field-of-view of this Unit.
@@ -102,7 +102,7 @@ public abstract class Unit
 	 */
 	public Unit(int spawningPlayerID, UnitType unitType, MapLocation mapLocation, Direction facing, int fovRange, int fovAngle,
 				int attckRange, int attckDmg, int cooldown, int cost, int score) {
-		this(spawningPlayerID, unitType, mapLocation, Constants.UNIT_DEFAULT_HP, facing, fovRange, fovAngle, attckRange, attckDmg,
+		this(spawningPlayerID, unitType, mapLocation, HunterKillerConstants.UNIT_DEFAULT_HP, facing, fovRange, fovAngle, attckRange, attckDmg,
 				cooldown, cost, score);
 	}
 
@@ -225,11 +225,11 @@ public abstract class Unit
 	public static int getAttackRange(UnitType unitType) {
 		switch (unitType) {
 		case Infected:
-			return Constants.INFECTED_ATTACK_RANGE;
+			return HunterKillerConstants.INFECTED_ATTACK_RANGE;
 		case Medic:
-			return Constants.MEDIC_ATTACK_RANGE;
+			return HunterKillerConstants.MEDIC_ATTACK_RANGE;
 		case Soldier:
-			return Constants.SOLDIER_ATTACK_RANGE;
+			return HunterKillerConstants.SOLDIER_ATTACK_RANGE;
 		default:
 			return 0;
 		}
@@ -244,11 +244,11 @@ public abstract class Unit
 	public static int getSpawnCost(UnitType unitType) {
 		switch (unitType) {
 		case Infected:
-			return Constants.INFECTED_SPAWN_COST;
+			return HunterKillerConstants.INFECTED_SPAWN_COST;
 		case Medic:
-			return Constants.MEDIC_SPAWN_COST;
+			return HunterKillerConstants.MEDIC_SPAWN_COST;
 		case Soldier:
-			return Constants.SOLDIER_SPAWN_COST;
+			return HunterKillerConstants.SOLDIER_SPAWN_COST;
 		default:
 			return 0;
 		}

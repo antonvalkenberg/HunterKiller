@@ -7,7 +7,7 @@ import hunterkiller.HunterKillerTest;
 import java.util.HashSet;
 
 import net.codepoke.ai.GameRules.Result;
-import net.codepoke.ai.challenge.hunterkiller.Constants;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerRules;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
@@ -116,7 +116,7 @@ public class StructureOrderTest
 		assertEquals("", result.getExplanation());
 
 		// Check that the player's resource was reduced
-		assertEquals(beforePlayerResource - Constants.INFECTED_SPAWN_COST, activePlayer.getResource());
+		assertEquals(beforePlayerResource - HunterKillerConstants.INFECTED_SPAWN_COST, activePlayer.getResource());
 		// Check that the player has an extra squad member
 		assertEquals(beforePlayerSquadSize + 1, activePlayer.getUnitIDs().size);
 

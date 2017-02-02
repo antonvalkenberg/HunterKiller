@@ -111,7 +111,7 @@ public class Map {
 		mapHeight = height;
 		currentTick = 1;
 		// Map will have (width * height) positions
-		mapContent = new GameObject[width * height][Constants.MAP_INTERNAL_LAYERS];
+		mapContent = new GameObject[width * height][HunterKillerConstants.MAP_INTERNAL_LAYERS];
 		// Create new collections for our ID->Object lookup and ID buffer
 		objects = new Array<GameObject>(true, width * height, GameObject.class);
 		idBuffer = new IntArray();
@@ -274,14 +274,14 @@ public class Map {
 		}
 
 		// There is a unit on a square if the content of the unit layer is not null
-		boolean unitPresent = mapContent[locationPosition][Constants.MAP_INTERNAL_UNIT_INDEX] != null;
+		boolean unitPresent = mapContent[locationPosition][HunterKillerConstants.MAP_INTERNAL_UNIT_INDEX] != null;
 		if (unitPresent) {
 			failureReasons.append(StringExtensions.format("Location not traversable, Unit present.%n"));
 			return false;
 		}
 
 		// A feature can be walked on/over if it is walkable, derp
-		boolean featureWalkable = ((MapFeature) mapContent[locationPosition][Constants.MAP_INTERNAL_FEATURE_INDEX]).isWalkable();
+		boolean featureWalkable = ((MapFeature) mapContent[locationPosition][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX]).isWalkable();
 		if (!featureWalkable) {
 			failureReasons.append(StringExtensions.format("Location not traversable, MapFeature is not walkable.%n"));
 			return false;
@@ -304,13 +304,13 @@ public class Map {
 	 */
 	public boolean isMovePossible(MapLocation fromLocation, UnitOrder move, StringBuilder failureReasons) {
 		// Make sure that there is a unit on the origin location
-		if (mapContent[toPosition(fromLocation)][Constants.MAP_INTERNAL_UNIT_INDEX] == null) {
+		if (mapContent[toPosition(fromLocation)][HunterKillerConstants.MAP_INTERNAL_UNIT_INDEX] == null) {
 			failureReasons.append(StringExtensions.format("Move not possible, no Unit on origin location (%s).%n", fromLocation));
 			return false;
 		}
 
 		// Make sure that the unit that is trying to move is actually at the location they are trying to move from
-		if (move.getObjectID() != ((Unit) mapContent[toPosition(fromLocation)][Constants.MAP_INTERNAL_UNIT_INDEX]).getID()) {
+		if (move.getObjectID() != ((Unit) mapContent[toPosition(fromLocation)][HunterKillerConstants.MAP_INTERNAL_UNIT_INDEX]).getID()) {
 			failureReasons.append(StringExtensions.format(	"Move not possible, subject Unit (ID: %d) is not on origin location (%s).%n",
 															move.getObjectID(),
 															fromLocation));
@@ -382,8 +382,8 @@ public class Map {
 		if (success)
 			success = place(targetPosition, object);
 		// If the move was successful and the target location was a closed Door, open it
-		if (success && mapContent[targetPosition][Constants.MAP_INTERNAL_FEATURE_INDEX] instanceof Door) {
-			Door door = (Door) mapContent[targetPosition][Constants.MAP_INTERNAL_FEATURE_INDEX];
+		if (success && mapContent[targetPosition][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX] instanceof Door) {
+			Door door = (Door) mapContent[targetPosition][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX];
 			if (!door.isOpen())
 				door.open();
 		}
@@ -570,37 +570,37 @@ public class Map {
 
 		// Index 0 is -1,-1
 		if (isXonMap(location.getX() - 1) && isYonMap(location.getY() - 1)) {
-			features[0] = (MapFeature) mapContent[toPosition(location.getX() - 1, location.getY() - 1)][Constants.MAP_INTERNAL_FEATURE_INDEX];
+			features[0] = (MapFeature) mapContent[toPosition(location.getX() - 1, location.getY() - 1)][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX];
 		}
 		// Index 1 is 0, -1
 		if (isXonMap(location.getX()) && isYonMap(location.getY() - 1)) {
-			features[1] = (MapFeature) mapContent[toPosition(location.getX(), location.getY() - 1)][Constants.MAP_INTERNAL_FEATURE_INDEX];
+			features[1] = (MapFeature) mapContent[toPosition(location.getX(), location.getY() - 1)][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX];
 		}
 		// Index 2 is +1, -1
 		if (isXonMap(location.getX() + 1) && isYonMap(location.getY() - 1)) {
-			features[2] = (MapFeature) mapContent[toPosition(location.getX() + 1, location.getY() - 1)][Constants.MAP_INTERNAL_FEATURE_INDEX];
+			features[2] = (MapFeature) mapContent[toPosition(location.getX() + 1, location.getY() - 1)][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX];
 		}
 		// Index 3 is -1, 0
 		if (isXonMap(location.getX() - 1) && isYonMap(location.getY())) {
-			features[3] = (MapFeature) mapContent[toPosition(location.getX() - 1, location.getY())][Constants.MAP_INTERNAL_FEATURE_INDEX];
+			features[3] = (MapFeature) mapContent[toPosition(location.getX() - 1, location.getY())][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX];
 		}
 		// Index 4 is 0, 0
-		features[4] = (MapFeature) mapContent[toPosition(location)][Constants.MAP_INTERNAL_FEATURE_INDEX];
+		features[4] = (MapFeature) mapContent[toPosition(location)][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX];
 		// Index 5 is +1, 0
 		if (isXonMap(location.getX() + 1) && isYonMap(location.getY())) {
-			features[5] = (MapFeature) mapContent[toPosition(location.getX() + 1, location.getY())][Constants.MAP_INTERNAL_FEATURE_INDEX];
+			features[5] = (MapFeature) mapContent[toPosition(location.getX() + 1, location.getY())][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX];
 		}
 		// Index 6 is -1, +1
 		if (isXonMap(location.getX() - 1) && isYonMap(location.getY() + 1)) {
-			features[6] = (MapFeature) mapContent[toPosition(location.getX() - 1, location.getY() + 1)][Constants.MAP_INTERNAL_FEATURE_INDEX];
+			features[6] = (MapFeature) mapContent[toPosition(location.getX() - 1, location.getY() + 1)][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX];
 		}
 		// Index 7 is 0, +1
 		if (isXonMap(location.getX()) && isYonMap(location.getY() + 1)) {
-			features[7] = (MapFeature) mapContent[toPosition(location.getX(), location.getY() + 1)][Constants.MAP_INTERNAL_FEATURE_INDEX];
+			features[7] = (MapFeature) mapContent[toPosition(location.getX(), location.getY() + 1)][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX];
 		}
 		// Index 8 is +1, +1
 		if (isXonMap(location.getX() + 1) && isYonMap(location.getY() + 1)) {
-			features[8] = (MapFeature) mapContent[toPosition(location.getX() + 1, location.getY() + 1)][Constants.MAP_INTERNAL_FEATURE_INDEX];
+			features[8] = (MapFeature) mapContent[toPosition(location.getX() + 1, location.getY() + 1)][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX];
 		}
 
 		return features;
@@ -670,8 +670,8 @@ public class Map {
 	 *            The location to find a unit at.
 	 */
 	public Unit getUnitAtLocation(MapLocation location) {
-		if (isOnMap(location) && mapContent[toPosition(location)][Constants.MAP_INTERNAL_UNIT_INDEX] != null) {
-			return (Unit) mapContent[toPosition(location)][Constants.MAP_INTERNAL_UNIT_INDEX];
+		if (isOnMap(location) && mapContent[toPosition(location)][HunterKillerConstants.MAP_INTERNAL_UNIT_INDEX] != null) {
+			return (Unit) mapContent[toPosition(location)][HunterKillerConstants.MAP_INTERNAL_UNIT_INDEX];
 		}
 		return null;
 	}
@@ -684,7 +684,7 @@ public class Map {
 	 */
 	public MapFeature getFeatureAtLocation(MapLocation location) {
 		if (isOnMap(location)) {
-			return (MapFeature) mapContent[toPosition(location)][Constants.MAP_INTERNAL_FEATURE_INDEX];
+			return (MapFeature) mapContent[toPosition(location)][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX];
 		}
 		return null;
 	}
@@ -812,9 +812,9 @@ public class Map {
 		// Check which layer the object needs to be at
 		int layer = -1;
 		if (object instanceof MapFeature)
-			layer = Constants.MAP_INTERNAL_FEATURE_INDEX;
+			layer = HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX;
 		else if (object instanceof Unit)
-			layer = Constants.MAP_INTERNAL_UNIT_INDEX;
+			layer = HunterKillerConstants.MAP_INTERNAL_UNIT_INDEX;
 		else {
 			System.out.println("WARNING: Unable to place object on map, unknown type");
 			return false;
@@ -843,9 +843,9 @@ public class Map {
 		// Check which layer the object should be at
 		int layer = -1;
 		if (object instanceof MapFeature)
-			layer = Constants.MAP_INTERNAL_FEATURE_INDEX;
+			layer = HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX;
 		else if (object instanceof Unit)
-			layer = Constants.MAP_INTERNAL_UNIT_INDEX;
+			layer = HunterKillerConstants.MAP_INTERNAL_UNIT_INDEX;
 		else {
 			System.out.println("WARNING: Unable to remove object from map, unknown type");
 			return false;
@@ -861,7 +861,7 @@ public class Map {
 			return false;
 		}
 		// Remove the object
-		object.setLocation(Constants.GAMEOBJECT_NOT_PLACED);
+		object.setLocation(HunterKillerConstants.GAMEOBJECT_NOT_PLACED);
 		mapContent[position][layer] = null;
 		return true;
 	}
@@ -964,13 +964,13 @@ public class Map {
 			// This will be one line of the printed map
 			StringBuilder lineBuilder = new StringBuilder();
 			// Separate the two layers with ' | '
-			lineBuilder.append(Constants.MAP_TOSTRING_LAYER_SEPARATOR);
+			lineBuilder.append(HunterKillerConstants.MAP_TOSTRING_LAYER_SEPARATOR);
 			for (int x = 0; x < mapWidth; x++) {
 				int currentPosition = toPosition(x, y);
 				GameObject[] objects = mapContent[currentPosition];
-				String featureLevel = objects[Constants.MAP_INTERNAL_FEATURE_INDEX] != null	? objects[Constants.MAP_INTERNAL_FEATURE_INDEX].toString()
+				String featureLevel = objects[HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX] != null	? objects[HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX].toString()
 																							: " ";
-				String unitLevel = objects[Constants.MAP_INTERNAL_UNIT_INDEX] != null	? objects[Constants.MAP_INTERNAL_UNIT_INDEX].toString()
+				String unitLevel = objects[HunterKillerConstants.MAP_INTERNAL_UNIT_INDEX] != null	? objects[HunterKillerConstants.MAP_INTERNAL_UNIT_INDEX].toString()
 																						: ".";
 				// Add feature level first, unit level on other side
 				lineBuilder.insert(x, featureLevel);
@@ -1094,9 +1094,9 @@ public class Map {
 	protected GameObject[][] copyMapContent(Array<GameObject> objects) {
 		int positions = this.mapWidth * this.mapHeight;
 		// Create a new content array
-		GameObject[][] newContent = new GameObject[positions][Constants.MAP_INTERNAL_LAYERS];
+		GameObject[][] newContent = new GameObject[positions][HunterKillerConstants.MAP_INTERNAL_LAYERS];
 		for (int i = 0; i < positions; i++) {
-			for (int j = 0; j < Constants.MAP_INTERNAL_LAYERS; j++) {
+			for (int j = 0; j < HunterKillerConstants.MAP_INTERNAL_LAYERS; j++) {
 				GameObject object = this.mapContent[i][j];
 				// Check if there is anything on this position
 				if (object != null) {
@@ -1158,13 +1158,13 @@ public class Map {
 		}
 		int position = toPosition(location);
 		// Get the map feature on this position
-		MapFeature feature = (MapFeature) mapContent[position][Constants.MAP_INTERNAL_FEATURE_INDEX];
+		MapFeature feature = (MapFeature) mapContent[position][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX];
 		// If the feature is destructible, reduce it's HP by the damage
 		if (feature.isDestructible())
 			feature.reduceHP(damage);
 		// Check if there is a Unit on this position
-		if (mapContent[position][Constants.MAP_INTERNAL_UNIT_INDEX] != null)
-			mapContent[position][Constants.MAP_INTERNAL_UNIT_INDEX].reduceHP(damage);
+		if (mapContent[position][HunterKillerConstants.MAP_INTERNAL_UNIT_INDEX] != null)
+			mapContent[position][HunterKillerConstants.MAP_INTERNAL_UNIT_INDEX].reduceHP(damage);
 		return true;
 	}
 
@@ -1250,7 +1250,7 @@ public class Map {
 			if (!isXonMap(x) || !isYonMap(y))
 				return true;
 			// Check the feature at the specified position
-			return ((MapFeature) getMapContent()[toPosition(x, y)][Constants.MAP_INTERNAL_FEATURE_INDEX]).isBlockingLOS();
+			return ((MapFeature) getMapContent()[toPosition(x, y)][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX]).isBlockingLOS();
 		}
 
 	}

@@ -3,7 +3,7 @@ package hunterkiller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import net.codepoke.ai.challenge.hunterkiller.Constants;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.FourPatch;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerStateFactory;
@@ -147,7 +147,7 @@ public class MapTest
 
 		// Go through the MapFeatures
 		GameObject[][] content = createdMap.getMapContent();
-		int index = Constants.MAP_INTERNAL_FEATURE_INDEX;
+		int index = HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX;
 
 		// Map visualisation:
 		// . _ █ █ _ .

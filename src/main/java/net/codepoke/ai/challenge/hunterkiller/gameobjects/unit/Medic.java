@@ -2,7 +2,7 @@ package net.codepoke.ai.challenge.hunterkiller.gameobjects.unit;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.codepoke.ai.challenge.hunterkiller.Constants;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
@@ -27,9 +27,9 @@ public class Medic
 	 * {@link Medic#Medic(int, MapLocation, int, int, Direction, int, int, int, int, int, int, int)}
 	 */
 	public Medic(int spawningPlayerID, MapLocation mapLocation, Direction facing) {
-		this(spawningPlayerID, mapLocation, Constants.MEDIC_MAX_HP, Constants.MEDIC_MAX_HP, facing, Constants.MEDIC_FOV_RANGE,
-				Constants.MEDIC_FOV_ANGLE, Constants.MEDIC_ATTACK_RANGE, Constants.MEDIC_ATTACK_DAMAGE, 0, Constants.MEDIC_SPAWN_COST,
-				Constants.MEDIC_SCORE);
+		this(spawningPlayerID, mapLocation, HunterKillerConstants.MEDIC_MAX_HP, HunterKillerConstants.MEDIC_MAX_HP, facing, HunterKillerConstants.MEDIC_FOV_RANGE,
+				HunterKillerConstants.MEDIC_FOV_ANGLE, HunterKillerConstants.MEDIC_ATTACK_RANGE, HunterKillerConstants.MEDIC_ATTACK_DAMAGE, 0, HunterKillerConstants.MEDIC_SPAWN_COST,
+				HunterKillerConstants.MEDIC_SCORE);
 	}
 
 	/**
@@ -85,7 +85,7 @@ public class Medic
 	 */
 	@Override
 	public void startCooldown() {
-		this.setSpecialAttackCooldown(Constants.MEDIC_COOLDOWN);
+		this.setSpecialAttackCooldown(HunterKillerConstants.MEDIC_COOLDOWN);
 	}
 
 	@Override

@@ -103,7 +103,7 @@ public class Player
 	 * {@link Player#Player(int, String, int, int)}
 	 */
 	public Player(int id, String name, int mapSection) {
-		this(id, name, mapSection, Constants.PLAYER_STARTING_RESOURCE);
+		this(id, name, mapSection, HunterKillerConstants.PLAYER_STARTING_RESOURCE);
 	}
 
 	// endregion
@@ -274,7 +274,7 @@ public class Player
 			// Release all currently controlled structures
 			List<Structure> structures = getStructures(map);
 			for (Structure structure : structures) {
-				structure.setControllingPlayerID(Constants.STRUCTURE_NO_CONTROL);
+				structure.setControllingPlayerID(HunterKillerConstants.STRUCTURE_NO_CONTROL);
 			}
 			// Clear our collection of Structure IDs
 			structureIDs.clear();

@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.codepoke.ai.challenge.hunterkiller.Constants;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 
@@ -33,13 +33,13 @@ public abstract class GameObject {
 	/**
 	 * The location on the Map.
 	 */
-	private MapLocation location = Constants.GAMEOBJECT_NOT_PLACED;
+	private MapLocation location = HunterKillerConstants.GAMEOBJECT_NOT_PLACED;
 
 	/**
 	 * The maximum amount of health points for this object.
 	 */
 	@Setter
-	private int hpMax = Constants.GAMEOBJECT_DEFAULT_HP;
+	private int hpMax = HunterKillerConstants.GAMEOBJECT_DEFAULT_HP;
 
 	/**
 	 * The amount of health points this object currently has.
@@ -57,7 +57,7 @@ public abstract class GameObject {
 	 * {@link GameObject#GameObject(MapLocation, int, int)}
 	 */
 	public GameObject(MapLocation mapLocation) {
-		this(mapLocation, Constants.GAMEOBJECT_DEFAULT_HP);
+		this(mapLocation, HunterKillerConstants.GAMEOBJECT_DEFAULT_HP);
 	}
 
 	/**

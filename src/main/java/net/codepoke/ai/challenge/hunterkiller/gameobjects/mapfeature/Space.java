@@ -2,7 +2,7 @@ package net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.codepoke.ai.challenge.hunterkiller.Constants;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 
@@ -25,7 +25,7 @@ public class Space
 	 *            The Space's location on the Map.
 	 */
 	public Space(MapLocation mapLocation) {
-		super(mapLocation, Constants.SPACE_DESTRUCTIBLE, Constants.SPACE_BLOCKS_LOS, Constants.SPACE_WALKABLE);
+		super(mapLocation, HunterKillerConstants.SPACE_DESTRUCTIBLE, HunterKillerConstants.SPACE_BLOCKS_LOS, HunterKillerConstants.SPACE_WALKABLE);
 	}
 
 	// endregion

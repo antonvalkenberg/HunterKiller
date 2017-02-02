@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.codepoke.ai.challenge.hunterkiller.Constants;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
@@ -29,18 +29,18 @@ public abstract class MapFeature
 	/**
 	 * Whether or not this feature on the map is destructible.
 	 */
-	private boolean isDestructible = Constants.MAPFEATURE_DEFAULT_DESTRUCTIBLE;
+	private boolean isDestructible = HunterKillerConstants.MAPFEATURE_DEFAULT_DESTRUCTIBLE;
 
 	/**
 	 * Whether or not this feature blocks Line of Sight for Units. This property is protected because
 	 * the subtype {@link Door} can change it.
 	 */
-	protected boolean isBlockingLOS = Constants.MAPFEATURE_DEFAULT_BLOCKING_LOS;
+	protected boolean isBlockingLOS = HunterKillerConstants.MAPFEATURE_DEFAULT_BLOCKING_LOS;
 
 	/**
 	 * Whether or not Units can move over this feature.
 	 */
-	private boolean isWalkable = Constants.MAPFEATURE_DEFAULT_WALKABLE;
+	private boolean isWalkable = HunterKillerConstants.MAPFEATURE_DEFAULT_WALKABLE;
 
 	// endregion
 
@@ -52,7 +52,7 @@ public abstract class MapFeature
 	 * {@link MapFeature#MapFeature(MapLocation, int, int, boolean, boolean, boolean)}
 	 */
 	public MapFeature(MapLocation mapLocation, boolean destructible, boolean blockingLOS, boolean walkable) {
-		this(mapLocation, Constants.MAPFEATURE_DEFAULT_HP, destructible, blockingLOS, walkable);
+		this(mapLocation, HunterKillerConstants.MAPFEATURE_DEFAULT_HP, destructible, blockingLOS, walkable);
 	}
 
 	/**

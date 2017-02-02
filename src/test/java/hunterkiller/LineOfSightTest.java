@@ -4,7 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 
-import net.codepoke.ai.challenge.hunterkiller.Constants;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.Map;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
@@ -77,11 +77,11 @@ public class LineOfSightTest
 	@Test
 	public void testOpenVision() {
 		// Fill map with Floors
-		GameObject[][] mapContent = new GameObject[testMap.getMapWidth() * testMap.getMapHeight()][Constants.MAP_INTERNAL_LAYERS];
+		GameObject[][] mapContent = new GameObject[testMap.getMapWidth() * testMap.getMapHeight()][HunterKillerConstants.MAP_INTERNAL_LAYERS];
 		for (int i = 0; i < mapContent.length; i++) {
 			Floor floor = new Floor(testMap.toLocation(i));
 			testMap.registerGameObject(floor);
-			mapContent[i][Constants.MAP_INTERNAL_FEATURE_INDEX] = floor;
+			mapContent[i][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX] = floor;
 		}
 		testMap.setMapContent(mapContent);
 
@@ -90,7 +90,7 @@ public class LineOfSightTest
 
 		// Create a new soldier at [1,1] facing NORTH
 		MapLocation testLocation = new MapLocation(1, 1);
-		Soldier soldier = new Soldier(0, Constants.GAMEOBJECT_NOT_PLACED, Direction.NORTH);
+		Soldier soldier = new Soldier(0, HunterKillerConstants.GAMEOBJECT_NOT_PLACED, Direction.NORTH);
 		testMap.registerGameObject(soldier);
 		testMap.place(testLocation, soldier);
 
@@ -162,7 +162,7 @@ public class LineOfSightTest
 		testMap.unregisterGameObject(soldier);
 
 		// Create a new infected at [1,2]
-		Infected infected = new Infected(0, Constants.GAMEOBJECT_NOT_PLACED, Direction.NORTH);
+		Infected infected = new Infected(0, HunterKillerConstants.GAMEOBJECT_NOT_PLACED, Direction.NORTH);
 		testMap.registerGameObject(infected);
 		testMap.place(new MapLocation(1, 2), infected);
 		// Get the field-of-view for the infected
@@ -208,17 +208,17 @@ public class LineOfSightTest
 	@Test
 	public void testWallVision() {
 		// Fill map with Floors, except for the first column
-		GameObject[][] mapContent = new GameObject[testMap.getMapWidth() * testMap.getMapHeight()][Constants.MAP_INTERNAL_LAYERS];
+		GameObject[][] mapContent = new GameObject[testMap.getMapWidth() * testMap.getMapHeight()][HunterKillerConstants.MAP_INTERNAL_LAYERS];
 		for (int i = 0; i < mapContent.length; i++) {
 			MapLocation location = testMap.toLocation(i);
 			if (location.getX() == 2) {
 				Wall wall = new Wall(location);
 				testMap.registerGameObject(wall);
-				mapContent[i][Constants.MAP_INTERNAL_FEATURE_INDEX] = wall;
+				mapContent[i][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX] = wall;
 			} else {
 				Floor floor = new Floor(location);
 				testMap.registerGameObject(floor);
-				mapContent[i][Constants.MAP_INTERNAL_FEATURE_INDEX] = floor;
+				mapContent[i][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX] = floor;
 			}
 		}
 		testMap.setMapContent(mapContent);
@@ -228,7 +228,7 @@ public class LineOfSightTest
 
 		// Create a new soldier at [1,1] facing NORTH
 		MapLocation testLocation = new MapLocation(1, 1);
-		Soldier soldier = new Soldier(0, Constants.GAMEOBJECT_NOT_PLACED, Direction.NORTH);
+		Soldier soldier = new Soldier(0, HunterKillerConstants.GAMEOBJECT_NOT_PLACED, Direction.NORTH);
 		testMap.registerGameObject(soldier);
 		testMap.place(testLocation, soldier);
 
@@ -297,7 +297,7 @@ public class LineOfSightTest
 		testMap.unregisterGameObject(soldier);
 
 		// Create a new infected at [1,2]
-		Infected infected = new Infected(0, Constants.GAMEOBJECT_NOT_PLACED, Direction.NORTH);
+		Infected infected = new Infected(0, HunterKillerConstants.GAMEOBJECT_NOT_PLACED, Direction.NORTH);
 		testMap.registerGameObject(infected);
 		testMap.place(new MapLocation(1, 2), infected);
 		// Get the field-of-view for the infected
@@ -339,17 +339,17 @@ public class LineOfSightTest
 	@Test
 	public void testCornerVision() {
 		// Fill map with Floors, except for position #4
-		GameObject[][] mapContent = new GameObject[testMap.getMapWidth() * testMap.getMapHeight()][Constants.MAP_INTERNAL_LAYERS];
+		GameObject[][] mapContent = new GameObject[testMap.getMapWidth() * testMap.getMapHeight()][HunterKillerConstants.MAP_INTERNAL_LAYERS];
 		for (int i = 0; i < mapContent.length; i++) {
 			MapLocation location = testMap.toLocation(i);
 			if (i == 4) {
 				Wall wall = new Wall(location);
 				testMap.registerGameObject(wall);
-				mapContent[i][Constants.MAP_INTERNAL_FEATURE_INDEX] = wall;
+				mapContent[i][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX] = wall;
 			} else {
 				Floor floor = new Floor(location);
 				testMap.registerGameObject(floor);
-				mapContent[i][Constants.MAP_INTERNAL_FEATURE_INDEX] = floor;
+				mapContent[i][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX] = floor;
 			}
 		}
 		testMap.setMapContent(mapContent);
@@ -359,7 +359,7 @@ public class LineOfSightTest
 
 		// Create a new soldier at [0,0] facing EAST
 		MapLocation testLocation = new MapLocation(0, 0);
-		Soldier soldier = new Soldier(0, Constants.GAMEOBJECT_NOT_PLACED, Direction.EAST);
+		Soldier soldier = new Soldier(0, HunterKillerConstants.GAMEOBJECT_NOT_PLACED, Direction.EAST);
 		testMap.registerGameObject(soldier);
 		testMap.place(testLocation, soldier);
 
@@ -397,7 +397,7 @@ public class LineOfSightTest
 		testMap.unregisterGameObject(soldier);
 
 		// Create a new infected at [0,0]
-		Infected infected = new Infected(0, Constants.GAMEOBJECT_NOT_PLACED, Direction.NORTH);
+		Infected infected = new Infected(0, HunterKillerConstants.GAMEOBJECT_NOT_PLACED, Direction.NORTH);
 		testMap.registerGameObject(infected);
 		testMap.place(testLocation, infected);
 		// Get the field-of-view for the infected
@@ -437,17 +437,17 @@ public class LineOfSightTest
 	@Test
 	public void testRoomVision() {
 		// Fill map with Floors, except for positions #5, 6, 7, 9, 13
-		GameObject[][] mapContent = new GameObject[testMap.getMapWidth() * testMap.getMapHeight()][Constants.MAP_INTERNAL_LAYERS];
+		GameObject[][] mapContent = new GameObject[testMap.getMapWidth() * testMap.getMapHeight()][HunterKillerConstants.MAP_INTERNAL_LAYERS];
 		for (int i = 0; i < mapContent.length; i++) {
 			MapLocation location = testMap.toLocation(i);
 			if (i == 5 || i == 6 || i == 7 || i == 9 || i == 13) {
 				Wall wall = new Wall(location);
 				testMap.registerGameObject(wall);
-				mapContent[i][Constants.MAP_INTERNAL_FEATURE_INDEX] = wall;
+				mapContent[i][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX] = wall;
 			} else {
 				Floor floor = new Floor(location);
 				testMap.registerGameObject(floor);
-				mapContent[i][Constants.MAP_INTERNAL_FEATURE_INDEX] = floor;
+				mapContent[i][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX] = floor;
 			}
 		}
 		testMap.setMapContent(mapContent);
@@ -457,7 +457,7 @@ public class LineOfSightTest
 
 		// Create a new soldier at [3,3] facing WEST
 		MapLocation testLocation = new MapLocation(3, 3);
-		Soldier soldier = new Soldier(0, Constants.GAMEOBJECT_NOT_PLACED, Direction.WEST);
+		Soldier soldier = new Soldier(0, HunterKillerConstants.GAMEOBJECT_NOT_PLACED, Direction.WEST);
 		testMap.registerGameObject(soldier);
 		testMap.place(testLocation, soldier);
 
@@ -495,7 +495,7 @@ public class LineOfSightTest
 		testMap.unregisterGameObject(soldier);
 
 		// Create a new infected at [3,3]
-		Infected infected = new Infected(0, Constants.GAMEOBJECT_NOT_PLACED, Direction.NORTH);
+		Infected infected = new Infected(0, HunterKillerConstants.GAMEOBJECT_NOT_PLACED, Direction.NORTH);
 		testMap.registerGameObject(infected);
 		testMap.place(testLocation, infected);
 		// Get the field-of-view for the infected

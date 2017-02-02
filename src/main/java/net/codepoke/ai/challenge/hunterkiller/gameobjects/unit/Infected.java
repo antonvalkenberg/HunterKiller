@@ -2,7 +2,7 @@ package net.codepoke.ai.challenge.hunterkiller.gameobjects.unit;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.codepoke.ai.challenge.hunterkiller.Constants;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
@@ -27,9 +27,9 @@ public class Infected
 	 * {@link Infected#Infected(int, MapLocation, int, int, Direction, int, int, int, int, int, int, int)}
 	 */
 	public Infected(int spawningPlayerID, MapLocation mapLocation, Direction facing) {
-		this(spawningPlayerID, mapLocation, Constants.INFECTED_MAX_HP, Constants.INFECTED_MAX_HP, facing, Constants.INFECTED_FOV_RANGE,
-				Constants.INFECTED_FOV_ANGLE, Constants.INFECTED_ATTACK_RANGE, Constants.INFECTED_ATTACK_DAMAGE, 0,
-				Constants.INFECTED_SPAWN_COST, Constants.INFECTED_SCORE);
+		this(spawningPlayerID, mapLocation, HunterKillerConstants.INFECTED_MAX_HP, HunterKillerConstants.INFECTED_MAX_HP, facing, HunterKillerConstants.INFECTED_FOV_RANGE,
+				HunterKillerConstants.INFECTED_FOV_ANGLE, HunterKillerConstants.INFECTED_ATTACK_RANGE, HunterKillerConstants.INFECTED_ATTACK_DAMAGE, 0,
+				HunterKillerConstants.INFECTED_SPAWN_COST, HunterKillerConstants.INFECTED_SCORE);
 	}
 
 	/**
@@ -86,7 +86,7 @@ public class Infected
 	 */
 	@Override
 	public void startCooldown() {
-		this.setSpecialAttackCooldown(Constants.INFECTED_COOLDOWN);
+		this.setSpecialAttackCooldown(HunterKillerConstants.INFECTED_COOLDOWN);
 	}
 
 	@Override

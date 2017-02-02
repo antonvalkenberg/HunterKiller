@@ -182,7 +182,7 @@ public class HunterKillerStateFactory
 		}
 
 		// Set the resource generation of bases
-		Constants.setBASE_RESOURCE_GENERATION(premade.baseResourceGeneration);
+		HunterKillerConstants.setBASE_RESOURCE_GENERATION(premade.baseResourceGeneration);
 
 		// Construct the map
 		Map map = constructMap(premade, players);
@@ -325,7 +325,7 @@ public class HunterKillerStateFactory
 				map.place(mapPosition, door);
 				break;
 			case DOOR_OPEN:
-				Door openDoor = new Door(location, Constants.DOOR_OPEN_ROUNDS);
+				Door openDoor = new Door(location, HunterKillerConstants.DOOR_OPEN_ROUNDS);
 				map.registerGameObject(openDoor);
 				map.place(mapPosition, openDoor);
 				break;
@@ -376,17 +376,17 @@ public class HunterKillerStateFactory
 				int playerID = sectionPlayerIDMap.get(sectionIndex, -1);
 
 				if (!ignoreUnitAndBase && tile == TileType.INFECTED) {
-					Infected infected = new Infected(playerID, location, Constants.UNIT_DEFAULT_ORIENTATION);
+					Infected infected = new Infected(playerID, location, HunterKillerConstants.UNIT_DEFAULT_ORIENTATION);
 					map.registerGameObject(infected);
 					map.place(mapPosition, infected);
 
 				} else if (!ignoreUnitAndBase && tile == TileType.MEDIC) {
-					Medic medic = new Medic(playerID, location, Constants.UNIT_DEFAULT_ORIENTATION);
+					Medic medic = new Medic(playerID, location, HunterKillerConstants.UNIT_DEFAULT_ORIENTATION);
 					map.registerGameObject(medic);
 					map.place(mapPosition, medic);
 
 				} else if (!ignoreUnitAndBase && tile == TileType.SOLDIER) {
-					Soldier soldier = new Soldier(playerID, location, Constants.UNIT_DEFAULT_ORIENTATION);
+					Soldier soldier = new Soldier(playerID, location, HunterKillerConstants.UNIT_DEFAULT_ORIENTATION);
 					map.registerGameObject(soldier);
 					map.place(mapPosition, soldier);
 

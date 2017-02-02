@@ -3,7 +3,7 @@ package hunterkiller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import net.codepoke.ai.GameRules.Result;
-import net.codepoke.ai.challenge.hunterkiller.Constants;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerRules;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
@@ -115,7 +115,7 @@ public class HunterKillerRulesTest
 		// Set the health of the Unit at the target location so that it dies to the attack we'll be making
 		Unit targetUnit = state.getMap()
 								.getUnitAtLocation(targetLocation);
-		targetUnit.reduceHP(targetUnit.getHpCurrent() - Constants.SOLDIER_ATTACK_DAMAGE);
+		targetUnit.reduceHP(targetUnit.getHpCurrent() - HunterKillerConstants.SOLDIER_ATTACK_DAMAGE);
 
 		// Create an order to attack the target location
 		HunterKillerAction attackAction = new HunterKillerAction(state);
@@ -137,7 +137,7 @@ public class HunterKillerRulesTest
 		int post_ActivePlayerScore = state.getPlayer(activePlayer.getID())
 											.getScore();
 		// Make sure the player was awarded the correct score amount
-		assertEquals(Constants.SOLDIER_SCORE, (post_ActivePlayerScore - pre_ActivePlayerScore));
+		assertEquals(HunterKillerConstants.SOLDIER_SCORE, (post_ActivePlayerScore - pre_ActivePlayerScore));
 	}
 
 	// endregion

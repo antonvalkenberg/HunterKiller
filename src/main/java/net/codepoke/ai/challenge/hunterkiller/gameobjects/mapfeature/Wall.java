@@ -2,7 +2,7 @@ package net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.codepoke.ai.challenge.hunterkiller.Constants;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 
@@ -25,7 +25,7 @@ public class Wall
 	 *            The Wall's location on the Map.
 	 */
 	public Wall(MapLocation mapLocation) {
-		super(mapLocation, Constants.WALL_DESTRUCTIBLE, Constants.WALL_BLOCKS_LOS, Constants.WALL_WALKABLE);
+		super(mapLocation, HunterKillerConstants.WALL_DESTRUCTIBLE, HunterKillerConstants.WALL_BLOCKS_LOS, HunterKillerConstants.WALL_WALKABLE);
 	}
 
 	// endregion

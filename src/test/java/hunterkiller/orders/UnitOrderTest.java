@@ -7,7 +7,7 @@ import hunterkiller.HunterKillerTest;
 import java.util.HashSet;
 
 import net.codepoke.ai.GameRules.Result;
-import net.codepoke.ai.challenge.hunterkiller.Constants;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerRules;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
@@ -312,7 +312,7 @@ public class UnitOrderTest
 		door = (Door) state.getMap()
 							.getFeatureAtLocation(doorLocation);
 		assertTrue(door.isOpen());
-		assertEquals(Constants.DOOR_OPEN_ROUNDS, door.getOpenTimer());
+		assertEquals(HunterKillerConstants.DOOR_OPEN_ROUNDS, door.getOpenTimer());
 
 		// Refresh unit reference
 		unit = state.getMap()
@@ -449,7 +449,7 @@ public class UnitOrderTest
 											.getHpCurrent();
 		// Make sure health was lost, and the correct amount
 		assertTrue(post_TargetUnitHealth < pre_TargetUnitHealth);
-		assertEquals(Constants.SOLDIER_ATTACK_DAMAGE, pre_TargetUnitHealth - post_TargetUnitHealth);
+		assertEquals(HunterKillerConstants.SOLDIER_ATTACK_DAMAGE, pre_TargetUnitHealth - post_TargetUnitHealth);
 	}
 
 	// endregion
@@ -529,9 +529,9 @@ public class UnitOrderTest
 
 		// Make sure health was lost, and the correct amount
 		assertTrue(post_TargetUnitHealth < pre_TargetUnitHealth);
-		assertEquals(Constants.SOLDIER_SPECIAL_DAMAGE, pre_TargetUnitHealth - post_TargetUnitHealth);
+		assertEquals(HunterKillerConstants.SOLDIER_SPECIAL_DAMAGE, pre_TargetUnitHealth - post_TargetUnitHealth);
 		assertTrue(post_TargetBaseHealth < pre_TargetBaseHealth);
-		assertEquals(Constants.SOLDIER_SPECIAL_DAMAGE, pre_TargetBaseHealth - post_TargetBaseHealth);
+		assertEquals(HunterKillerConstants.SOLDIER_SPECIAL_DAMAGE, pre_TargetBaseHealth - post_TargetBaseHealth);
 
 		// Make sure health remains the same for indestructable objects
 		assertEquals(pre_TargetFloorHealth, post_TargetFloorHealth);
@@ -596,7 +596,7 @@ public class UnitOrderTest
 
 		// Make sure health was gained, and the correct amount
 		assertTrue(post_TargetUnitHealth > pre_TargetUnitHealth);
-		assertEquals(Constants.MEDIC_SPECIAL_HEAL, post_TargetUnitHealth - pre_TargetUnitHealth);
+		assertEquals(HunterKillerConstants.MEDIC_SPECIAL_HEAL, post_TargetUnitHealth - pre_TargetUnitHealth);
 
 		// Make sure the unit that attack has it's special on cooldown
 		assertTrue(unit.getSpecialAttackCooldown() > 0);
@@ -686,10 +686,10 @@ public class UnitOrderTest
 		// We need to replace this unit, because an infected's special won't trigger off of another Infected unit
 		map.unregisterGameObject(tempUnit);
 		// Create a new Soldier, with just enough health to die to an Infected's attack
-		Soldier pre_TargetUnit = new Soldier(0, targetLocation, Constants.SOLDIER_MAX_HP, Constants.INFECTED_ATTACK_DAMAGE, Direction.WEST,
-												Constants.SOLDIER_FOV_RANGE, Constants.SOLDIER_FOV_ANGLE, Constants.SOLDIER_ATTACK_RANGE,
-												Constants.SOLDIER_ATTACK_DAMAGE, Constants.SOLDIER_COOLDOWN, Constants.SOLDIER_SPAWN_COST,
-												Constants.SOLDIER_SCORE);
+		Soldier pre_TargetUnit = new Soldier(0, targetLocation, HunterKillerConstants.SOLDIER_MAX_HP, HunterKillerConstants.INFECTED_ATTACK_DAMAGE, Direction.WEST,
+												HunterKillerConstants.SOLDIER_FOV_RANGE, HunterKillerConstants.SOLDIER_FOV_ANGLE, HunterKillerConstants.SOLDIER_ATTACK_RANGE,
+												HunterKillerConstants.SOLDIER_ATTACK_DAMAGE, HunterKillerConstants.SOLDIER_COOLDOWN, HunterKillerConstants.SOLDIER_SPAWN_COST,
+												HunterKillerConstants.SOLDIER_SCORE);
 		map.registerGameObject(pre_TargetUnit);
 		map.place(targetLocation, pre_TargetUnit);
 

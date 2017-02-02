@@ -39,11 +39,11 @@ public class MapSetup {
 	/**
 	 * The amount of resources players start the game with.
 	 */
-	int startingResources = Constants.PLAYER_STARTING_RESOURCE;
+	int startingResources = HunterKillerConstants.PLAYER_STARTING_RESOURCE;
 	/**
 	 * The amount of resources the player's bases generate each time.
 	 */
-	int baseResourceGeneration = Constants.BASE_RESOURCE_GENERATION;
+	int baseResourceGeneration = HunterKillerConstants.BASE_RESOURCE_GENERATION;
 
 	public MapSetup(String mapData) {
 		this.mapData = mapData;

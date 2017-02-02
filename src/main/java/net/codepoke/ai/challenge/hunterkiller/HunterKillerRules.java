@@ -169,17 +169,17 @@ public class HunterKillerRules
 
 			case SPAWN_INFECTED:
 				unit = new Infected(activePlayer.getID(), spawnLocation, spawnDirection);
-				spawnCosts = Constants.INFECTED_SPAWN_COST;
+				spawnCosts = HunterKillerConstants.INFECTED_SPAWN_COST;
 				break;
 
 			case SPAWN_MEDIC:
 				unit = new Medic(activePlayer.getID(), spawnLocation, spawnDirection);
-				spawnCosts = Constants.MEDIC_SPAWN_COST;
+				spawnCosts = HunterKillerConstants.MEDIC_SPAWN_COST;
 				break;
 
 			case SPAWN_SOLDIER:
 				unit = new Soldier(activePlayer.getID(), spawnLocation, spawnDirection);
-				spawnCosts = Constants.SOLDIER_SPAWN_COST;
+				spawnCosts = HunterKillerConstants.SOLDIER_SPAWN_COST;
 				break;
 
 			default:
@@ -276,7 +276,7 @@ public class HunterKillerRules
 
 				case Medic:
 					map.getUnitAtLocation(targetLocation)
-						.increaseHP(Constants.MEDIC_SPECIAL_HEAL);
+						.increaseHP(HunterKillerConstants.MEDIC_SPECIAL_HEAL);
 					unit.startCooldown();
 					break;
 
@@ -285,7 +285,7 @@ public class HunterKillerRules
 					List<MapLocation> areaOfEffect = map.getAreaAround(targetLocation, true);
 					for (MapLocation location : areaOfEffect) {
 						// Call an attack on each location inside the area of effect
-						if (map.attackLocation(location, Constants.SOLDIER_SPECIAL_DAMAGE)) {
+						if (map.attackLocation(location, HunterKillerConstants.SOLDIER_SPECIAL_DAMAGE)) {
 							// Check if there was a Unit on the targeted location, and if it is currently dead
 							Unit tU = map.getUnitAtLocation(location);
 							if (tU != null && tU.getHpCurrent() <= 0) {
@@ -510,11 +510,11 @@ public class HunterKillerRules
 			return;
 
 		if (killedUnit instanceof Soldier) {
-			player.awardScore(Constants.SOLDIER_SCORE);
+			player.awardScore(HunterKillerConstants.SOLDIER_SCORE);
 		} else if (killedUnit instanceof Medic) {
-			player.awardScore(Constants.MEDIC_SCORE);
+			player.awardScore(HunterKillerConstants.MEDIC_SCORE);
 		} else if (killedUnit instanceof Infected) {
-			player.awardScore(Constants.INFECTED_SCORE);
+			player.awardScore(HunterKillerConstants.INFECTED_SCORE);
 		}
 	}
 

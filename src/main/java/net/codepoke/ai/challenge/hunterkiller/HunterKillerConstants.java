@@ -11,7 +11,7 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
-public class Constants {
+public class HunterKillerConstants {
 
 	// region MapFeature
 

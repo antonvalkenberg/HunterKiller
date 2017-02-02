@@ -1,7 +1,7 @@
 package hunterkiller;
 
 import static org.junit.Assert.assertTrue;
-import net.codepoke.ai.challenge.hunterkiller.Constants;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerStateFactory;
 import net.codepoke.ai.challenge.hunterkiller.Map;
@@ -114,7 +114,7 @@ public class HunterKillerStateTest
 
 		// Make sure the unit is gone from the content
 		GameObject[][] post_Content = copiedMap.getMapContent();
-		assertTrue(post_Content[copiedMap.toPosition(location)][Constants.MAP_INTERNAL_UNIT_INDEX] == null);
+		assertTrue(post_Content[copiedMap.toPosition(location)][HunterKillerConstants.MAP_INTERNAL_UNIT_INDEX] == null);
 
 		// Make sure the unit is gone from the objects
 		Array<GameObject> post_Objects = copiedMap.getObjects();

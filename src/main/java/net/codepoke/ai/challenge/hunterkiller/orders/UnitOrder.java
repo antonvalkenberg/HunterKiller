@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.codepoke.ai.challenge.hunterkiller.Constants;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitOrderType;
@@ -51,7 +51,7 @@ public class UnitOrder
 	 * {@link UnitOrder#UnitOrder(Unit, UnitOrderType, int, MapLocation)}
 	 */
 	public UnitOrder(Unit unit, UnitOrderType type) {
-		super(unit, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX);
+		super(unit, HunterKillerConstants.MOVEGENERATOR_DEFAULT_ACTION_INDEX);
 		this.orderType = type;
 		this.unitType = unit.getType();
 	}
@@ -73,7 +73,7 @@ public class UnitOrder
 	 * {@link UnitOrder#UnitOrder(Unit, UnitOrderType, int, MapLocation)}
 	 */
 	public UnitOrder(Unit unit, UnitOrderType type, MapLocation target) {
-		this(unit, type, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX);
+		this(unit, type, HunterKillerConstants.MOVEGENERATOR_DEFAULT_ACTION_INDEX);
 		this.targetLocation = new MapLocation(target.getX(), target.getY());
 	}
 

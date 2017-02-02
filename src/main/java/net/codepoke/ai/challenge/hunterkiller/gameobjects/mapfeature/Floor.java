@@ -2,7 +2,7 @@ package net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.codepoke.ai.challenge.hunterkiller.Constants;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
 
@@ -25,7 +25,7 @@ public class Floor
 	 *            The Floor's location on the Map.
 	 */
 	public Floor(MapLocation mapLocation) {
-		super(mapLocation, Constants.FLOOR_DESTRUCTIBLE, Constants.FLOOR_BLOCKS_LOS, Constants.FLOOR_WALKABLE);
+		super(mapLocation, HunterKillerConstants.FLOOR_DESTRUCTIBLE, HunterKillerConstants.FLOOR_BLOCKS_LOS, HunterKillerConstants.FLOOR_WALKABLE);
 	}
 
 	// endregion

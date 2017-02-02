@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import net.codepoke.ai.challenge.hunterkiller.Constants;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.Map;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
@@ -51,7 +51,7 @@ public class Door
 	 *            Amount of rounds before the Door closes.
 	 */
 	public Door(MapLocation mapLocation, int timeToClose) {
-		super(mapLocation, Constants.DOOR_DESTRUCTIBLE, timeToClose <= 0, Constants.DOOR_WALKABLE);
+		super(mapLocation, HunterKillerConstants.DOOR_DESTRUCTIBLE, timeToClose <= 0, HunterKillerConstants.DOOR_WALKABLE);
 		openTimer = timeToClose;
 	}
 
@@ -72,7 +72,7 @@ public class Door
 	 * Open this Door. It will close after a predetermined amount of rounds.
 	 */
 	public void open() {
-		openTimer = Constants.DOOR_OPEN_ROUNDS;
+		openTimer = HunterKillerConstants.DOOR_OPEN_ROUNDS;
 		isBlockingLOS = false;
 	}
 

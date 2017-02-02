@@ -140,7 +140,7 @@ public class HunterKillerState
 		// A game is completed once only 1 command center remains, or if we have reached the maximum allowed number of
 		// rounds and the last player has made their move
 		return map.getCurrentCommandCenterCount() == 1
-				|| (currentRound >= Constants.RULES_MAX_GAME_ROUNDS && activePlayerID == players[players.length - 1].getID());
+				|| (currentRound >= HunterKillerConstants.RULES_MAX_GAME_ROUNDS && activePlayerID == players[players.length - 1].getID());
 	}
 
 	/**
@@ -160,7 +160,7 @@ public class HunterKillerState
 			currentRound++;
 
 			// If the next round-threshold has been reached, make structures generate things
-			if (currentRound % Constants.RULES_STRUCTURE_GENERATION_FREQUENCY == 0) {
+			if (currentRound % HunterKillerConstants.RULES_STRUCTURE_GENERATION_FREQUENCY == 0) {
 				Array<GameObject> objects = map.getObjects();
 				for (int i = 0; i < objects.size; i++) {
 					if (objects.get(i) instanceof Structure) {
@@ -225,9 +225,9 @@ public class HunterKillerState
 			// Check if this location lies outside of the player's field-of-view
 			if (!playerFoV.contains(map.toLocation(i))) {
 				// Check if there is a unit there
-				if (mapContent[i][Constants.MAP_INTERNAL_UNIT_INDEX] != null) {
+				if (mapContent[i][HunterKillerConstants.MAP_INTERNAL_UNIT_INDEX] != null) {
 					// Check if that unit belongs to another player
-					Unit unit = (Unit) mapContent[i][Constants.MAP_INTERNAL_UNIT_INDEX];
+					Unit unit = (Unit) mapContent[i][HunterKillerConstants.MAP_INTERNAL_UNIT_INDEX];
 					if (unit.getControllingPlayerID() != activePlayerID) {
 						// Remove the unit from the map
 						map.unregisterGameObject(unit);

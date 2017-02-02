@@ -2,7 +2,7 @@ package net.codepoke.ai.challenge.hunterkiller.gameobjects.unit;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.codepoke.ai.challenge.hunterkiller.Constants;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.enums.TileType;
@@ -27,9 +27,9 @@ public class Soldier
 	 * {@link Soldier#Soldier(int, MapLocation, int, int, Direction, int, int, int, int, int, int, int)}
 	 */
 	public Soldier(int spawningPlayerID, MapLocation mapLocation, Direction facing) {
-		this(spawningPlayerID, mapLocation, Constants.SOLDIER_MAX_HP, Constants.SOLDIER_MAX_HP, facing, Constants.SOLDIER_FOV_RANGE,
-				Constants.SOLDIER_FOV_ANGLE, Constants.SOLDIER_ATTACK_RANGE, Constants.SOLDIER_ATTACK_DAMAGE, 0,
-				Constants.SOLDIER_SPAWN_COST, Constants.SOLDIER_SCORE);
+		this(spawningPlayerID, mapLocation, HunterKillerConstants.SOLDIER_MAX_HP, HunterKillerConstants.SOLDIER_MAX_HP, facing, HunterKillerConstants.SOLDIER_FOV_RANGE,
+				HunterKillerConstants.SOLDIER_FOV_ANGLE, HunterKillerConstants.SOLDIER_ATTACK_RANGE, HunterKillerConstants.SOLDIER_ATTACK_DAMAGE, 0,
+				HunterKillerConstants.SOLDIER_SPAWN_COST, HunterKillerConstants.SOLDIER_SCORE);
 	}
 
 	/**
@@ -85,7 +85,7 @@ public class Soldier
 	 */
 	@Override
 	public void startCooldown() {
-		this.setSpecialAttackCooldown(Constants.SOLDIER_COOLDOWN);
+		this.setSpecialAttackCooldown(HunterKillerConstants.SOLDIER_COOLDOWN);
 	}
 
 	@Override

@@ -3,7 +3,7 @@ package net.codepoke.ai.challenge.hunterkiller.orders;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import net.codepoke.ai.challenge.hunterkiller.Constants;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
 import net.codepoke.ai.challenge.hunterkiller.enums.StructureOrderType;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Structure;
@@ -38,7 +38,7 @@ public class StructureOrder
 	 * {@link StructureOrder#StructureOrder(Structure, StructureOrderType, int)}
 	 */
 	public StructureOrder(Structure base, StructureOrderType type) {
-		super(base, Constants.MOVEGENERATOR_DEFAULT_ACTION_INDEX);
+		super(base, HunterKillerConstants.MOVEGENERATOR_DEFAULT_ACTION_INDEX);
 		this.orderType = type;
 	}
 
