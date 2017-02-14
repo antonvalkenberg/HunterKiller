@@ -44,48 +44,57 @@ public class HunterKillerStateFactory
 		// Load in all maps defined in the folder /maps/
 		File maps = new File("maps\\");
 
-		for (File mapFile : maps.listFiles()) {
-			try {
-				// Check if the file isn't a directory
-				if (mapFile.isDirectory())
-					continue;
+		// Check if any files can be found in the directory
+		if (maps.listFiles() == null) {
+			// Use a predefined basic map
+			String rawMapData = StringExtensions.format("..........%n..........%n..████████%n..█B______%n..█_______%n..█_______%n..█_______%n..█_______%n..█_______%n..█_______");
+			mapRotation.add(new MapSetup("basic", rawMapData));
+		} else {
 
-				FileHandle fileH = Gdx.files.getFileHandle(mapFile.getAbsolutePath(), FileType.Absolute);
-				String rawMapData = fileH.readString()
-											.replace("\r\n", "\n");
+			for (File mapFile : maps.listFiles()) {
+				try {
+					// Check if the file isn't a directory
+					if (mapFile.isDirectory())
+						continue;
 
-				String[] mapLines = rawMapData.split(FourPatch.NEWLINE_SEPARATOR);
+					FileHandle fileH = Gdx.files.getFileHandle(mapFile.getAbsolutePath(), FileType.Absolute);
+					String rawMapData = fileH.readString()
+												.replace("\r\n", "\n");
 
-				// Check if we have any lines of settings
-				if (Character.isDigit(mapLines[0].charAt(0))) {
-					// First line is the size/orientation
-					String[] optionsLine1 = mapLines[0].split(" ");
-					int qWidth = Integer.parseInt(optionsLine1[0]);
-					int qHeight = Integer.parseInt(optionsLine1[1]);
-					Direction spawnDirection = Direction.parse(optionsLine1[2]);
+					String[] mapLines = rawMapData.split(FourPatch.NEWLINE_SEPARATOR);
 
-					// Check if there is a second line of settings
-					if (Character.isDigit(mapLines[1].charAt(0))) {
-						// Second line is the amount of starting resources for players and the base resource-generation
-						String[] optionsLine2 = mapLines[1].split(" ");
-						int startingResources = Integer.parseInt(optionsLine2[0]);
-						int baseResourceGeneration = Integer.parseInt(optionsLine2[1]);
-						rawMapData = rawMapData.substring(rawMapData.indexOf(mapLines[2]));
+					// Check if we have any lines of settings
+					if (Character.isDigit(mapLines[0].charAt(0))) {
+						// First line is the size/orientation
+						String[] optionsLine1 = mapLines[0].split(" ");
+						int qWidth = Integer.parseInt(optionsLine1[0]);
+						int qHeight = Integer.parseInt(optionsLine1[1]);
+						Direction spawnDirection = Direction.parse(optionsLine1[2]);
 
-						mapRotation.add(new MapSetup(mapFile.getName(), rawMapData, qWidth, qHeight, spawnDirection, startingResources,
-														baseResourceGeneration));
+						// Check if there is a second line of settings
+						if (Character.isDigit(mapLines[1].charAt(0))) {
+							// Second line is the amount of starting resources for players and the base
+							// resource-generation
+							String[] optionsLine2 = mapLines[1].split(" ");
+							int startingResources = Integer.parseInt(optionsLine2[0]);
+							int baseResourceGeneration = Integer.parseInt(optionsLine2[1]);
+							rawMapData = rawMapData.substring(rawMapData.indexOf(mapLines[2]));
+
+							mapRotation.add(new MapSetup(mapFile.getName(), rawMapData, qWidth, qHeight, spawnDirection, startingResources,
+															baseResourceGeneration));
+						} else {
+
+							rawMapData = rawMapData.substring(rawMapData.indexOf(mapLines[1]));
+							mapRotation.add(new MapSetup(mapFile.getName(), rawMapData, qWidth, qHeight, spawnDirection));
+						}
 					} else {
-
-						rawMapData = rawMapData.substring(rawMapData.indexOf(mapLines[1]));
-						mapRotation.add(new MapSetup(mapFile.getName(), rawMapData, qWidth, qHeight, spawnDirection));
+						// Assume the whole map needs to be copied and we can use defaults.
+						mapRotation.add(new MapSetup(mapFile.getName(), rawMapData));
 					}
-				} else {
-					// Assume the whole map needs to be copied and we can use defaults.
-					mapRotation.add(new MapSetup(mapFile.getName(), rawMapData));
+				} catch (Exception e) {
+					System.err.println("Error during parsing of file: " + mapFile.getName());
+					e.printStackTrace();
 				}
-			} catch (Exception e) {
-				System.err.println("Error during parsing of file: " + mapFile.getName());
-				e.printStackTrace();
 			}
 		}
 	}
