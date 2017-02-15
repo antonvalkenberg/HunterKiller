@@ -102,8 +102,8 @@ public abstract class Unit
 	 */
 	public Unit(int spawningPlayerID, UnitType unitType, MapLocation mapLocation, Direction facing, int fovRange, int fovAngle,
 				int attckRange, int attckDmg, int cooldown, int cost, int score) {
-		this(spawningPlayerID, unitType, mapLocation, HunterKillerConstants.UNIT_DEFAULT_HP, facing, fovRange, fovAngle, attckRange, attckDmg,
-				cooldown, cost, score);
+		this(spawningPlayerID, unitType, mapLocation, HunterKillerConstants.UNIT_DEFAULT_HP, facing, fovRange, fovAngle, attckRange,
+				attckDmg, cooldown, cost, score);
 	}
 
 	/**
@@ -259,6 +259,13 @@ public abstract class Unit
 	 */
 	public boolean isWithinAttackRange(MapLocation location) {
 		return MapLocation.getManhattanDist(this.getLocation(), location) <= getAttackRange();
+	}
+
+	/**
+	 * Whether or not the specified location is within the specified range.
+	 */
+	public boolean isWithinRange(MapLocation location, int range) {
+		return MapLocation.getManhattanDist(this.getLocation(), location) <= range;
 	}
 
 	/**
