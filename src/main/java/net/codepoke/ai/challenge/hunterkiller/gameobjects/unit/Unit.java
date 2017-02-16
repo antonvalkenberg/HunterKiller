@@ -159,6 +159,8 @@ public abstract class Unit
 		specialAttackCooldown = cooldown;
 		spawnCost = cost;
 		scoreWorth = score;
+
+		fieldOfView = new HashSet<MapLocation>();
 	}
 
 	// endregion
