@@ -2,7 +2,6 @@ package net.codepoke.ai.challenge.hunterkiller.gameobjects.unit;
 
 import java.util.HashSet;
 
-import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,7 +27,7 @@ import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
  */
 @Getter
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public abstract class Unit
 		extends GameObject
 		implements Controlled {

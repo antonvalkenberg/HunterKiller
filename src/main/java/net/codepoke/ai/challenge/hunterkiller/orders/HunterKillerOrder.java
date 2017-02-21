@@ -1,6 +1,5 @@
 package net.codepoke.ai.challenge.hunterkiller.orders;
 
-import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +18,7 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
  */
 @Getter
 @EqualsAndHashCode
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public abstract class HunterKillerOrder
 		implements Comparable<HunterKillerOrder> {
 

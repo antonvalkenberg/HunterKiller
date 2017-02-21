@@ -2,7 +2,6 @@ package net.codepoke.ai.challenge.hunterkiller;
 
 import java.util.HashSet;
 
-import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 
@@ -19,7 +18,7 @@ import com.badlogic.gdx.math.Vector2;
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  * 
  */
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class LineOfSight {
 
 	private static final int NO_ANGLE_LIMIT = -1;

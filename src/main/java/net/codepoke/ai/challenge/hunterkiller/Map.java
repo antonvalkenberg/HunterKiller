@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -969,9 +968,9 @@ public class Map {
 				int currentPosition = toPosition(x, y);
 				GameObject[] objects = mapContent[currentPosition];
 				String featureLevel = objects[HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX] != null	? objects[HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX].toString()
-																							: " ";
+																										: " ";
 				String unitLevel = objects[HunterKillerConstants.MAP_INTERNAL_UNIT_INDEX] != null	? objects[HunterKillerConstants.MAP_INTERNAL_UNIT_INDEX].toString()
-																						: ".";
+																									: ".";
 				// Add feature level first, unit level on other side
 				lineBuilder.insert(x, featureLevel);
 				lineBuilder.append(unitLevel);
@@ -1240,7 +1239,7 @@ public class Map {
 		}
 	}
 
-	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@NoArgsConstructor
 	public class BlocksLight
 			implements BlocksLightFunction {
 
@@ -1255,7 +1254,7 @@ public class Map {
 
 	}
 
-	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@NoArgsConstructor
 	public class GetManhattanDistance
 			implements GetDistanceFunction {
 
@@ -1270,7 +1269,7 @@ public class Map {
 
 	}
 
-	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@NoArgsConstructor
 	public class GetEuclidianDistance
 			implements GetDistanceFunction {
 

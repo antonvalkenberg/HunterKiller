@@ -2,7 +2,6 @@ package net.codepoke.ai.challenge.hunterkiller;
 
 import java.util.HashSet;
 
-import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,7 +25,7 @@ import com.badlogic.gdx.utils.Array;
  */
 @Getter
 @EqualsAndHashCode
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class HunterKillerState
 		implements HiddenState, SequentialState {
 

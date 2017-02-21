@@ -1,6 +1,5 @@
 package net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature;
 
-import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +17,7 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
  */
 @Getter
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class Door
 		extends MapFeature {
 

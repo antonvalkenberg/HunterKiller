@@ -2,7 +2,6 @@ package net.codepoke.ai.challenge.hunterkiller;
 
 import java.util.Random;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
@@ -15,7 +14,7 @@ import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
  *
  */
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class MapLocation {
 
 	// region Properties

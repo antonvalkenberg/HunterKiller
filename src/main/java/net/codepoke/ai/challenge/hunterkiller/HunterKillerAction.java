@@ -3,7 +3,6 @@ package net.codepoke.ai.challenge.hunterkiller;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.codepoke.ai.Action;
@@ -22,7 +21,7 @@ import com.badlogic.gdx.utils.IntArray;
  *
  */
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class HunterKillerAction
 		implements Action {
 

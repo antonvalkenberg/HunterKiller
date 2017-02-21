@@ -1,6 +1,5 @@
 package net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature;
 
-import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +19,7 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public abstract class MapFeature
 		extends GameObject {
 

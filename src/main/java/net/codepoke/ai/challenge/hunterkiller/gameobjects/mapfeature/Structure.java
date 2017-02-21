@@ -1,6 +1,5 @@
 package net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature;
 
-import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,7 +27,7 @@ import net.codepoke.ai.challenge.hunterkiller.orders.StructureOrder;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class Structure
 		extends MapFeature
 		implements Controlled {
@@ -101,8 +100,9 @@ public class Structure
 	 *            The type of structure to create.
 	 */
 	public Structure(MapLocation location, StructureType type) {
-		super(location, HunterKillerConstants.STRUCTURE_MAX_HP, HunterKillerConstants.STRUCTURE_MAX_HP, HunterKillerConstants.STRUCTURE_DESTRUCTIBLE,
-				HunterKillerConstants.STRUCTURE_BLOCKING_LOS, HunterKillerConstants.STRUCTURE_WALKABLE);
+		super(location, HunterKillerConstants.STRUCTURE_MAX_HP, HunterKillerConstants.STRUCTURE_MAX_HP,
+				HunterKillerConstants.STRUCTURE_DESTRUCTIBLE, HunterKillerConstants.STRUCTURE_BLOCKING_LOS,
+				HunterKillerConstants.STRUCTURE_WALKABLE);
 		this.type = type;
 		// Set the specifics of each structure type
 		switch (type) {

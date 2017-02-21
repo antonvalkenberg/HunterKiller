@@ -1,6 +1,5 @@
 package net.codepoke.ai.challenge.hunterkiller.gameobjects.unit;
 
-import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
@@ -14,7 +13,7 @@ import net.codepoke.ai.challenge.hunterkiller.enums.UnitType;
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class Soldier
 		extends Unit {
 
@@ -27,8 +26,9 @@ public class Soldier
 	 * {@link Soldier#Soldier(int, MapLocation, int, int, Direction, int, int, int, int, int, int, int)}
 	 */
 	public Soldier(int spawningPlayerID, MapLocation mapLocation, Direction facing) {
-		this(spawningPlayerID, mapLocation, HunterKillerConstants.SOLDIER_MAX_HP, HunterKillerConstants.SOLDIER_MAX_HP, facing, HunterKillerConstants.SOLDIER_FOV_RANGE,
-				HunterKillerConstants.SOLDIER_FOV_ANGLE, HunterKillerConstants.SOLDIER_ATTACK_RANGE, HunterKillerConstants.SOLDIER_ATTACK_DAMAGE, 0,
+		this(spawningPlayerID, mapLocation, HunterKillerConstants.SOLDIER_MAX_HP, HunterKillerConstants.SOLDIER_MAX_HP, facing,
+				HunterKillerConstants.SOLDIER_FOV_RANGE, HunterKillerConstants.SOLDIER_FOV_ANGLE,
+				HunterKillerConstants.SOLDIER_ATTACK_RANGE, HunterKillerConstants.SOLDIER_ATTACK_DAMAGE, 0,
 				HunterKillerConstants.SOLDIER_SPAWN_COST, HunterKillerConstants.SOLDIER_SCORE);
 	}
 
