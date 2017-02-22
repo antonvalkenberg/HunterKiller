@@ -1,14 +1,12 @@
 package net.codepoke.ai.challenge.hunterkiller;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.codepoke.ai.Action;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 import net.codepoke.ai.challenge.hunterkiller.orders.HunterKillerOrder;
 
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
 
 /**
@@ -40,7 +38,7 @@ public class HunterKillerAction
 	/**
 	 * Collection of orders in this action.
 	 */
-	private List<HunterKillerOrder> orders;
+	private Array<HunterKillerOrder> orders;
 
 	// endregion
 
@@ -55,7 +53,7 @@ public class HunterKillerAction
 	public HunterKillerAction(HunterKillerState state) {
 		this.actingPlayerID = state.getCurrentPlayer();
 		this.currentRound = state.getCurrentRound();
-		orders = new ArrayList<HunterKillerOrder>();
+		orders = new Array<HunterKillerOrder>();
 	}
 
 	// endregion
@@ -91,9 +89,11 @@ public class HunterKillerAction
 		// Try to remove the order that is for the specified object
 		IntArray objectIDs = new IntArray(getObjectIDs());
 		if (objectIDs.contains(object.getID())) {
-			for (HunterKillerOrder order : orders) {
-				if (order.getObjectID() == object.getID()) {
-					return orders.remove(order);
+			for (int i = 0; i < orders.size; i++) {
+				if (orders.get(i)
+							.getObjectID() == object.getID()) {
+					orders.removeIndex(i);
+					return true;
 				}
 			}
 			return false;
@@ -107,8 +107,8 @@ public class HunterKillerAction
 	 * @return Array containing the object's IDs.
 	 */
 	public int[] getObjectIDs() {
-		int[] ids = new int[orders.size()];
-		for (int i = 0; i < orders.size(); i++) {
+		int[] ids = new int[orders.size];
+		for (int i = 0; i < orders.size; i++) {
 			ids[i] = orders.get(i)
 							.getObjectID();
 		}
