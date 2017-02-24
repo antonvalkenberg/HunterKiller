@@ -100,6 +100,11 @@ public class HunterKillerStateFactory
 	}
 
 	// region Public methods
+	
+	@Override
+	public int[] getSupportedPlayers() {
+		return new int[]{2,4};
+	}
 
 	/**
 	 * Constructs a {@link Map} from a specific {@link MapSetup}.
