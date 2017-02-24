@@ -39,6 +39,8 @@ public class HunterKillerStateFactory
 
 	private static final Random r = new Random();
 
+	private static final IntArray supportedPlayers = new IntArray(new int[] { 2, 3, 4 });
+
 	public Array<MapSetup> mapRotation = new Array<MapSetup>();
 
 	public HunterKillerStateFactory() {
@@ -101,11 +103,6 @@ public class HunterKillerStateFactory
 	}
 
 	// region Public methods
-	
-	@Override
-	public int[] getSupportedPlayers() {
-		return new int[]{2,4};
-	}
 
 	/**
 	 * Constructs a {@link Map} from a specific {@link MapSetup}.
@@ -159,8 +156,8 @@ public class HunterKillerStateFactory
 		// Make sure the options string is not null
 		if (options == null)
 			options = "";
-		// Check that either 2, 3 or 4 players are provided, other amounts are not supported
-		if (playerNames.length < 2 || playerNames.length > 4) {
+		// Check that the amount of player names falls within the supported amount of players
+		if (!supportedPlayers.contains(playerNames.length)) {
 			throw new HunterKillerException(
 											StringExtensions.format("Unsupported amount of players: %d. Only 2, 3 and 4 players are currently supported.",
 																	playerNames.length));
@@ -218,6 +215,11 @@ public class HunterKillerStateFactory
 
 	// region Overridden methods
 
+	@Override
+	public int[] getSupportedPlayers() {
+		return supportedPlayers.toArray();
+	}
+
 	/**
 	 * Generates an initial state of the game from a collection of players that will participate and a
 	 * {@link MatchRequest}.
@@ -226,8 +228,6 @@ public class HunterKillerStateFactory
 	 *            Collection of names for the players in the game.
 	 * @param request
 	 *            Either a {@link MatchRequest} or a {@link HunterKillerMatchRequest}.
-	 * 
-	 * @returns HunterKillerState adhering to the specifications set out by the parameters.
 	 */
 	@Override
 	public HunterKillerState generateInitialState(String[] playerNames, MatchRequest request) {
