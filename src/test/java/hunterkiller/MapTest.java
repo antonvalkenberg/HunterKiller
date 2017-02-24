@@ -3,8 +3,9 @@ package hunterkiller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.FourPatch;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerMatchRequest;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerStateFactory;
 import net.codepoke.ai.challenge.hunterkiller.Map;
@@ -245,7 +246,7 @@ public class MapTest
 	public void testInitialState() {
 		HunterKillerStateFactory factory = new HunterKillerStateFactory();
 		// Create an initial state
-		HunterKillerState initialState = factory.generateInitialState(new String[] { "playerA", "playerB" }, "");
+		HunterKillerState initialState = factory.generateInitialState(new String[] { "playerA", "playerB" }, new HunterKillerMatchRequest());
 
 		// Check that the initialState starts in round 1
 		assertEquals(1, initialState.getCurrentRound());

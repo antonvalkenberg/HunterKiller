@@ -18,6 +18,7 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Wall;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
+import net.codepoke.ai.network.MatchRequest;
 
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Gdx;
@@ -219,25 +220,41 @@ public class HunterKillerStateFactory
 
 	/**
 	 * Generates an initial state of the game from a collection of players that will participate and a
-	 * String defining some options for the game. This method makes the following assumptions:
-	 * <ul>
-	 * <li>{@code playerNames} contains the names of the players in the game.</li>
-	 * <li>Currently supported player amounts are: {@code 2, 3, 4}.</li>
-	 * <li>Currently supported options are:
-	 * <ul>
-	 * <li>{@code nonRandomSections} Indicates that the players should be placed in sections of the map according to the
-	 * order supplied in {@code playerNames}.</li>
-	 * </ul>
-	 * </li>
-	 * </ul>
+	 * {@link MatchRequest}.
+	 * 
+	 * @param playerNames
+	 *            Collection of names for the players in the game.
+	 * @param request
+	 *            Either a {@link MatchRequest} or a {@link HunterKillerMatchRequest}.
+	 * 
+	 * @returns HunterKillerState adhering to the specifications set out by the parameters.
 	 */
 	@Override
-	public HunterKillerState generateInitialState(String[] playerNames, String options) {
-		// Make sure the options string is not null
-		if (options == null)
-			options = "";
+	public HunterKillerState generateInitialState(String[] playerNames, MatchRequest request) {
+		Array<MapSetup> maps = new Array<MapSetup>(mapRotation);
+		String options = "";
+
+		// Check if we are dealing with a specific HunterKillerMatchRequest
+		if (request instanceof HunterKillerMatchRequest) {
+			HunterKillerMatchRequest hkRequest = (HunterKillerMatchRequest) request;
+
+			// Make sure the options string is not null
+			if (hkRequest.options != null)
+				options = hkRequest.options;
+
+			// Check the maps to see if they fall within the request's restrictions
+			Array<MapSetup> requestMaps = new Array<MapSetup>();
+			for (MapSetup setup : mapRotation) {
+				if ((hkRequest.mapType == null || setup.name.contains(hkRequest.mapType.getFileFlag()))
+					&& (hkRequest.gameType == null || setup.name.contains(hkRequest.gameType.getFileFlag()))
+					&& (hkRequest.mapName == null || setup.name.contains(hkRequest.mapName)))
+					requestMaps.add(setup);
+			}
+			maps = requestMaps;
+		}
+
 		// Select a random premade map to create
-		MapSetup premade = mapRotation.random();
+		MapSetup premade = maps.random();
 		// Generate the initial state from this premade map
 		return generateInitialStateFromPremade(premade, playerNames, options);
 	}
