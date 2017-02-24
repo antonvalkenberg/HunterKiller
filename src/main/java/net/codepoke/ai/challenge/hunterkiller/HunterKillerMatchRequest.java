@@ -48,7 +48,7 @@ public class HunterKillerMatchRequest
 	 *            Whether or not the results of the match should affect your bot's ELO-rating.
 	 */
 	public HunterKillerMatchRequest(String botUID, boolean training) {
-		super("HunterKiller", botUID, training);
+		super(HunterKillerConstants.GAME_NAME, botUID, training);
 	}
 
 }

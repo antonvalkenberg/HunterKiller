@@ -13,6 +13,8 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
  */
 public class HunterKillerConstants {
 
+	public static final String GAME_NAME = "HunterKiller";
+
 	// region MapFeature
 
 	/**
