@@ -1,6 +1,5 @@
 package net.codepoke.ai.challenge.hunterkiller;
 
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.codepoke.ai.challenge.hunterkiller.enums.GameMode;
@@ -13,7 +12,6 @@ import net.codepoke.ai.network.MatchRequest;
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
-@AllArgsConstructor
 @NoArgsConstructor
 @Setter
 public class HunterKillerMatchRequest

@@ -39,7 +39,10 @@ public class HunterKillerStateFactory
 
 	private static final Random r = new Random();
 
-	private static final IntArray supportedPlayers = new IntArray(new int[] { 2, 3, 4 });
+	/**
+	 * Array representing the minimum and maximum number of players that this game supports.
+	 */
+	private static final IntArray supportedPlayers = new IntArray(new int[] { 2, 4 });
 
 	public Array<MapSetup> mapRotation = new Array<MapSetup>();
 
