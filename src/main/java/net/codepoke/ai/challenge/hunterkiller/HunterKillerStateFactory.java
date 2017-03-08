@@ -1,6 +1,7 @@
 package net.codepoke.ai.challenge.hunterkiller;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Random;
 
@@ -68,11 +69,19 @@ public class HunterKillerStateFactory
 					if (mapFile.isDirectory())
 						continue;
 
-					FileHandle fileH = Gdx.files.getFileHandle(mapFile.getAbsolutePath(), FileType.Absolute);
-					String rawMapData = fileH.readString()
-												.replace("\r\n", "\n");
+					// Check if we can use GDX to access files, or need to fall back on Java.NIO
+					String rawMapData = "";
+					String[] mapLines = new String[] {};
+					if (Gdx.files != null) {
+						FileHandle fileH = Gdx.files.getFileHandle(mapFile.getAbsolutePath(), FileType.Absolute);
+						rawMapData = fileH.readString()
+											.replace("\r\n", "\n");
+						mapLines = rawMapData.split(FourPatch.NEWLINE_SEPARATOR);
+					} else {
 
-					String[] mapLines = rawMapData.split(FourPatch.NEWLINE_SEPARATOR);
+						mapLines = Files.readAllLines(Paths.get(mapFile.getAbsolutePath()))
+										.toArray(mapLines);
+					}
 
 					// Check if we have any lines of settings
 					if (Character.isDigit(mapLines[0].charAt(0))) {
