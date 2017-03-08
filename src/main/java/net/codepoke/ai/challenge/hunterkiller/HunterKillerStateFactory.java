@@ -38,8 +38,11 @@ public class HunterKillerStateFactory
 		implements Generator<HunterKillerState> {
 
 	private static final Random r = new Random();
-	
-	private static final String executingLocation = HunterKillerStateFactory.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+
+	private static final String executingLocation = HunterKillerStateFactory.class.getProtectionDomain()
+																					.getCodeSource()
+																					.getLocation()
+																					.getPath();
 
 	/**
 	 * Array representing the minimum and maximum number of players that this game supports.
@@ -50,7 +53,7 @@ public class HunterKillerStateFactory
 
 	public HunterKillerStateFactory() {
 		// Load in all maps defined in the folder /maps/
-		File maps = new File(executingLocation.replace("/src/main/java/net/codepoke/ai/challenge/hunterkiller/", "/maps/"));
+		File maps = new File(executingLocation.replace("/target/classes/", "/maps/"));
 
 		// Check if any files can be found in the directory
 		if (maps.listFiles() == null) {
@@ -255,7 +258,16 @@ public class HunterKillerStateFactory
 					&& (hkRequest.mapName == null || setup.name.contains(hkRequest.mapName)))
 					requestMaps.add(setup);
 			}
-			maps = requestMaps;
+
+			if (requestMaps.size > 0) {
+				maps = requestMaps;
+			} else if (hkRequest.mapType != null || hkRequest.gameType != null || hkRequest.mapName != null) {
+				// Throw an error, we could not find any map to satisfy the request's requirements
+				// TODO: finish error message
+				throw new HunterKillerException(StringExtensions.format("Could not find map for requirements: MapType-'%s'",
+																		hkRequest.mapType));
+			}
+
 		}
 
 		// Select a random premade map to create

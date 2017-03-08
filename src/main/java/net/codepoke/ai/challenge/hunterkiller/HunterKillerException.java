@@ -13,4 +13,5 @@ public class HunterKillerException
 	public HunterKillerException(String message) {
 		super(message);
 	}
+
 }

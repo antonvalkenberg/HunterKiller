@@ -124,4 +124,14 @@ public class HunterKillerMatchRequest
 			options = otherHKMR.options;
 		}
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("HunterKillerMatchRequest with settings:");
+		sb.append(" MapType-'");
+		sb.append(mapType == null ? "n.a.'" : mapType.getFileFlag() + "'");
+
+		return sb.toString();
+	}
 }
