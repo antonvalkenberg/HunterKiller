@@ -2,6 +2,7 @@ package net.codepoke.ai.challenge.hunterkiller;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Random;
 
@@ -78,8 +79,9 @@ public class HunterKillerStateFactory
 											.replace("\r\n", "\n");
 						mapLines = rawMapData.split(FourPatch.NEWLINE_SEPARATOR);
 					} else {
-
-						mapLines = Files.readAllLines(Paths.get(mapFile.getAbsolutePath()))
+						Path mapFilePath = Paths.get(mapFile.getAbsolutePath());
+						rawMapData = new String(Files.readAllBytes(mapFilePath));
+						mapLines = Files.readAllLines(mapFilePath)
 										.toArray(mapLines);
 					}
 
