@@ -257,28 +257,47 @@ public class HunterKillerStateFactory
 		if (request instanceof HunterKillerMatchRequest) {
 			HunterKillerMatchRequest hkRequest = (HunterKillerMatchRequest) request;
 
-			// Make sure the options string is not null
+			// If any options are set through the request, they become our options
 			if (hkRequest.options != null)
 				options = hkRequest.options;
 
 			// Check the maps to see if they fall within the request's restrictions
 			Array<MapSetup> requestMaps = new Array<MapSetup>();
 			for (MapSetup setup : mapRotation) {
-				if ((hkRequest.mapType == null || setup.name.contains(hkRequest.mapType.getFileFlag()))
-					&& (hkRequest.gameType == null || setup.name.contains(hkRequest.gameType.getFileFlag()))
-					&& (hkRequest.mapName == null || setup.name.contains(hkRequest.mapName)))
-					requestMaps.add(setup);
+				// This map setup does not comply to the request if the MapType is set, but the setup does not contain
+				// the MapType's file-flag.
+				if (hkRequest.mapType != null && !setup.name.contains(hkRequest.mapType.getFileFlag())) {
+					continue;
+				}
+				// This map setup does not comply to the request if the GameType is set, but the setup does not contain
+				// the GameType's file-flag.
+				if (hkRequest.gameType != null && !setup.name.contains(hkRequest.gameType.getFileFlag())) {
+					continue;
+				}
+				// This map setup does not comply to the request if the MapName is set, but the setup does not contain
+				// the MapName.
+				if (hkRequest.mapName != null && !setup.name.contains(hkRequest.mapName)) {
+					continue;
+				}
+
+				// This map setup passed the test, so add it.
+				requestMaps.add(setup);
 			}
 
+			// If we found any maps that meet the requirements
 			if (requestMaps.size > 0) {
-				maps = requestMaps;
+				// They become the maps we'll choose from
+				maps = new Array<MapSetup>(requestMaps);
 			} else if (hkRequest.mapType != null || hkRequest.gameType != null || hkRequest.mapName != null) {
 				// Throw an error, we could not find any map to satisfy the request's requirements
-				// TODO: finish error message
-				throw new HunterKillerException(StringExtensions.format("Could not find map for requirements: MapType-'%s'",
-																		hkRequest.mapType));
+				throw new HunterKillerException(
+												StringExtensions.format("Could not find map for requirements: MapType-'%s', GameType-'%s', MapName-'%s'.",
+																		hkRequest.mapType == null ? "" : hkRequest.mapType.getFileFlag(),
+																		hkRequest.gameType == null ? "" : hkRequest.gameType.getFileFlag(),
+																		hkRequest.mapName == null ? "" : hkRequest.mapName));
 			}
-
+		} else {
+			// If the request is not a HunterKillerMatchRequest, we just use the pre-defined map rotation.
 		}
 
 		// Select a random premade map to create
