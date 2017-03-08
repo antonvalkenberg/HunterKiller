@@ -131,7 +131,12 @@ public class HunterKillerMatchRequest
 		sb.append("HunterKillerMatchRequest with settings:");
 		sb.append(" MapType-'");
 		sb.append(mapType == null ? "n.a.'" : mapType.getFileFlag() + "'");
-
+		sb.append(" GameMode-'");
+		sb.append(gameType == null ? "n.a.'" : gameType.getFileFlag() + "'");
+		sb.append(" MapName-'");
+		sb.append(mapName == null ? "n.a.'" : mapName + "'");
+		sb.append(" Options-'");
+		sb.append(options == null ? "n.a.'." : options + "'.");
 		return sb.toString();
 	}
 }
