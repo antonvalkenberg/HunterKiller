@@ -38,6 +38,8 @@ public class HunterKillerStateFactory
 		implements Generator<HunterKillerState> {
 
 	private static final Random r = new Random();
+	
+	private static final String executingLocation = HunterKillerStateFactory.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 
 	/**
 	 * Array representing the minimum and maximum number of players that this game supports.
@@ -48,7 +50,7 @@ public class HunterKillerStateFactory
 
 	public HunterKillerStateFactory() {
 		// Load in all maps defined in the folder /maps/
-		File maps = new File("maps\\");
+		File maps = new File(executingLocation.replace("/src/main/java/net/codepoke/ai/challenge/hunterkiller/", "/maps/"));
 
 		// Check if any files can be found in the directory
 		if (maps.listFiles() == null) {
