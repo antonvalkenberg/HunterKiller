@@ -80,19 +80,17 @@ public class HunterKillerMatchRequest
 		// It's a HKMR, so check if our special settings are the same
 		HunterKillerMatchRequest otherHKMR = (HunterKillerMatchRequest) other;
 
-		if (mapType != null && mapType != otherHKMR.mapType) {
+		// Reject the other request if it has a value set where we also have a value, but the values are not the same.
+		if (otherHKMR.mapType != null && mapType != null && otherHKMR.mapType != mapType) {
 			return false;
 		}
-
-		if (gameType != null && gameType != otherHKMR.gameType) {
+		if (otherHKMR.gameType != null && gameType != null && otherHKMR.gameType != gameType) {
 			return false;
 		}
-
-		if (mapName != null && !mapName.equals(otherHKMR.mapName)) {
+		if (otherHKMR.mapName != null && mapName != null && !otherHKMR.mapName.equals(mapName)) {
 			return false;
 		}
-
-		if (options != null && !options.equals(otherHKMR.options)) {
+		if (otherHKMR.options != null && options != null && !otherHKMR.options.equals(options)) {
 			return false;
 		}
 
@@ -111,6 +109,7 @@ public class HunterKillerMatchRequest
 		// It's a HKMR, so check if any options from the other request are more restrictive
 		HunterKillerMatchRequest otherHKMR = (HunterKillerMatchRequest) other;
 
+		// If we do not have a value set, where the other request does, copy it.
 		if (mapType == null && otherHKMR.mapType != null) {
 			mapType = otherHKMR.mapType;
 		}
