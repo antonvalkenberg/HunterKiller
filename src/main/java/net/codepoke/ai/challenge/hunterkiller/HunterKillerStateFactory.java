@@ -176,7 +176,7 @@ public class HunterKillerStateFactory
 		if (options == null)
 			options = "";
 		// Check that the amount of player names falls within the supported amount of players
-		if (!supportedPlayers.contains(playerNames.length)) {
+		if (playerNames.length < supportedPlayers.get(0) || playerNames.length > supportedPlayers.get(1)) {
 			throw new HunterKillerException(
 											StringExtensions.format("Unsupported amount of players: %d. Only 2, 3 and 4 players are currently supported.",
 																	playerNames.length));
