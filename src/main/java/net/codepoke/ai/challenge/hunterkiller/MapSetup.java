@@ -43,7 +43,7 @@ public class MapSetup {
 	/**
 	 * The amount of resources the player's bases generate each time.
 	 */
-	int baseResourceGeneration = HunterKillerConstants.BASE_RESOURCE_GENERATION;
+	int baseResourceGeneration = HunterKillerConstants.STRUCTURE_RESOURCE_GENERATION;
 
 	public MapSetup(String mapData) {
 		this.mapData = mapData;
