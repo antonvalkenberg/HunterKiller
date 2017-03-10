@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Random;
 
-import lombok.NoArgsConstructor;
 import net.codepoke.ai.Generator;
 import net.codepoke.ai.challenge.hunterkiller.FourPatch.DataCreation;
 import net.codepoke.ai.challenge.hunterkiller.FourPatch.Sections;
