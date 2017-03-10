@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Random;
 
+import lombok.NoArgsConstructor;
 import net.codepoke.ai.Generator;
 import net.codepoke.ai.challenge.hunterkiller.FourPatch.DataCreation;
 import net.codepoke.ai.challenge.hunterkiller.FourPatch.Sections;
@@ -41,9 +42,7 @@ public class HunterKillerStateFactory
 
 	private static final Random r = new Random();
 
-	private static final String executingLocation = Paths.get("")
-															.toAbsolutePath()
-															.toString();
+	// private static final String executingLocation = Paths.get("").toAbsolutePath().toString();
 
 	/**
 	 * Array representing the minimum and maximum number of players that this game supports.
@@ -54,7 +53,7 @@ public class HunterKillerStateFactory
 
 	public HunterKillerStateFactory() {
 		// Load in all maps defined in the folder /maps/
-		File maps = new File(executingLocation + "/maps/");
+		File maps = new File("/maps/");// executingLocation + "/maps/");
 
 		// Check if any files can be found in the directory
 		if (maps.listFiles() == null) {
