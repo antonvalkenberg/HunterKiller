@@ -105,7 +105,6 @@ public class HunterKillerRules
 			// Check if the order is possible
 			if (!isOrderPossible(state, order, orderFailures)) {
 				failCount++;
-				order.setAccepted(false);
 				actionFailures.append(orderFailures.toString());
 				continue;
 			}
@@ -116,10 +115,7 @@ public class HunterKillerRules
 			// Check if anything still went wrong
 			if (orderFailures.length() > 0) {
 				failCount++;
-				order.setAccepted(false);
 				actionFailures.append(orderFailures.toString());
-			} else {
-				order.setAccepted(true);
 			}
 		}
 
