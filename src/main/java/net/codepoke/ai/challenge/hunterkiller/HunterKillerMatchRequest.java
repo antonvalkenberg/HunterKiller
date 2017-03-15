@@ -68,9 +68,9 @@ public class HunterKillerMatchRequest
 	 * {@link MatchRequest#isCompatible(MatchRequest, String, Array)}.
 	 */
 	@Override
-	public boolean isCompatible(MatchRequest other, String otherBotName, Array<String> alreadyConnectedPlayers) {
+	public boolean isCompatible(MatchRequest other, String otherBotName, String myBotName, Array<String> alreadyConnectedPlayers) {
 		// Check if the requests are compatible on a MatchRequest level
-		boolean superCompatible = super.isCompatible(other, otherBotName, alreadyConnectedPlayers);
+		boolean superCompatible = super.isCompatible(other, otherBotName, myBotName, alreadyConnectedPlayers);
 
 		// Check if the other request is not a HunterKillerMatchRequest
 		if (!(other instanceof HunterKillerMatchRequest)) {
