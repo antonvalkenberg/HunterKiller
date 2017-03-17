@@ -5,6 +5,7 @@ import java.util.HashSet;
 import lombok.NoArgsConstructor;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 /**
@@ -446,12 +447,13 @@ public class LineOfSight {
 	// CODEPOKE Calculate whether we go OoB on angle
 	private boolean isAngleOutOfBounds(int x, int y, MapLocation mapOrigin, float facingAngle, float halfAngleLimit) {
 		// If there is no angle limit set, return
-		if (halfAngleLimit == NO_ANGLE_LIMIT) {
+
+		if (MathUtils.isEqual(halfAngleLimit, NO_ANGLE_LIMIT, 0.1f)) {
 			System.err.println("WARNING: no angle set");
 			return false;
 		}
 		// If half of the Unit's limit is 180, they have full 360-vision, so nothing is out of bounds;
-		if (halfAngleLimit == FULL_ANGLE_LIMIT) {
+		if (MathUtils.isEqual(halfAngleLimit, FULL_ANGLE_LIMIT, 0.1f)) {
 			return false;
 		}
 
