@@ -22,8 +22,12 @@ import com.badlogic.gdx.math.Vector2;
 @NoArgsConstructor
 public class LineOfSight {
 
+	// CODEPOKE We have set some constants to use limited field-of-view angles
 	private static final int NO_ANGLE_LIMIT = -1;
 	private static final int FULL_ANGLE_LIMIT = 180;
+	// CODEPOKE We need to use a small tolerance on angle comparisons, because Javascript gives small differences when
+	// calculating angles.
+	private static final float ANGLE_COMPARISON_TOLERANCE = 0.1f;
 
 	private BlocksLightFunction _blocksLight;
 	private GetDistanceFunction _getDistance;
@@ -448,12 +452,12 @@ public class LineOfSight {
 	private boolean isAngleOutOfBounds(int x, int y, MapLocation mapOrigin, float facingAngle, float halfAngleLimit) {
 		// If there is no angle limit set, return
 
-		if (MathUtils.isEqual(halfAngleLimit, NO_ANGLE_LIMIT, 0.1f)) {
+		if (MathUtils.isEqual(halfAngleLimit, NO_ANGLE_LIMIT, ANGLE_COMPARISON_TOLERANCE)) {
 			System.err.println("WARNING: no angle set");
 			return false;
 		}
 		// If half of the Unit's limit is 180, they have full 360-vision, so nothing is out of bounds;
-		if (MathUtils.isEqual(halfAngleLimit, FULL_ANGLE_LIMIT, 0.1f)) {
+		if (MathUtils.isEqual(halfAngleLimit, FULL_ANGLE_LIMIT, ANGLE_COMPARISON_TOLERANCE)) {
 			return false;
 		}
 
@@ -468,7 +472,7 @@ public class LineOfSight {
 		// mapOrigin, new MapLocation(x, y), angle, facingAngle, halfAngleLimit, delta));
 
 		// Check if the difference is within our limit
-		return delta > halfAngleLimit && delta < 360 - halfAngleLimit;
+		return delta > (halfAngleLimit + ANGLE_COMPARISON_TOLERANCE) && delta < 360 - (halfAngleLimit + ANGLE_COMPARISON_TOLERANCE);
 	}
 
 	public void resetVisibleLocations() {
