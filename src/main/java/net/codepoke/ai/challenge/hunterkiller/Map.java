@@ -1031,14 +1031,18 @@ public class Map {
 					// If the object is a Structure, replace it with a Space-tile
 					if (object instanceof Structure) {
 						Structure structure = (Structure) object;
-						Player player = state.getPlayer(structure.getControllingPlayerID());
-						// Check if the structure was a command center
-						if (structure.isCommandCenter()) {
-							// Tell the Player that was controlling the Structure that it's gone
-							player.informCommandCenterDestroyed(this, structure.getID());
-						} else {
-							// Tell the Player to remove the structure from it's list
-							player.removeStructure(structure.getID());
+
+						// Check if the structure was currently being controlled by anyone
+						if (structure.isUnderControl()) {
+							Player player = state.getPlayer(structure.getControllingPlayerID());
+							// Check if the structure was a command center
+							if (structure.isCommandCenter()) {
+								// Tell the Player that was controlling the Structure that it's gone
+								player.informCommandCenterDestroyed(this, structure.getID());
+							} else {
+								// Tell the Player to remove the structure from it's list
+								player.removeStructure(structure.getID());
+							}
 						}
 
 						// Create a new Space object
