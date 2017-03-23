@@ -208,6 +208,9 @@ public class Structure
 	 *            The type of unit.
 	 */
 	public boolean canSpawn(HunterKillerState state, UnitType unitType) {
+		if (!this.isUnderControl())
+			return false;
+
 		// Get the player's resource
 		int playerResource = state.getPlayer(controllingPlayerID)
 									.getResource();
