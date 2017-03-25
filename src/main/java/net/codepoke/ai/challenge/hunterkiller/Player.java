@@ -141,12 +141,16 @@ public class Player
 		// Start with the Structure field of view
 		for (int i = 0; i < structureIDs.size; i++) {
 			Structure struct = (Structure) map.getObject(structureIDs.get(i));
+			if (struct == null)
+				continue;
 			fieldOfViewSet.addAll(map.getFieldOfView(struct));
 		}
 		// Go through our units
 		for (int i = 0; i < unitIDs.size; i++) {
 			// Get the Unit from the map
 			Unit unit = (Unit) map.getObject(unitIDs.get(i));
+			if (unit == null)
+				continue;
 			fieldOfViewSet.addAll(unit.getFieldOfView());
 		}
 		// Return the collection
