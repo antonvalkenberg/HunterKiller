@@ -3,11 +3,24 @@ package net.codepoke.ai.challenge.hunterkiller;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.codepoke.ai.Action;
+import net.codepoke.ai.challenge.hunterkiller.enums.StructureOrderType;
+import net.codepoke.ai.challenge.hunterkiller.enums.UnitOrderType;
+import net.codepoke.ai.challenge.hunterkiller.enums.UnitType;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 import net.codepoke.ai.challenge.hunterkiller.orders.HunterKillerOrder;
+import net.codepoke.ai.challenge.hunterkiller.orders.NullMove;
+import net.codepoke.ai.challenge.hunterkiller.orders.StructureOrder;
+import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
+
+import java.rmi.server.UID;
+
+import org.hamcrest.core.Is;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.Json.Serializable;
+import com.badlogic.gdx.utils.JsonValue;
 
 /**
  * Class representing an {@link Action} in the game. A {@link Player}'s turn consists of a
@@ -21,7 +34,9 @@ import com.badlogic.gdx.utils.IntArray;
 @Getter
 @NoArgsConstructor
 public class HunterKillerAction
-		implements Action {
+		implements Action, Serializable {
+	
+	public static int ORDER_STRUCTURE = 0, ORDER_UNIT = 1;
 
 	// region Properties
 
@@ -113,6 +128,96 @@ public class HunterKillerAction
 							.getObjectID();
 		}
 		return ids;
+	}
+
+	public void write(Json json) {
+
+		// We read an array: {actingPlayerID, currentRound, orders.size, per action[type, actionID, {orderType} / {unitType, orderType, x,y}]
+		json.writeArrayStart("actions");
+		
+		json.writeValue(actingPlayerID);
+		json.writeValue(currentRound);
+			
+		json.writeValue(orders.size);
+		
+		for (int i = 0; i < orders.size; i++) {
+			
+			HunterKillerOrder order = orders.get(i);
+						
+			json.writeValue(order.objectID);
+			json.writeValue(order.actionIndex);
+			
+			if(order instanceof StructureOrder){
+				StructureOrder sOrder = (StructureOrder) order;
+				
+				json.writeValue(ORDER_STRUCTURE);
+				json.writeValue(sOrder.getOrderType().ordinal());
+			} else if(order instanceof UnitOrder){
+				UnitOrder uOrder = (UnitOrder) order;
+				
+				MapLocation loc = uOrder.getTargetLocation();
+				
+				json.writeValue(ORDER_UNIT);
+				json.writeValue(uOrder.getUnitType().ordinal());
+				json.writeValue(uOrder.getOrderType().ordinal());
+				
+				if(uOrder.getOrderType().hasLocation){
+					json.writeValue(loc.getX());
+					json.writeValue(loc.getY());					
+				}
+			}
+			
+		}
+		
+		json.writeArrayEnd();
+		
+	}
+
+	public void read(Json json, JsonValue jsonData) {
+
+		// We read an array: {actingPlayerID, currentRound, orders.size, per action[type, actionID, {orderType} / {unitType, orderType, x,y}]
+		JsonValue raw = jsonData.child();
+		
+		actingPlayerID = raw.asInt();
+		currentRound = (raw = raw.next).asInt();
+		
+		orders = new Array<HunterKillerOrder>((raw = raw.next).asInt());
+		
+		// Each next 
+		while((raw = raw.next) != null){
+			
+			int objectID = raw.asInt();
+			int actionIdx = (raw = raw.next).asInt();			
+			int type = (raw = raw.next).asInt();
+			
+			HunterKillerOrder order = null;
+			
+			if(type == ORDER_STRUCTURE){
+				StructureOrder sOrder = new StructureOrder();
+				
+				sOrder.setOrderType(StructureOrderType.values[(raw = raw.next).asInt()]);
+				
+				order = sOrder;
+			} else if(type == ORDER_UNIT){
+				UnitOrder uOrder = new UnitOrder();
+				
+				uOrder.setUnitType(UnitType.values[(raw = raw.next).asInt()]);
+				
+				UnitOrderType orderType = UnitOrderType.values[(raw = raw.next).asInt()];
+				uOrder.setOrderType(orderType);
+				
+				if(orderType.hasLocation){
+					uOrder.setTargetLocation(new MapLocation((raw = raw.next).asInt(), (raw = raw.next).asInt()));					
+				}
+				
+				order = uOrder;
+			}
+			
+			order.objectID = objectID;
+			order.actionIndex = actionIdx;			
+			
+		}
+		
 	}
 
 	// endregion

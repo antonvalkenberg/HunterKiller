@@ -19,4 +19,6 @@ public enum StructureOrderType {
 	SPAWN_INFECTED,
 	SPAWN_MEDIC,
 	SPAWN_SOLDIER;
+	
+	public static final StructureOrderType[] values = values();
 }

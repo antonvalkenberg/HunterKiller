@@ -2,6 +2,7 @@ package net.codepoke.ai.challenge.hunterkiller.orders;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.enums.StructureOrderType;
@@ -16,6 +17,7 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
  *
  */
 @Getter
+@Setter
 @NoArgsConstructor
 public class StructureOrder
 		extends HunterKillerOrder {

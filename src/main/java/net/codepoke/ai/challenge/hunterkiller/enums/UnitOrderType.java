@@ -1,5 +1,7 @@
 package net.codepoke.ai.challenge.hunterkiller.enums;
 
+import lombok.AllArgsConstructor;
+
 /**
  * Enumeration of all types of {@link net.codepoke.ai.challenge.hunterkiller.orders.HunterKillerOrder HunterKillerOrder}
  * s
@@ -28,11 +30,17 @@ package net.codepoke.ai.challenge.hunterkiller.enums;
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
  */
+@AllArgsConstructor
 public enum UnitOrderType {
 	// If adding a type, don't forget to add it to the documentation list above!
-	MOVE,
-	ROTATE_CLOCKWISE,
-	ROTATE_COUNTER_CLOCKWISE,
-	ATTACK,
-	ATTACK_SPECIAL;
+	MOVE(true),
+	ROTATE_CLOCKWISE(false),
+	ROTATE_COUNTER_CLOCKWISE(false),
+	ATTACK(true),
+	ATTACK_SPECIAL(true);
+
+	public static final UnitOrderType[] values = values();
+	
+	public boolean hasLocation;
+	
 }

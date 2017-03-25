@@ -18,6 +18,7 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
  *
  */
 @Getter
+@Setter
 @NoArgsConstructor
 public class UnitOrder
 		extends HunterKillerOrder {
@@ -37,7 +38,6 @@ public class UnitOrder
 	/**
 	 * The target location of this order.
 	 */
-	@Setter
 	private MapLocation targetLocation;
 
 	// endregion

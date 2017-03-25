@@ -21,4 +21,6 @@ public enum UnitType {
 	Soldier,
 	Medic,
 	Infected;
+	
+	public static final UnitType[] values = values();
 }
