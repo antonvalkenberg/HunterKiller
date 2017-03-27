@@ -90,6 +90,12 @@ public abstract class Unit
 	 */
 	private HashSet<MapLocation> fieldOfView;
 
+	/**
+	 * Whether or not this Unit's field-of-view is currently valid. An invalid field-of-view implies that it should be
+	 * updated before being accessed.
+	 */
+	private boolean fieldOfViewValid;
+
 	// endregion
 
 	// region Constructor
@@ -160,6 +166,7 @@ public abstract class Unit
 		scoreWorth = score;
 
 		fieldOfView = new HashSet<MapLocation>();
+		fieldOfViewValid = false;
 	}
 
 	// endregion
@@ -215,6 +222,15 @@ public abstract class Unit
 		for (MapLocation location : fieldOfView) {
 			this.fieldOfView.add(new MapLocation(location.getX(), location.getY()));
 		}
+		fieldOfViewValid = true;
+	}
+
+	/**
+	 * Invalidate this Unit's field-of-view. An invalid field-of-view implies that it should be updated before being
+	 * accessed.
+	 */
+	public void invalidateFieldOfView() {
+		fieldOfViewValid = false;
 	}
 
 	/**

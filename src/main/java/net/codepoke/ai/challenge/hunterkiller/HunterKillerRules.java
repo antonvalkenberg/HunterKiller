@@ -206,14 +206,20 @@ public class HunterKillerRules
 
 			case ROTATE_CLOCKWISE:
 				unit.setOrientation(Direction.rotate(unit.getOrientation(), Rotation.CLOCKWISE));
+				// Invalidate the unit's field-of-view
+				unit.invalidateFieldOfView();
 				break;
 
 			case ROTATE_COUNTER_CLOCKWISE:
 				unit.setOrientation(Direction.rotate(unit.getOrientation(), Rotation.COUNTER_CLOCKWISE));
+				// Invalidate the unit's field-of-view
+				unit.invalidateFieldOfView();
 				break;
 
 			case MOVE:
 				map.move(targetLocation, unit, failureReasons);
+				// Invalidate the unit's field-of-view
+				unit.invalidateFieldOfView();
 				break;
 
 			case ATTACK:

@@ -617,6 +617,9 @@ public class Map
 	 *            The Unit.
 	 */
 	public HashSet<MapLocation> getFieldOfView(Unit unit) {
+		// Check if the unit's field-of-view is still valid, if so, return the unit's current field-of-view
+		if (unit.isFieldOfViewValid())
+			return unit.getFieldOfView();
 		// Reset any previously computed locations
 		lineOfSight.resetVisibleLocations();
 		// Ask the line-of-sight implementation to compute the field-of-view
@@ -777,6 +780,9 @@ public class Map
 		for (GameObject object : objects) {
 			if (object != null && object instanceof Unit) {
 				Unit unit = (Unit) object;
+				// If the unit's field-of-view is still valid, we do not have to update
+				if (unit.isFieldOfViewValid())
+					continue;
 				// Get the field-of-view collection for the unit
 				HashSet<MapLocation> fieldOfView = getFieldOfView(unit);
 				// Tell the unit to update it's field-of-view
