@@ -443,16 +443,6 @@ public class HunterKillerConstants {
 
 	// endregion
 
-	// region MoveGenerator
-
-	/**
-	 * The default index that an order created by the {@link MoveGenerator} will receive in the
-	 * {@link HunterKillerAction}.
-	 */
-	public static final int MOVEGENERATOR_DEFAULT_ACTION_INDEX = 0;
-
-	// endregion
-
 	// region Player
 
 	/**

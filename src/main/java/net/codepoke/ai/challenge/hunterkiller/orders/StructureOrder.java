@@ -3,8 +3,6 @@ package net.codepoke.ai.challenge.hunterkiller.orders;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
-import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.enums.StructureOrderType;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Structure;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
@@ -36,25 +34,13 @@ public class StructureOrder
 	/**
 	 * Constructs a new instance.
 	 * 
-	 * {@link StructureOrder#StructureOrder(Structure, StructureOrderType, int)}
-	 */
-	public StructureOrder(Structure base, StructureOrderType type) {
-		super(base, HunterKillerConstants.MOVEGENERATOR_DEFAULT_ACTION_INDEX);
-		this.orderType = type;
-	}
-
-	/**
-	 * Constructs a new instance.
-	 * 
 	 * @param structure
 	 *            The structure this order is for.
 	 * @param type
 	 *            The type of order.
-	 * @param actionIndex
-	 *            The index this order has in the {@link HunterKillerAction}.
 	 */
-	public StructureOrder(Structure structure, StructureOrderType type, int actionIndex) {
-		super(structure, actionIndex);
+	public StructureOrder(Structure structure, StructureOrderType type) {
+		super(structure);
 		this.orderType = type;
 	}
 

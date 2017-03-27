@@ -28,10 +28,10 @@ import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.BinaryHeap;
 import com.badlogic.gdx.utils.BinaryHeap.Node;
-import com.badlogic.gdx.utils.Json.Serializable;
-import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.Json.Serializable;
+import com.badlogic.gdx.utils.JsonValue;
 
 /**
  * The map on which HunterKiller is played. The map is internally represented as a 2-dimensional
@@ -46,7 +46,8 @@ import com.badlogic.gdx.utils.Json;
  *
  */
 @Getter
-public class Map implements Serializable {
+public class Map
+		implements Serializable {
 
 	// region Properties
 
@@ -832,7 +833,6 @@ public class Map implements Serializable {
 		mapContent[position][layer] = object;
 		return true;
 	}
-		
 
 	/**
 	 * Removes a {@link GameObject} from the map.
@@ -1319,13 +1319,13 @@ public class Map implements Serializable {
 	}
 
 	public void write(Json json) {
-		
+
 		// Add Unit class tags
 		json.addClassTag("uM", Medic.class);
 		json.addClassTag("uS", Soldier.class);
 		json.addClassTag("uI", Infected.class);
 		json.addClassTag("u", Unit.class);
-		
+
 		// Add Map Feature class tags
 		json.addClassTag("fD", Door.class);
 		json.addClassTag("fF", Floor.class);
@@ -1333,26 +1333,26 @@ public class Map implements Serializable {
 		json.addClassTag("fSt", Structure.class);
 		json.addClassTag("fW", Wall.class);
 		json.addClassTag("f", MapFeature.class);
-		
+
 		json.writeArrayStart("map");
-		
+
 		// We don't serialize the map, as we reconstruct it during deserialization.
-		
+
 		json.writeValue(name);
 		json.writeValue(mapWidth);
 		json.writeValue(mapHeight);
 		json.writeValue(currentTick);
 		json.writeValue(objects, Array.class, GameObject.class);
 		json.writeValue(idBuffer, IntArray.class);
-		
+
 		json.writeArrayEnd();
-		
+
 	}
 
 	public void read(Json json, JsonValue jsonData) {
 
-		JsonValue raw = jsonData.child;
-		
+		JsonValue raw = jsonData.child.child;
+
 		name = raw.asString();
 		mapWidth = (raw = raw.next).asInt();
 		mapHeight = (raw = raw.next).asInt();
@@ -1362,9 +1362,9 @@ public class Map implements Serializable {
 
 		// Map will have (width * height) positions
 		mapContent = new GameObject[mapWidth * mapHeight][HunterKillerConstants.MAP_INTERNAL_LAYERS];
-		
+
 		for (int i = 0; i < objects.size; i++) {
-			GameObject obj = objects.get(i);			
+			GameObject obj = objects.get(i);
 			place(obj.getLocation(), obj);
 		}
 	}

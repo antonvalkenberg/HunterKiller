@@ -18,8 +18,7 @@ import net.codepoke.ai.challenge.hunterkiller.orders.StructureOrder;
 import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
 
 /**
- * This class generates legal {@link HunterKillerOrder}s. This method initialises all orders with a default action
- * index. It is advised to adjust these indexes to your preference.
+ * This class generates legal {@link HunterKillerOrder}s.
  * 
  * @author Anton Valkenberg (anton.valkenberg@gmail.com)
  *
@@ -28,8 +27,7 @@ public class MoveGenerator {
 
 	/**
 	 * Returns a list containing all legal orders for a structure in the current state. For a list of all types of
-	 * orders
-	 * available to a Structure, see {@link StructureOrderType}.
+	 * orders available to a Structure, see {@link StructureOrderType}.
 	 * 
 	 * @param state
 	 *            The current {@link HunterKillerState} of the game.

@@ -95,9 +95,6 @@ public class HunterKillerRules
 		// Get the orders contained in the action
 		Array<HunterKillerOrder> orders = action.getOrders();
 
-		// Sort the orders by their natural ordering
-		orders.sort();
-
 		// Go through the sorted list of orders
 		for (HunterKillerOrder order : orders) {
 			StringBuilder orderFailures = new StringBuilder();
@@ -522,9 +519,6 @@ public class HunterKillerRules
 	 * 
 	 * @param action
 	 *            The {@link HunterKillerAction} that the order should be added to.
-	 * @param orderIndex
-	 *            The index the order will have within the action. This will be incremented by 1 if the order is added
-	 *            to the action.
 	 * @param state
 	 *            The {@link HunterKillerState} to apply the order on.
 	 * @param order
@@ -535,20 +529,14 @@ public class HunterKillerRules
 	 *            If the order failed to execute on the provided state, this will contain the reason(s) why.
 	 * @return Whether or not the order was added to the action.
 	 */
-	public boolean addOrderIfPossible(HunterKillerAction action, int orderIndex, HunterKillerState state, HunterKillerOrder order,
+	public boolean addOrderIfPossible(HunterKillerAction action, HunterKillerState state, HunterKillerOrder order,
 			StringBuilder possibleCheckFails, StringBuilder orderFails) {
 		boolean addedOrder = false;
-		// Set the order's index to the correct number
-		order.setActionIndex(orderIndex);
 
 		// Make sure this order is possible in the provided state
 		if (isOrderPossible(state, order, possibleCheckFails)) {
 			// Add the order to the action
-			if (action.addOrder(order)) {
-				// Increment the index
-				orderIndex++;
-				addedOrder = true;
-			}
+			addedOrder = action.addOrder(order);
 			// Execute this order on the state
 			executeOrder(state, order, orderFails);
 		}
