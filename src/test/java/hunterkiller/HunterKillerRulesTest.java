@@ -3,8 +3,8 @@ package hunterkiller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import net.codepoke.ai.GameRules.Result;
-import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerRules;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerStateFactory;
@@ -107,6 +107,7 @@ public class HunterKillerRulesTest
 				.getUnitAtLocation(new MapLocation(1, 0))
 				.setOrientation(Direction.EAST);
 		// Update the Unit's field-of-view because we just changed it
+		unit.invalidateFieldOfView();
 		unit.updateFieldOfView(state.getMap()
 									.getFieldOfView(unit));
 

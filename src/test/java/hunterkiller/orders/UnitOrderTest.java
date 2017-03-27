@@ -7,8 +7,8 @@ import hunterkiller.HunterKillerTest;
 import java.util.HashSet;
 
 import net.codepoke.ai.GameRules.Result;
-import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerRules;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerStateFactory;
@@ -417,6 +417,7 @@ public class UnitOrderTest
 		Unit unit = state.getMap()
 							.getUnitAtLocation(unitLocation);
 		unit.setOrientation(Direction.EAST);
+		unit.invalidateFieldOfView();
 		// Make sure the map updates the field-of-view, because we changed a unit's orientation.
 		// Note: this is normally handled by the HunterKillerRules if executed through an order, but we skipped that.
 		state.getMap()
@@ -480,6 +481,7 @@ public class UnitOrderTest
 		Unit unit = state.getMap()
 							.getUnitAtLocation(unitLocation);
 		unit.setOrientation(Direction.EAST);
+		unit.invalidateFieldOfView();
 		// Make sure the map updates the field-of-view, because we changed a unit's orientation.
 		// Note: this is normally handled by the HunterKillerRules if executed through an order, but we skipped that.
 		state.getMap()
@@ -561,6 +563,7 @@ public class UnitOrderTest
 		Unit unit = map.getUnitAtLocation(unitLocation);
 		// Units are initially created on the map facing NORTH, but we want our Medic to face WEST towards the Soldier
 		unit.setOrientation(Direction.WEST);
+		unit.invalidateFieldOfView();
 		// Make sure the map updates the field-of-view, because we changed a unit's orientation.
 		// Note: this is normally handled by the HunterKillerRules if executed through an order, but we skipped that.
 		map.updateFieldOfView();
@@ -626,6 +629,7 @@ public class UnitOrderTest
 		// Move the unit south, since it has an attack range of only 1
 		unitLocation = new MapLocation(1, 1);
 		map.move(unitLocation, unit, new StringBuilder());
+		unit.invalidateFieldOfView();
 
 		// Save the other player's ID
 		int pre_TargetUnitPlayerID = state.getMap()
@@ -680,15 +684,18 @@ public class UnitOrderTest
 		// Move the unit south, since it has an attack range of only 1
 		unitLocation = new MapLocation(1, 1);
 		map.move(unitLocation, unit, new StringBuilder());
+		unit.invalidateFieldOfView();
 
 		// Get the unit at the target location
 		Unit tempUnit = map.getUnitAtLocation(targetLocation);
 		// We need to replace this unit, because an infected's special won't trigger off of another Infected unit
 		map.unregisterGameObject(tempUnit);
 		// Create a new Soldier, with just enough health to die to an Infected's attack
-		Soldier pre_TargetUnit = new Soldier(0, targetLocation, HunterKillerConstants.SOLDIER_MAX_HP, HunterKillerConstants.INFECTED_ATTACK_DAMAGE, Direction.WEST,
-												HunterKillerConstants.SOLDIER_FOV_RANGE, HunterKillerConstants.SOLDIER_FOV_ANGLE, HunterKillerConstants.SOLDIER_ATTACK_RANGE,
-												HunterKillerConstants.SOLDIER_ATTACK_DAMAGE, HunterKillerConstants.SOLDIER_COOLDOWN, HunterKillerConstants.SOLDIER_SPAWN_COST,
+		Soldier pre_TargetUnit = new Soldier(0, targetLocation, HunterKillerConstants.SOLDIER_MAX_HP,
+												HunterKillerConstants.INFECTED_ATTACK_DAMAGE, Direction.WEST,
+												HunterKillerConstants.SOLDIER_FOV_RANGE, HunterKillerConstants.SOLDIER_FOV_ANGLE,
+												HunterKillerConstants.SOLDIER_ATTACK_RANGE, HunterKillerConstants.SOLDIER_ATTACK_DAMAGE,
+												HunterKillerConstants.SOLDIER_COOLDOWN, HunterKillerConstants.SOLDIER_SPAWN_COST,
 												HunterKillerConstants.SOLDIER_SCORE);
 		map.registerGameObject(pre_TargetUnit);
 		map.place(targetLocation, pre_TargetUnit);
