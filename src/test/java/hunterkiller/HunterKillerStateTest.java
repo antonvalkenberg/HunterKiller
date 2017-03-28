@@ -58,7 +58,7 @@ public class HunterKillerStateTest
 	public void setUp() throws Exception {
 		// Re-create the initial state we are testing with
 		// Note that we indicate here that we don't want the players to be placed in random sections.
-		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMap, playerNames, "nonRandomSections");
+		state = new HunterKillerStateFactory().generateInitialStateFromPremade(testMap, playerNames, "nonRandomSections");
 	}
 
 	@After
@@ -82,7 +82,7 @@ public class HunterKillerStateTest
 	@Test
 	public void testPrepare() {
 		// Create the state we want to test
-		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMap, playerNames, "nonRandomSections");
+		state = new HunterKillerStateFactory().generateInitialStateFromPremade(testMap, playerNames, "nonRandomSections");
 		// Create a copy of the state
 		HunterKillerState copiedState = state.copy();
 		Map copiedMap = copiedState.getMap();

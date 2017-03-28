@@ -67,7 +67,7 @@ public class HunterKillerRulesTest
 	public void setUp() throws Exception {
 		// Re-create the initial state we are testing with.
 		// Note that we indicate here that we don't want the players to be placed in random sections.
-		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMapAttack, playerNames, "nonRandomSections");
+		state = new HunterKillerStateFactory().generateInitialStateFromPremade(testMapAttack, playerNames, "nonRandomSections");
 	}
 
 	@After

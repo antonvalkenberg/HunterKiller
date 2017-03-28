@@ -92,7 +92,7 @@ public class UnitOrderTest
 	public void setUp() throws Exception {
 		// Re-create the initial state we are testing with.
 		// Note that we indicate here that we don't want the players to be placed in random sections.
-		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMap, playerNames, "nonRandomSections");
+		state = new HunterKillerStateFactory().generateInitialStateFromPremade(testMap, playerNames, "nonRandomSections");
 	}
 
 	@After
@@ -259,7 +259,7 @@ public class UnitOrderTest
 	@Test
 	public void testMovementThroughDoor() {
 		// Re-create the map using the door setup
-		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMapDoor, playerNames, "nonRandomSections");
+		state = new HunterKillerStateFactory().generateInitialStateFromPremade(testMapDoor, playerNames, "nonRandomSections");
 
 		Player activePlayer = state.getPlayer(state.getActivePlayerID());
 		MapLocation unitLocation = new MapLocation(1, 1);
@@ -349,7 +349,7 @@ public class UnitOrderTest
 	@Test
 	public void testFailMovementBlocked() {
 		// Re-create the map using the door setup
-		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMapBlocked, playerNames, "nonRandomSections");
+		state = new HunterKillerStateFactory().generateInitialStateFromPremade(testMapBlocked, playerNames, "nonRandomSections");
 
 		MapLocation pre_UnitLocation = new MapLocation(2, 0);
 		MapLocation targetLocation = new MapLocation(2, 1);
@@ -408,7 +408,7 @@ public class UnitOrderTest
 	@Test
 	public void testAttack() {
 		// Re-create the map using the smaller map for attacking
-		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMapAttack, playerNames, "nonRandomSections");
+		state = new HunterKillerStateFactory().generateInitialStateFromPremade(testMapAttack, playerNames, "nonRandomSections");
 
 		MapLocation unitLocation = new MapLocation(1, 0);
 		MapLocation targetLocation = new MapLocation(2, 1);
@@ -470,7 +470,7 @@ public class UnitOrderTest
 	@Test
 	public void testSpecialAttackSoldier() {
 		// Re-create the map using the map for the soldier's special attack
-		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMapSpecialSoldier, playerNames, "nonRandomSections");
+		state = new HunterKillerStateFactory().generateInitialStateFromPremade(testMapSpecialSoldier, playerNames, "nonRandomSections");
 
 		MapLocation unitLocation = new MapLocation(2, 1);
 		MapLocation targetLocation = new MapLocation(4, 2);
@@ -553,7 +553,7 @@ public class UnitOrderTest
 	@Test
 	public void testSpecialAttackMedic() {
 		// Re-create the map using the map for the medic's special attack
-		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMapSpecialMedic, playerNames, "nonRandomSections");
+		state = new HunterKillerStateFactory().generateInitialStateFromPremade(testMapSpecialMedic, playerNames, "nonRandomSections");
 		Map map = state.getMap();
 
 		MapLocation unitLocation = new MapLocation(3, 0);
@@ -617,7 +617,7 @@ public class UnitOrderTest
 	@Test
 	public void testFailSpecialAttackInfected() {
 		// Re-create the map using the map for the infected's special attack
-		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMapSpecialInfected, playerNames, "nonRandomSections");
+		state = new HunterKillerStateFactory().generateInitialStateFromPremade(testMapSpecialInfected, playerNames, "nonRandomSections");
 		Map map = state.getMap();
 
 		MapLocation unitLocation = new MapLocation(1, 0);
@@ -671,7 +671,7 @@ public class UnitOrderTest
 	@Test
 	public void testInfectedTrigger() {
 		// Re-create the map using the map for the infected's special attack
-		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMapSpecialInfected, playerNames, "nonRandomSections");
+		state = new HunterKillerStateFactory().generateInitialStateFromPremade(testMapSpecialInfected, playerNames, "nonRandomSections");
 		Map map = state.getMap();
 
 		MapLocation unitLocation = new MapLocation(1, 0);

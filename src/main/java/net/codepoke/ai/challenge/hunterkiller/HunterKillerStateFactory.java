@@ -128,13 +128,15 @@ public class HunterKillerStateFactory
 	 * 
 	 * @param premade
 	 *            The type of map to construct.
+	 * @param creator
+	 *            An instance of an implementation of {@link DataCreation}.
 	 * @param players
 	 *            The players in the game.
 	 * @return The constructed {@link Map} object.
 	 */
-	public static Map constructMap(MapSetup premade, Player[] players) {
+	public Map constructMap(MapSetup premade, HunterKillerMapCreation creator, Player[] players) {
 		// Create a FourPatch
-		FourPatch patch = new FourPatch(new HunterKillerMapCreation(), premade.mapData, premade.quadrantAWidth, premade.quadrantAHeight);
+		FourPatch patch = new FourPatch(creator, premade.mapData, premade.quadrantAWidth, premade.quadrantAHeight);
 		return constructFromFourPatch(premade.name, patch, players, premade.spawnDirection);
 	}
 
@@ -152,12 +154,12 @@ public class HunterKillerStateFactory
 	 * 
 	 * @return The constructed {@link Map} object.
 	 */
-	public static Map constructFromFourPatch(String mapName, FourPatch patch, Player[] players, Direction patchBaseSpawnDirection) {
+	public Map constructFromFourPatch(String mapName, FourPatch patch, Player[] players, Direction patchBaseSpawnDirection) {
 		// Create a new Map
 		Map map = new Map(mapName, patch.getGridWidth(), patch.getGridHeight());
 
 		// Set up the HunterKillerMapCreation
-		HunterKillerMapCreation.setup(players, map, patchBaseSpawnDirection);
+		((HunterKillerMapCreation) patch.creation).setup(players, map, patchBaseSpawnDirection);
 
 		// Call map construction through FourPatch
 		patch.createGrid();
@@ -171,7 +173,7 @@ public class HunterKillerStateFactory
 	 * 
 	 * {@link HunterKillerStateFactory#generateInitialState(String[], String)}.
 	 */
-	public static HunterKillerState generateInitialStateFromPremade(MapSetup premade, String[] playerNames, String options) {
+	public HunterKillerState generateInitialStateFromPremade(MapSetup premade, String[] playerNames, String options) {
 		// Make sure the options string is not null
 		if (options == null)
 			options = "";
@@ -216,7 +218,7 @@ public class HunterKillerStateFactory
 		HunterKillerConstants.setBASE_RESOURCE_GENERATION(premade.baseResourceGeneration);
 
 		// Construct the map
-		Map map = constructMap(premade, players);
+		Map map = constructMap(premade, new HunterKillerMapCreation(), players);
 
 		// Make sure the map assigns the objects to the players
 		for (Player player : players) {
@@ -320,21 +322,21 @@ public class HunterKillerStateFactory
 	 *
 	 */
 	@NoArgsConstructor
-	public static class HunterKillerMapCreation
+	public class HunterKillerMapCreation
 			implements DataCreation {
 
 		/**
 		 * The IDs of the players in the game.
 		 */
-		private static IntIntMap sectionPlayerIDMap;
+		private IntIntMap sectionPlayerIDMap;
 		/**
 		 * Reference to the map that the objects will be created on.
 		 */
-		private static Map map;
+		private Map map;
 		/**
 		 * The direction the base on the patch should spawn it's unit in.
 		 */
-		private static Direction patchBaseSpawnDirection;
+		private Direction patchBaseSpawnDirection;
 		/**
 		 * The amount of tiles/squares Units are spawned away from the Structure.
 		 */
@@ -350,7 +352,7 @@ public class HunterKillerStateFactory
 		 * @param spawn
 		 *            The direction the base on the patch should spawn it's unit in.
 		 */
-		public static void setup(Player[] players, Map newMap, Direction spawn) {
+		public void setup(Player[] players, Map newMap, Direction spawn) {
 			map = newMap;
 			patchBaseSpawnDirection = spawn;
 			// Create the player-section map
@@ -371,7 +373,7 @@ public class HunterKillerStateFactory
 		/**
 		 * Reset the temporary variables.
 		 */
-		public static void reset() {
+		public void reset() {
 			map = null;
 			patchBaseSpawnDirection = null;
 			sectionPlayerIDMap.clear();

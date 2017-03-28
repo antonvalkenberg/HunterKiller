@@ -8,6 +8,7 @@ import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerMatchRequest;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerStateFactory;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerStateFactory.HunterKillerMapCreation;
 import net.codepoke.ai.challenge.hunterkiller.Map;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.MapSetup;
@@ -136,15 +137,17 @@ public class MapTest
 
 	@Test
 	public void testMapFeatureCreation() {
+		HunterKillerStateFactory factory = new HunterKillerStateFactory();
+		HunterKillerMapCreation mapCreator = factory.new HunterKillerMapCreation();
 		String mapPatch = StringExtensions.format("._█%nDBO%nXPH");
 		// Create a FourPatch to test
-		FourPatch testPatch = new FourPatch(new HunterKillerStateFactory.HunterKillerMapCreation(), mapPatch, 3, 3);
+		FourPatch testPatch = new FourPatch(mapCreator, mapPatch, 3, 3);
 		// Setup the players
 		Player[] players = new Player[] { new Player(0, "A", 0), new Player(1, "B", 8) };
 		// Set the spawn direction
 		Direction spawnDirection = Direction.NORTH;
 		// Test the creation from a pre made map
-		Map createdMap = HunterKillerStateFactory.constructFromFourPatch("testPatch", testPatch, players, spawnDirection);
+		Map createdMap = factory.constructFromFourPatch("testPatch", testPatch, players, spawnDirection);
 
 		// Go through the MapFeatures
 		GameObject[][] content = createdMap.getMapContent();
@@ -258,7 +261,9 @@ public class MapTest
 	public void testFindPathOpponentSpawn() {
 		// Re-create the map using the map for testing pathfinding
 		String[] playerNames = new String[] { "A", "B" };
-		HunterKillerState state = HunterKillerStateFactory.generateInitialStateFromPremade(testPathMap, playerNames, "nonRandomSections");
+		HunterKillerState state = new HunterKillerStateFactory().generateInitialStateFromPremade(	testPathMap,
+																									playerNames,
+																									"nonRandomSections");
 		Map map = state.getMap();
 
 		// State of the map visualised:

@@ -7,8 +7,8 @@ import hunterkiller.HunterKillerTest;
 import java.util.HashSet;
 
 import net.codepoke.ai.GameRules.Result;
-import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerAction;
+import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerRules;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerStateFactory;
@@ -74,7 +74,7 @@ public class StructureOrderTest
 	public void setUp() throws Exception {
 		// Re-create the initial state we are testing with
 		// Note that we indicate here that we don't want the players to be placed in random sections.
-		state = HunterKillerStateFactory.generateInitialStateFromPremade(testMap, playerNames, "nonRandomSections");
+		state = new HunterKillerStateFactory().generateInitialStateFromPremade(testMap, playerNames, "nonRandomSections");
 	}
 
 	@After
@@ -178,7 +178,7 @@ public class StructureOrderTest
 	@Test
 	public void testFailSpawnLocationOccupied() {
 		// Re-create the State with the map that is setup to fail.
-		state = HunterKillerStateFactory.generateInitialStateFromPremade(failMap, playerNames, "nonRandomSections");
+		state = new HunterKillerStateFactory().generateInitialStateFromPremade(failMap, playerNames, "nonRandomSections");
 
 		// Set some values of things before the order
 		Player activePlayer = state.getPlayer(state.getActivePlayerID());
