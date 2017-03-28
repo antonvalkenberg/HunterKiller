@@ -65,7 +65,7 @@ public class HunterKillerMatchRequest
 	 * </ul>
 	 * 
 	 * If the other MatchRequest is not a {@link HunterKillerMatchRequest}, compatibility is decided by
-	 * {@link MatchRequest#isCompatible(MatchRequest, String, Array)}.
+	 * {@link MatchRequest#isCompatible(MatchRequest, String, String, Array)}.
 	 */
 	@Override
 	public boolean isCompatible(MatchRequest other, String otherBotName, String myBotName, Array<String> alreadyConnectedPlayers) {
