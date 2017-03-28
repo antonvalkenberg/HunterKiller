@@ -1283,8 +1283,10 @@ public class Map
 	}
 
 	/**
+	 * Adds tags for the classes used in this map's objects array to a Json instance.
 	 * 
 	 * @param json
+	 *            The Json instance to add the class tags to.
 	 */
 	private void addJsonClassTags(Json json) {
 		// Add Unit class tags

@@ -125,6 +125,11 @@ public class HunterKillerAction
 		return ids;
 	}
 
+	// endregion
+
+	// region Overridden methods
+
+	@Override
 	public void write(Json json) {
 
 		// We read an array: {actingPlayerID, currentRound, orders.size, per order[objectId, type, {orderType} /
@@ -171,6 +176,7 @@ public class HunterKillerAction
 
 	}
 
+	@Override
 	public void read(Json json, JsonValue jsonData) {
 
 		// We read an array: {actingPlayerID, currentRound, orders.size, per order[objectId, type, {orderType} /
