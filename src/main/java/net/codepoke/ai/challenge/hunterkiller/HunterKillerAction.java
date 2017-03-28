@@ -127,8 +127,8 @@ public class HunterKillerAction
 
 	public void write(Json json) {
 
-		// We read an array: {actingPlayerID, currentRound, orders.size, per action[type, {orderType} / {unitType,
-		// orderType, x,y}]
+		// We read an array: {actingPlayerID, currentRound, orders.size, per order[objectId, type, {orderType} /
+		// {unitType, orderType, x,y}]
 		json.writeArrayStart("actions");
 
 		json.writeValue(actingPlayerID);
@@ -173,9 +173,9 @@ public class HunterKillerAction
 
 	public void read(Json json, JsonValue jsonData) {
 
-		// We read an array: {actingPlayerID, currentRound, orders.size, per action[type, {orderType} / {unitType,
-		// orderType, x,y}]
-		JsonValue raw = jsonData.child();
+		// We read an array: {actingPlayerID, currentRound, orders.size, per order[objectId, type, {orderType} /
+		// {unitType, orderType, x,y}]
+		JsonValue raw = jsonData.getChild("actions");
 
 		actingPlayerID = raw.asInt();
 		currentRound = (raw = raw.next).asInt();
@@ -212,6 +212,7 @@ public class HunterKillerAction
 			}
 
 			order.objectID = objectID;
+			orders.add(order);
 
 		}
 

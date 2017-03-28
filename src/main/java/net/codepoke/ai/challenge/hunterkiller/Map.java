@@ -1013,6 +1013,49 @@ public class Map
 		return output;
 	}
 
+	@Override
+	public void write(Json json) {
+
+		addJsonClassTags(json);
+
+		json.writeArrayStart("map");
+
+		// We don't serialize the map, as we reconstruct it during deserialization.
+
+		json.writeValue(name);
+		json.writeValue(mapWidth);
+		json.writeValue(mapHeight);
+		json.writeValue(currentTick);
+		json.writeValue(objects, Array.class, GameObject.class);
+		json.writeValue(idBuffer, IntArray.class);
+
+		json.writeArrayEnd();
+
+	}
+
+	@Override
+	public void read(Json json, JsonValue jsonData) {
+
+		addJsonClassTags(json);
+
+		JsonValue raw = jsonData.getChild("map");
+
+		name = raw.asString();
+		mapWidth = (raw = raw.next).asInt();
+		mapHeight = (raw = raw.next).asInt();
+		currentTick = (raw = raw.next).asInt();
+		objects = json.readValue(Array.class, GameObject.class, (raw = raw.next));
+		idBuffer = json.readValue(IntArray.class, (raw = raw.next));
+
+		// Map will have (width * height) positions
+		mapContent = new GameObject[mapWidth * mapHeight][HunterKillerConstants.MAP_INTERNAL_LAYERS];
+
+		for (int i = 0; i < objects.size; i++) {
+			GameObject obj = objects.get(i);
+			place(obj.getLocation(), obj);
+		}
+	}
+
 	// endregion
 
 	// region Protected methods
@@ -1239,6 +1282,26 @@ public class Map
 		}
 	}
 
+	/**
+	 * 
+	 * @param json
+	 */
+	private void addJsonClassTags(Json json) {
+		// Add Unit class tags
+		json.addClassTag("uM", Medic.class);
+		json.addClassTag("uS", Soldier.class);
+		json.addClassTag("uI", Infected.class);
+		json.addClassTag("u", Unit.class);
+
+		// Add Map Feature class tags
+		json.addClassTag("fD", Door.class);
+		json.addClassTag("fF", Floor.class);
+		json.addClassTag("fSp", Space.class);
+		json.addClassTag("fSt", Structure.class);
+		json.addClassTag("fW", Wall.class);
+		json.addClassTag("f", MapFeature.class);
+	}
+
 	// endregion
 
 	// region Inner classes
@@ -1321,57 +1384,6 @@ public class Map
 
 		public HashSet<MapLocation> getVisibleLocations() {
 			return visibleLocations;
-		}
-	}
-
-	public void write(Json json) {
-
-		// Add Unit class tags
-		json.addClassTag("uM", Medic.class);
-		json.addClassTag("uS", Soldier.class);
-		json.addClassTag("uI", Infected.class);
-		json.addClassTag("u", Unit.class);
-
-		// Add Map Feature class tags
-		json.addClassTag("fD", Door.class);
-		json.addClassTag("fF", Floor.class);
-		json.addClassTag("fSp", Space.class);
-		json.addClassTag("fSt", Structure.class);
-		json.addClassTag("fW", Wall.class);
-		json.addClassTag("f", MapFeature.class);
-
-		json.writeArrayStart("map");
-
-		// We don't serialize the map, as we reconstruct it during deserialization.
-
-		json.writeValue(name);
-		json.writeValue(mapWidth);
-		json.writeValue(mapHeight);
-		json.writeValue(currentTick);
-		json.writeValue(objects, Array.class, GameObject.class);
-		json.writeValue(idBuffer, IntArray.class);
-
-		json.writeArrayEnd();
-
-	}
-
-	public void read(Json json, JsonValue jsonData) {
-
-		JsonValue raw = jsonData.child.child;
-
-		name = raw.asString();
-		mapWidth = (raw = raw.next).asInt();
-		mapHeight = (raw = raw.next).asInt();
-		currentTick = (raw = raw.next).asInt();
-		objects = json.readValue(Array.class, GameObject.class, (raw = raw.next));
-		idBuffer = json.readValue(IntArray.class, (raw = raw.next));
-
-		// Map will have (width * height) positions
-		mapContent = new GameObject[mapWidth * mapHeight][HunterKillerConstants.MAP_INTERNAL_LAYERS];
-
-		for (int i = 0; i < objects.size; i++) {
-			GameObject obj = objects.get(i);
-			place(obj.getLocation(), obj);
 		}
 	}
 
