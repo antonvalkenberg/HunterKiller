@@ -1052,6 +1052,10 @@ public class Map
 
 		for (int i = 0; i < objects.size; i++) {
 			GameObject obj = objects.get(i);
+			// Check for null, this can happen because on the server the state gets stripped of some objects through the
+			// .prepare method.
+			if (obj == null)
+				continue;
 			place(obj.getLocation(), obj);
 		}
 	}
