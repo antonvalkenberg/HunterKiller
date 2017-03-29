@@ -45,7 +45,7 @@ public class MoveGenerator {
 		}
 
 		// Check for each unit type if the structure can spawn it
-		for (UnitType type : UnitType.values()) {
+		for (UnitType type : UnitType.values) {
 			if (structure.canSpawn(state, type))
 				orders.add(structure.spawn(type));
 		}
@@ -116,7 +116,7 @@ public class MoveGenerator {
 		MapLocation unitLocation = unit.getLocation();
 
 		// Check what movement options we have
-		for (Direction direction : Direction.values()) {
+		for (Direction direction : Direction.values) {
 			if (map.isMovePossible(unitLocation, direction))
 				orders.add(unit.move(direction, map));
 		}
@@ -172,7 +172,7 @@ public class MoveGenerator {
 		MapLocation unitLocation = unit.getLocation();
 
 		// Create a field-of-view set
-		HashSet<MapLocation> fov = new HashSet<MapLocation>();
+		HashSet<MapLocation> fov = null;
 
 		// Determine which field-of-view we'll be using
 		if (usePlayersFoV) {

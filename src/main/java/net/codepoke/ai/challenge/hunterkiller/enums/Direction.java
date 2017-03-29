@@ -35,6 +35,8 @@ public enum Direction {
 	 * LineOfSight} calculations and can be safely ignored.
 	 */
 	public float angle;
+	
+	public static final Direction[] values = values();
 
 	/**
 	 * Returns the direction that is directly opposite of this.
