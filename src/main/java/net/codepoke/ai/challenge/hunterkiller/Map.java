@@ -87,6 +87,12 @@ public class Map
 	private IntArray idBuffer;
 
 	/**
+	 * Collection of IDs referencing the player's command centers.
+	 */
+	@Setter
+	private IntArray commandCenterObjectIDs;
+
+	/**
 	 * The line-of-sight implementation that is used on this map.
 	 */
 	private transient LineOfSight lineOfSight;
@@ -119,6 +125,7 @@ public class Map
 		// Create new collections for our ID->Object lookup and ID buffer
 		objects = new Array<GameObject>(true, width * height, GameObject.class);
 		idBuffer = new IntArray();
+		commandCenterObjectIDs = new IntArray(false, 4);
 		// Create the classes required for line-of-sight
 		lineOfSight = new LineOfSight(new BlocksLight(), new SetVisible(), new GetManhattanDistance());
 	}
@@ -709,12 +716,7 @@ public class Map
 	 * ended. (Note: game ends when exactly 1 command center remains, or the maximum amount of rounds is reached)
 	 */
 	public int getCurrentCommandCenterCount() {
-		int count = 0;
-		for (GameObject object : objects) {
-			if (object != null && object instanceof Structure && ((Structure) object).isCommandCenter())
-				count++;
-		}
-		return count;
+		return commandCenterObjectIDs.size;
 	}
 
 	/**
@@ -761,6 +763,11 @@ public class Map
 
 		// Set the object into our object collection
 		objects.set(objectID, object);
+
+		// Check if the object is a command center
+		if (object instanceof Structure && ((Structure) object).isCommandCenter()) {
+			commandCenterObjectIDs.add(objectID);
+		}
 	}
 
 	/**
@@ -778,6 +785,11 @@ public class Map
 		idBuffer.add(object.getID());
 		// Remove the object from the map content
 		remove(object.getLocation(), object);
+
+		// Check if the object is a command center
+		if (object instanceof Structure && ((Structure) object).isCommandCenter()) {
+			commandCenterObjectIDs.removeValue(object.getID());
+		}
 	}
 
 	/**
@@ -901,6 +913,7 @@ public class Map
 		newMap.setMapContent(newContent);
 		newMap.setObjects(newObjects);
 		newMap.setIdBuffer(new IntArray(idBuffer));
+		newMap.setCommandCenterObjectIDs(new IntArray(commandCenterObjectIDs));
 		// Return the created map
 		return newMap;
 	}
@@ -1036,6 +1049,7 @@ public class Map
 		json.writeValue(currentTick);
 		json.writeValue(objects, Array.class, GameObject.class);
 		json.writeValue(idBuffer, IntArray.class);
+		json.writeValue(commandCenterObjectIDs, IntArray.class);
 
 		json.writeArrayEnd();
 
@@ -1054,6 +1068,7 @@ public class Map
 		currentTick = (raw = raw.next).asInt();
 		objects = json.readValue(Array.class, GameObject.class, (raw = raw.next));
 		idBuffer = json.readValue(IntArray.class, (raw = raw.next));
+		commandCenterObjectIDs = json.readValue(IntArray.class, (raw = raw.next));
 
 		// Map will have (width * height) positions
 		mapContent = new GameObject[mapWidth * mapHeight][HunterKillerConstants.MAP_INTERNAL_LAYERS];
