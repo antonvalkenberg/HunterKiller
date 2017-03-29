@@ -243,7 +243,7 @@ public class Map
 	 * {@link Map#isTraversable(MapLocation, StringBuilder)}
 	 */
 	public boolean isTraversable(MapLocation location) {
-		return isTraversable(location, new StringBuilder());
+		return isTraversable(location, null);
 	}
 
 	/**
@@ -266,28 +266,32 @@ public class Map
 		// Check if the coordinates exist
 		boolean validX = isXonMap(location.getX());
 		if (!validX) {
-			failureReasons.append(StringExtensions.format(	"Location not traversable, X-coordinate is not on the map (%d).%n",
-															location.getX()));
+			if (failureReasons != null)
+				failureReasons.append(StringExtensions.format(	"Location not traversable, X-coordinate is not on the map (%d).%n",
+																location.getX()));
 			return false;
 		}
 		boolean validY = isYonMap(location.getY());
 		if (!validY) {
-			failureReasons.append(StringExtensions.format(	"Location not traversable, Y-coordinate is not on the map (%d).%n",
-															location.getY()));
+			if (failureReasons != null)
+				failureReasons.append(StringExtensions.format(	"Location not traversable, Y-coordinate is not on the map (%d).%n",
+																location.getY()));
 			return false;
 		}
 
 		// There is a unit on a square if the content of the unit layer is not null
 		boolean unitPresent = mapContent[locationPosition][HunterKillerConstants.MAP_INTERNAL_UNIT_INDEX] != null;
 		if (unitPresent) {
-			failureReasons.append(StringExtensions.format("Location not traversable, Unit present.%n"));
+			if (failureReasons != null)
+				failureReasons.append(StringExtensions.format("Location not traversable, Unit present.%n"));
 			return false;
 		}
 
 		// A feature can be walked on/over if it is walkable, derp
 		boolean featureWalkable = ((MapFeature) mapContent[locationPosition][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX]).isWalkable();
 		if (!featureWalkable) {
-			failureReasons.append(StringExtensions.format("Location not traversable, MapFeature is not walkable.%n"));
+			if (failureReasons != null)
+				failureReasons.append(StringExtensions.format("Location not traversable, MapFeature is not walkable.%n"));
 			return false;
 		}
 
@@ -354,7 +358,7 @@ public class Map
 		if (targetLocation == null)
 			return false;
 		// Check if the target location is traversable
-		return isTraversable(targetLocation, new StringBuilder());
+		return isTraversable(targetLocation, null);
 	}
 
 	/**
