@@ -313,21 +313,24 @@ public class Map
 	public boolean isMovePossible(MapLocation fromLocation, UnitOrder move, StringBuilder failureReasons) {
 		// Make sure that there is a unit on the origin location
 		if (mapContent[toPosition(fromLocation)][HunterKillerConstants.MAP_INTERNAL_UNIT_INDEX] == null) {
-			failureReasons.append(StringExtensions.format("Move not possible, no Unit on origin location (%s).%n", fromLocation));
+			if (failureReasons != null)
+				failureReasons.append(StringExtensions.format("Move not possible, no Unit on origin location (%s).%n", fromLocation));
 			return false;
 		}
 
 		// Make sure that the unit that is trying to move is actually at the location they are trying to move from
 		if (move.getObjectID() != ((Unit) mapContent[toPosition(fromLocation)][HunterKillerConstants.MAP_INTERNAL_UNIT_INDEX]).getID()) {
-			failureReasons.append(StringExtensions.format(	"Move not possible, subject Unit (ID: %d) is not on origin location (%s).%n",
-															move.getObjectID(),
-															fromLocation));
+			if (failureReasons != null)
+				failureReasons.append(StringExtensions.format(	"Move not possible, subject Unit (ID: %d) is not on origin location (%s).%n",
+																move.getObjectID(),
+																fromLocation));
 			return false;
 		}
 
 		// Make sure that a target location is set
 		if (move.getTargetLocation() == null) {
-			failureReasons.append(StringExtensions.format("Move not possible, no target location set.%n"));
+			if (failureReasons != null)
+				failureReasons.append(StringExtensions.format("Move not possible, no target location set.%n"));
 			return false;
 		}
 
@@ -381,7 +384,8 @@ public class Map
 		}
 		// Check if the object is a Unit
 		if (!(object instanceof Unit)) {
-			failureReasons.append(StringExtensions.format("WARNING: Unable to move, object is not a Unit.%n"));
+			if (failureReasons != null)
+				failureReasons.append(StringExtensions.format("WARNING: Unable to move, object is not a Unit.%n"));
 			return false;
 		}
 		// Remove the object
