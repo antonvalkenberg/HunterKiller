@@ -77,13 +77,11 @@ public class HunterKillerStateFactory
 						FileHandle fileH = Gdx.files.getFileHandle(mapFile.getAbsolutePath(), FileType.Absolute);
 						rawMapData = fileH.readString()
 											.replace("\r\n", "\n");
-						mapLines = rawMapData.split(FourPatch.NEWLINE_SEPARATOR);
 					} else {
 						Path mapFilePath = Paths.get(mapFile.getAbsolutePath());
-						rawMapData = new String(Files.readAllBytes(mapFilePath));
-						mapLines = Files.readAllLines(mapFilePath)
-										.toArray(mapLines);
+						rawMapData = new String(Files.readAllBytes(mapFilePath)).replace("\r\n", "\n");
 					}
+					mapLines = rawMapData.split(FourPatch.NEWLINE_SEPARATOR);
 
 					// Check if we have any lines of settings
 					if (Character.isDigit(mapLines[0].charAt(0))) {
@@ -171,7 +169,12 @@ public class HunterKillerStateFactory
 	/**
 	 * Generate an initial {@link HunterKillerState} from a specific {@link MapSetup}.
 	 * 
-	 * {@link HunterKillerStateFactory#generateInitialState(String[], String)}.
+	 * @param premade
+	 *            The map-setup that the state should be created from.
+	 * @param playerNames
+	 *            The names of the participating players.
+	 * @param options
+	 *            Any options that should be taking into account when creating the state.
 	 */
 	public HunterKillerState generateInitialStateFromPremade(MapSetup premade, String[] playerNames, String options) {
 		// Make sure the options string is not null
