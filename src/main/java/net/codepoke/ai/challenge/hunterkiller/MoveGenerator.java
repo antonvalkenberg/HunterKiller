@@ -182,23 +182,35 @@ public class MoveGenerator {
 			fov = unit.getFieldOfView();
 		}
 
-		// Get the unit's attack range
-		int attackRange = Unit.getAttackRange(unit.getType());
+		if (unit instanceof Infected) {
+			// Since we know an infected can only do a melee attack (range = 1)
+			for (Direction direction : Direction.values) {
+				// Make an order for each adjacent location
+				MapLocation targetLocation = map.getAdjacentLocationInDirection(unitLocation, direction);
+				if (targetLocation != null)
+					orders.add(unit.attack(targetLocation, false));
+			}
+			// Also add the unit's own location as a possibility
+			orders.add(unit.attack(unitLocation, false));
+		} else {
+			// Get the unit's attack range
+			int attackRange = Unit.getAttackRange(unit.getType());
 
-		// Go through the field-of-view
-		for (MapLocation location : fov) {
-			// Check if this location is within the unit's attack range
-			if (map.getDistance(unitLocation, location) <= attackRange) {
-				// Check if the special for this unit is available, but don't create an order for Infected (can't order)
-				if (unit.getSpecialAttackCooldown() <= 0 && !(unit instanceof Infected)) {
-					// A Soldier's special can't target Walls
-					if (unit instanceof Soldier && map.getFeatureAtLocation(location) instanceof Wall)
-						continue;
-					// Create a special attack order for this location
-					orders.add(unit.attack(location, true));
+			// Go through the field-of-view
+			for (MapLocation location : fov) {
+				// Check if this location is within the unit's attack range
+				if (map.getDistance(unitLocation, location) <= attackRange) {
+					// Check if the special for this unit is available
+					if (unit.getSpecialAttackCooldown() <= 0) {
+						// A Soldier's special can't target Walls
+						if (unit instanceof Soldier && map.getFeatureAtLocation(location) instanceof Wall)
+							continue;
+						// Create a special attack order for this location
+						orders.add(unit.attack(location, true));
+					}
+					// Create an attack order for this location
+					orders.add(unit.attack(location, false));
 				}
-				// Create an attack order for this location
-				orders.add(unit.attack(location, false));
 			}
 		}
 
