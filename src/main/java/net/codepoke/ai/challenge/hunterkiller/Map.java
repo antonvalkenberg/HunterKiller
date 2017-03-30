@@ -1055,6 +1055,7 @@ public class Map
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 
