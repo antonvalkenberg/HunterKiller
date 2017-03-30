@@ -91,15 +91,32 @@ public class LineOfSight {
 	 * @param rangeLimit
 	 *            The viewing range.
 	 * @param facingAngle
-	 *            The angle the unit is facing in degrees, X-positive axis (Y==0) is 0, increasing
-	 *            counter clockwise
+	 *            The angle the unit is facing in degrees, X-positive axis (Y==0) is 0, increasing clockwise
 	 * @param angleLimit
 	 *            The limit in degrees of the given cone of vision.
 	 */
 	public void compute(MapLocation origin, int rangeLimit, float facingAngle, float angleLimit) {
 		_setVisible.func(origin.getX(), origin.getY());
-		for (int octant = 0; octant < 8; octant++)
-			compute(octant, origin, rangeLimit, facingAngle, angleLimit / 2f, 1, new Slope(1, 1), new Slope(0, 1));
+
+		// CODEPOKE Skip calculation for any octant that is out of the angleLimit's bounds
+		float halfAngleLimit = angleLimit / 2f;
+		Vector2 target = new Vector2(1, 0).setAngle(facingAngle);
+
+		for (int octant = 0; octant < 8; octant++) {
+			// CODEPOKE Skip this check for a limit that signifies full vision
+			if (halfAngleLimit < FULL_ANGLE_LIMIT) {
+				float upper = Math.abs(target.angle(next(octant)));
+				float lower = Math.abs(target.angle(next((octant + 1) % 8)));
+
+				float angle = MathUtils.ceil(Math.min(lower, upper)) - 1; // JS translation
+
+				if (angle > halfAngleLimit) {
+					continue;
+				}
+			}
+
+			compute(octant, origin, rangeLimit, facingAngle, halfAngleLimit, 1, new Slope(1, 1), new Slope(0, 1));
+		}
 	}
 
 	private void compute(int octant, MapLocation mapOrigin, int rangeLimit, float facingAngle, float halfAngleLimit, int x, Slope top,
@@ -450,14 +467,9 @@ public class LineOfSight {
 
 	// CODEPOKE Calculate whether we go OoB on angle
 	private boolean isAngleOutOfBounds(int x, int y, MapLocation mapOrigin, float facingAngle, float halfAngleLimit) {
-		// If there is no angle limit set, return
 
-		if (MathUtils.isEqual(halfAngleLimit, NO_ANGLE_LIMIT, ANGLE_COMPARISON_TOLERANCE)) {
-			System.err.println("WARNING: no angle set");
-			return false;
-		}
 		// If half of the Unit's limit is 180, they have full 360-vision, so nothing is out of bounds;
-		if (MathUtils.isEqual(halfAngleLimit, FULL_ANGLE_LIMIT, ANGLE_COMPARISON_TOLERANCE)) {
+		if (halfAngleLimit >= FULL_ANGLE_LIMIT) {
 			return false;
 		}
 
@@ -473,6 +485,11 @@ public class LineOfSight {
 
 		// Check if the difference is within our limit
 		return delta > (halfAngleLimit + ANGLE_COMPARISON_TOLERANCE) && delta < 360 - (halfAngleLimit + ANGLE_COMPARISON_TOLERANCE);
+	}
+
+	// CODEPOKE
+	private Vector2 next(int octant) {
+		return new Vector2(1, 0).setAngle(octant * -45);
 	}
 
 	public void resetVisibleLocations() {
