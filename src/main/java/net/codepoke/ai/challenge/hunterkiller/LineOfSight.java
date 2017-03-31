@@ -63,12 +63,11 @@ public class LineOfSight {
 	 * {@link LineOfSight#compute(MapLocation, int, Direction, float)}
 	 */
 	public void compute(MapLocation origin, int rangeLimit) {
-		compute(origin, rangeLimit, 0, NO_ANGLE_LIMIT);
+		compute(origin, rangeLimit, Direction.NORTH, NO_ANGLE_LIMIT);
 	}
 
 	/**
-	 * Compute the field-of-view from a location within a specific range, but with a limit on the cone
-	 * of vision.
+	 * Compute the field-of-view from a location within a specific range.
 	 * 
 	 * @param origin
 	 *            The location to get the field-of-view for.
@@ -80,36 +79,29 @@ public class LineOfSight {
 	 *            The limit in degrees of the given cone of vision.
 	 */
 	public void compute(MapLocation origin, int rangeLimit, Direction direction, float angleLimit) {
-		compute(origin, rangeLimit, direction.angle, angleLimit);
-	}
-
-	/**
-	 * Compute the field-of-view from a location within a specific range.
-	 * 
-	 * @param origin
-	 *            The location to get the field-of-view for.
-	 * @param rangeLimit
-	 *            The viewing range.
-	 * @param facingAngle
-	 *            The angle the unit is facing in degrees, X-positive axis (Y==0) is 0, increasing clockwise
-	 * @param angleLimit
-	 *            The limit in degrees of the given cone of vision.
-	 */
-	public void compute(MapLocation origin, int rangeLimit, float facingAngle, float angleLimit) {
 		_setVisible.func(origin.getX(), origin.getY());
 
-		// CODEPOKE Skip calculation for any octant that is out of the angleLimit's bounds
+		// CODEPOKE Skip calculation for any octant that is out of the angleLimit's bounds.
+		float facingAngle = direction.angle;
 		float halfAngleLimit = angleLimit / 2f;
 		Vector2 target = new Vector2(1, 0).setAngle(facingAngle);
 
 		for (int octant = 0; octant < 8; octant++) {
-			// CODEPOKE Skip this check for a limit that signifies full vision
-			if (halfAngleLimit < FULL_ANGLE_LIMIT) {
-				float upper = Math.abs(target.angle(next(octant)));
-				float lower = Math.abs(target.angle(next((octant + 1) % 8)));
+			// CODEPOKE Skip this check for a limit that signifies full vision, or has no limit.
+			if (halfAngleLimit < FULL_ANGLE_LIMIT || angleLimit == NO_ANGLE_LIMIT) {
+				// CODEPOKE Check if we have 'cached' the limits for this octant and Direction combination.
+				float angle = minimumAngleToOctant(octant, direction);
 
-				float angle = MathUtils.ceil(Math.min(lower, upper)) - 1; // JS translation
+				// CODEPOKE Check if the cache returned anything, if not, calculate.
+				if (angle == Float.NaN) {
+					float upper = Math.abs(target.angle(next(octant)));
+					float lower = Math.abs(target.angle(next((octant + 1) % 8)));
+					// CODEPOKE Get the minimum angle, remove 1 to avoid Javascript rounding errors.
+					angle = MathUtils.ceil(Math.min(lower, upper)) - 1;
+				}
 
+				// CODEPOKE If the minimum angle to the octant is larger than half of the angle limit,
+				// we can skip calculations for this octant, since it lies out of bounds.
 				if (angle > halfAngleLimit) {
 					continue;
 				}
@@ -487,9 +479,92 @@ public class LineOfSight {
 		return delta > (halfAngleLimit + ANGLE_COMPARISON_TOLERANCE) && delta < 360 - (halfAngleLimit + ANGLE_COMPARISON_TOLERANCE);
 	}
 
-	// CODEPOKE
+	// CODEPOKE Get the vector that describes the octant following the provided one.
 	private Vector2 next(int octant) {
 		return new Vector2(1, 0).setAngle(octant * -45);
+	}
+
+	// CODEPOKE Check some pre-calculated minimum angles to octants.
+	private float minimumAngleToOctant(int octant, Direction facing) {
+		switch (facing) {
+		case EAST:
+			switch (octant) {
+			case 0:
+				return 0;
+			case 1:
+				return 45;
+			case 2:
+				return 90;
+			case 3:
+				return 135;
+			case 4:
+				return 135;
+			case 5:
+				return 90;
+			case 6:
+				return 45;
+			case 7:
+				return 0;
+			}
+		case NORTH:
+			switch (octant) {
+			case 0:
+				return 45;
+			case 1:
+				return 0;
+			case 2:
+				return 0;
+			case 3:
+				return 45;
+			case 4:
+				return 90;
+			case 5:
+				return 135;
+			case 6:
+				return 135;
+			case 7:
+				return 90;
+			}
+		case SOUTH:
+			switch (octant) {
+			case 0:
+				return 90;
+			case 1:
+				return 135;
+			case 2:
+				return 135;
+			case 3:
+				return 90;
+			case 4:
+				return 45;
+			case 5:
+				return 0;
+			case 6:
+				return 0;
+			case 7:
+				return 45;
+			}
+		case WEST:
+			switch (octant) {
+			case 0:
+				return 135;
+			case 1:
+				return 90;
+			case 2:
+				return 45;
+			case 3:
+				return 0;
+			case 4:
+				return 0;
+			case 5:
+				return 45;
+			case 6:
+				return 90;
+			case 7:
+				return 135;
+			}
+		}
+		return Float.NaN;
 	}
 
 	public void resetVisibleLocations() {
