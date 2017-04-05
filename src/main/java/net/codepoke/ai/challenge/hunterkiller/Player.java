@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.codepoke.ai.GameRules.Result.Ranking;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Structure;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 
@@ -160,13 +161,31 @@ public class Player
 	 *            The map to get the structures from.
 	 */
 	public List<Structure> getStructures(Map map) {
+		IntArray removeList = new IntArray();
 		List<Structure> structures = new ArrayList<Structure>();
 		for (int i = 0; i < structureIDs.size; i++) {
+			GameObject object = map.getObject(structureIDs.get(i));
 			// Make sure the structure did not get removed just before this call
-			if (map.getObject(structureIDs.get(i)) != null) {
-				structures.add((Structure) map.getObject(structureIDs.get(i)));
+			if (object != null) {
+				// Make sure it is still a Structure; the ID could have been re-used if it was destroyed
+				if (object instanceof Structure) {
+					Structure structure = (Structure) object;
+					// Make sure the structure is still under this Player's control
+					if (structure.isControlledBy(this)) {
+						structures.add(structure);
+						continue;
+					}
+				}
 			}
+			// If we did not make it to adding the structure, it means one of the checks failed
+			// The ID should be removed
+			removeList.add(structureIDs.get(i));
 		}
+
+		// Before we return with the list, remove false structure
+		if (removeList.size > 0)
+			structureIDs.removeAll(removeList);
+
 		return structures;
 	}
 
@@ -177,13 +196,31 @@ public class Player
 	 *            The map to get the units from.
 	 */
 	public List<Unit> getUnits(Map map) {
+		IntArray removeList = new IntArray();
 		List<Unit> units = new ArrayList<Unit>();
 		for (int i = 0; i < unitIDs.size; i++) {
+			GameObject object = map.getObject(unitIDs.get(i));
 			// Make sure the unit did not get removed just before this call
-			if (map.getObject(unitIDs.get(i)) != null) {
-				units.add((Unit) map.getObject(unitIDs.get(i)));
+			if (object != null) {
+				// Make sure it is still a Unit; the ID could have been re-used if the unit was destroyed
+				if (object instanceof Unit) {
+					Unit unit = (Unit) object;
+					// Make sure the unit is still under this Player's control
+					if (unit.isControlledBy(this)) {
+						units.add(unit);
+						continue;
+					}
+				}
 			}
+			// If we did not make it to adding the unit, it means one of the checks failed
+			// The ID should be removed
+			removeList.add(unitIDs.get(i));
 		}
+
+		// Before we return with the list, remove false units
+		if (removeList.size > 0)
+			unitIDs.removeAll(removeList);
+
 		return units;
 	}
 

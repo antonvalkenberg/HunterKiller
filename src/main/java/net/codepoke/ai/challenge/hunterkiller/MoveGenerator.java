@@ -217,4 +217,5 @@ public class MoveGenerator {
 		// Return the list of legal orders
 		return orders;
 	}
+
 }
