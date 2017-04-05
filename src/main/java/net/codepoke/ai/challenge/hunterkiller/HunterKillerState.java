@@ -14,6 +14,7 @@ import net.codepoke.ai.states.HiddenState;
 import net.codepoke.ai.states.SequentialState;
 
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.IntArray;
 
 /**
  * Class representing the state of the HunterKiller game. In this state one {@link Player} is the
@@ -130,6 +131,18 @@ public class HunterKillerState
 	 */
 	public Player getActivePlayer() {
 		return players[activePlayerID];
+	}
+
+	/**
+	 * Returns the current score for all players, indexed by player-ID.
+	 */
+	public IntArray getScores() {
+		IntArray scores = new IntArray(true, players.length);
+		scores.setSize(players.length);
+		for (Player player : players) {
+			scores.set(player.getID(), player.getScore());
+		}
+		return scores;
 	}
 
 	/**
