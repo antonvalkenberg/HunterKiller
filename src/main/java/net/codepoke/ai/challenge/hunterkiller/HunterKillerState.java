@@ -243,6 +243,8 @@ public class HunterKillerState
 					if (unit.getControllingPlayerID() != activePlayerID) {
 						// Remove the unit from the map
 						map.unregisterGameObject(unit);
+						// Tell the player that controls this unit that it's gone (for the moment)
+						getPlayer(unit.getControllingPlayerID()).removeUnit(unit.getID());
 					}
 				}
 			}
