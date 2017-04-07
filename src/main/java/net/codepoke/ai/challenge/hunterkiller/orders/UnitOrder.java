@@ -124,4 +124,13 @@ public class UnitOrder
 
 	// endregion
 
+	// region Overridden methods
+
+	@Override
+	public String toString() {
+		return unitType + " | " + orderType + " | " + targetLocation;
+	}
+
+	// endregion
+
 }
