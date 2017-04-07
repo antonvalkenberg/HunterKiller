@@ -201,20 +201,16 @@ public class Player
 		for (int i = 0; i < unitIDs.size; i++) {
 			GameObject object = map.getObject(unitIDs.get(i));
 			// Make sure the unit did not get removed just before this call
-			if (object != null) {
-				// Make sure it is still a Unit; the ID could have been re-used if the unit was destroyed
-				if (object instanceof Unit) {
-					Unit unit = (Unit) object;
-					// Make sure the unit is still under this Player's control
-					if (unit.isControlledBy(this)) {
-						units.add(unit);
-						continue;
-					}
-				}
+			if (object == null || !(object instanceof Unit) || !((Unit) object).isControlledBy(this)) {
+
+				// If we did not make it to adding the unit, it means one of the checks failed
+				// The ID should be removed
+				// removeList.add(unitIDs.get(i));
+
+				throw new RuntimeException("turn down for what");
+			} else {
+				units.add((Unit) object);
 			}
-			// If we did not make it to adding the unit, it means one of the checks failed
-			// The ID should be removed
-			removeList.add(unitIDs.get(i));
 		}
 
 		// Before we return with the list, remove false units
