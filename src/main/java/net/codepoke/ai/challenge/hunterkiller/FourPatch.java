@@ -1,5 +1,7 @@
 package net.codepoke.ai.challenge.hunterkiller;
 
+import net.codepoke.ai.challenge.hunterkiller.FourPatch.DataCreation;
+
 /**
  * Represents a class that enables the construction of a grid based on a predefined part. This
  * predefined part is used to build up the grid by mirroring and copying quadrants of it.
@@ -164,6 +166,9 @@ public class FourPatch {
 	 */
 	protected char[][] data;
 
+	/** Whether or not we need to mirror and rotate over the data, or just copy it over directly. */
+	protected boolean custom;
+
 	/**
 	 * Create a new FourPatch, where quadrant A has a specific width and height.
 	 * 
@@ -177,10 +182,11 @@ public class FourPatch {
 	 * @param quadrantAHeight
 	 *            The height of quadrant A in the {@link FourPatch}.
 	 */
-	public FourPatch(DataCreation creation, String data, int quadrantAWidth, int quadrantAHeight) {
+	public FourPatch(DataCreation creation, String data, int quadrantAWidth, int quadrantAHeight, boolean custom) {
 		this.creation = creation;
 		this.quadrantAWidth = quadrantAWidth;
 		this.quadrantAHeight = quadrantAHeight;
+		this.custom = custom;
 		// Note that quadrantAWidth and quadrantAHeight should be set before the 'parseData' call.
 		this.data = parseData(data);
 	}
@@ -218,9 +224,9 @@ public class FourPatch {
 
 		// Check if quadrant A's dimensions need to be set
 		if (quadrantAWidth < 0)
-			quadrantAWidth = maxRowLength;
+			quadrantAWidth = custom ? maxRowLength / 2 : maxRowLength;
 		if (quadrantAHeight < 0)
-			quadrantAHeight = rows.length;
+			quadrantAHeight = custom ? rows.length / 2 : rows.length;
 
 		// Initialise the data
 		char[][] parsedData = new char[rows.length][maxRowLength];
@@ -243,45 +249,85 @@ public class FourPatch {
 	 */
 	public void createGrid() {
 		// Initialize the width and height of the grid.
-		int gridWidth = data[0].length + quadrantAWidth;
-		int gridHeight = data.length + quadrantAHeight;
+		int gridWidth = getGridWidth();
+		int gridHeight = getGridHeight();
 
 		// Note: To get a mirrored coordinate, the following steps are taken:
 		// - take the total dimension of the grid (width for X, height for Y)
 		// - minus 1 because coordinates start at 0
 		// - minus the current value of the coordinate
 
+		int quadrantBWidth = gridWidth - quadrantAWidth * 2;
+		int quadrantBHeight = gridHeight - quadrantAHeight * 2;
+
 		// Move through the predefined part of the grid. Note: using [y][x] again because of how we created the data
 		// array.
 		for (int y = 0; y < data.length; y++) {
 			for (int x = 0; x < data[y].length; x++) {
-				// Check which quadrant this location on the predefined part is in.
-				if (x < quadrantAWidth && y < quadrantAHeight) {
-					// Quadrant A, this exists 4 times on the grid.
-					// The first copy is on the same coordinates, in section 0.
-					creation.create(data[y][x], x, y, Sections.A);
-					// The second copy is on the same y coordinate, but the x coordinate is mirrored, in section 2.
-					creation.create(data[y][x], ((gridWidth - 1) - x), y, Sections.A_H);
-					// The third copy is on the same x coordinate, but the y coordinate is mirrored, in section 6.
-					creation.create(data[y][x], x, ((gridHeight - 1) - y), Sections.A_V);
-					// The fourth copy is on mirrored x and mirrored y, in section 8.
-					creation.create(data[y][x], ((gridWidth - 1) - x), ((gridHeight - 1) - y), Sections.A_Mirror);
-				} else if (x >= quadrantAWidth && y < quadrantAHeight) {
-					// Quadrant B, this exists twice on the grid, only mirrored in the Y axis.
-					// The first copy is on the same coordinates, in section 1.
-					creation.create(data[y][x], x, y, Sections.B);
-					// The second copy is on the same x coordinate, but the y coordinate is mirrored, in section 7.
-					creation.create(data[y][x], x, ((gridHeight - 1) - y), Sections.B_Mirror);
-				} else if (x < quadrantAWidth && y >= quadrantAHeight) {
-					// Quadrant C, this exists twice on the grid, only mirrored in the X axis.
-					// The first copy is on the same coordinates, in section 3.
-					creation.create(data[y][x], x, y, Sections.C);
-					// The second copy is on the same y coordinate, but the x coordinate is mirrored, in section 5.
-					creation.create(data[y][x], ((gridWidth - 1) - x), y, Sections.C_Mirror);
+
+				if (custom) {
+
+					// Copy directly over, but classify in which section we are.
+					Sections section = null;
+					if (x < quadrantAWidth) {
+						// Either A, C, A_V
+						if (y < quadrantAHeight)
+							section = Sections.A;
+						else if (y < quadrantAHeight + quadrantBHeight)
+							section = Sections.C;
+						else
+							section = Sections.A_V;
+
+					} else if (x < quadrantAWidth + quadrantBWidth) {
+						// Either B, D, B_Mirror
+						if (y < quadrantAHeight)
+							section = Sections.B;
+						else if (y < quadrantAHeight + quadrantBHeight)
+							section = Sections.D;
+						else
+							section = Sections.B_Mirror;
+					} else {
+						// Either A_H, C_Mirror, or A_Mirror
+						if (y < quadrantAHeight)
+							section = Sections.A_H;
+						else if (y < quadrantAHeight + quadrantBHeight)
+							section = Sections.C_Mirror;
+						else
+							section = Sections.A_Mirror;
+
+					}
+
+					creation.create(data[y][x], x, y, section);
 				} else {
-					// Quadrant D, this exists only once on the grid, in section 4.
-					creation.create(data[y][x], x, y, Sections.D);
+					// Check which quadrant this location on the predefined part is in.
+					if (x < quadrantAWidth && y < quadrantAHeight) {
+						// Quadrant A, this exists 4 times on the grid.
+						// The first copy is on the same coordinates, in section 0.
+						creation.create(data[y][x], x, y, Sections.A);
+						// The second copy is on the same y coordinate, but the x coordinate is mirrored, in section 2.
+						creation.create(data[y][x], ((gridWidth - 1) - x), y, Sections.A_H);
+						// The third copy is on the same x coordinate, but the y coordinate is mirrored, in section 6.
+						creation.create(data[y][x], x, ((gridHeight - 1) - y), Sections.A_V);
+						// The fourth copy is on mirrored x and mirrored y, in section 8.
+						creation.create(data[y][x], ((gridWidth - 1) - x), ((gridHeight - 1) - y), Sections.A_Mirror);
+					} else if (x >= quadrantAWidth && y < quadrantAHeight) {
+						// Quadrant B, this exists twice on the grid, only mirrored in the Y axis.
+						// The first copy is on the same coordinates, in section 1.
+						creation.create(data[y][x], x, y, Sections.B);
+						// The second copy is on the same x coordinate, but the y coordinate is mirrored, in section 7.
+						creation.create(data[y][x], x, ((gridHeight - 1) - y), Sections.B_Mirror);
+					} else if (x < quadrantAWidth && y >= quadrantAHeight) {
+						// Quadrant C, this exists twice on the grid, only mirrored in the X axis.
+						// The first copy is on the same coordinates, in section 3.
+						creation.create(data[y][x], x, y, Sections.C);
+						// The second copy is on the same y coordinate, but the x coordinate is mirrored, in section 5.
+						creation.create(data[y][x], ((gridWidth - 1) - x), y, Sections.C_Mirror);
+					} else {
+						// Quadrant D, this exists only once on the grid, in section 4.
+						creation.create(data[y][x], x, y, Sections.D);
+					}
 				}
+
 			}
 		}
 	}
@@ -290,14 +336,14 @@ public class FourPatch {
 	 * Returns the width of the grid that will be created.
 	 */
 	public int getGridWidth() {
-		return data[0].length + quadrantAWidth;
+		return custom ? data[0].length : data[0].length + quadrantAWidth;
 	}
 
 	/**
 	 * Returns the height of the grid that will be created.
 	 */
 	public int getGridHeight() {
-		return data.length + quadrantAHeight;
+		return custom ? data.length : data.length + quadrantAHeight;
 	}
 
 }

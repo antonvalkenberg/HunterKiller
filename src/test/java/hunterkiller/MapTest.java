@@ -141,7 +141,7 @@ public class MapTest
 		HunterKillerMapCreation mapCreator = factory.new HunterKillerMapCreation();
 		String mapPatch = StringExtensions.format("._█%nDBO%nXPH");
 		// Create a FourPatch to test
-		FourPatch testPatch = new FourPatch(mapCreator, mapPatch, 3, 3);
+		FourPatch testPatch = new FourPatch(mapCreator, mapPatch, 3, 3, false);
 		// Setup the players
 		Player[] players = new Player[] { new Player(0, "A", 0), new Player(1, "B", 8) };
 		// Set the spawn direction

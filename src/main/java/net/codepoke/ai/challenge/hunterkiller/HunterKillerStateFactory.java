@@ -61,7 +61,7 @@ public class HunterKillerStateFactory
 		if (maps.listFiles() == null) {
 			// Use a predefined basic map
 			String rawMapData = StringExtensions.format("..........%n..........%n..████████%n..█B______%n..█_______%n..█_______%n..█_______%n..█_______%n..█_______%n..█_______");
-			mapRotation.add(new MapSetup("basic", rawMapData));
+			mapRotation.add(new MapSetup("basic", rawMapData, false));
 		} else {
 
 			for (File mapFile : maps.listFiles()) {
@@ -107,9 +107,13 @@ public class HunterKillerStateFactory
 							rawMapData = rawMapData.substring(rawMapData.indexOf(mapLines[1]));
 							mapRotation.add(new MapSetup(mapFile.getName(), rawMapData, qWidth, qHeight, spawnDirection));
 						}
+					} else if (mapLines[0].startsWith("custom")) {
+						// Strip away the first line
+						String stripped = rawMapData.substring(rawMapData.indexOf(mapLines[1]));
+						mapRotation.add(new MapSetup(mapFile.getName(), stripped, true));
 					} else {
 						// Assume the whole map needs to be copied and we can use defaults.
-						mapRotation.add(new MapSetup(mapFile.getName(), rawMapData));
+						mapRotation.add(new MapSetup(mapFile.getName(), rawMapData, false));
 					}
 				} catch (Exception e) {
 					System.err.println("Error during parsing of file: " + mapFile.getName());
@@ -134,7 +138,7 @@ public class HunterKillerStateFactory
 	 */
 	public Map constructMap(MapSetup premade, HunterKillerMapCreation creator, Player[] players) {
 		// Create a FourPatch
-		FourPatch patch = new FourPatch(creator, premade.mapData, premade.quadrantAWidth, premade.quadrantAHeight);
+		FourPatch patch = new FourPatch(creator, premade.mapData, premade.quadrantAWidth, premade.quadrantAHeight, premade.custom);
 		return constructFromFourPatch(premade.name, patch, players, premade.spawnDirection);
 	}
 

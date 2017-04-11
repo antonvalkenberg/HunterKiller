@@ -128,7 +128,7 @@ public class UnitOrder
 
 	@Override
 	public String toString() {
-		return unitType + " | " + orderType + " | " + targetLocation;
+		return unitType + " (" + objectID + ")" + " | " + orderType + " | " + targetLocation;
 	}
 
 	// endregion

@@ -24,6 +24,10 @@ public class MapSetup {
 	 * The data that will be copied around the map by {@link FourPatch}.
 	 */
 	String mapData;
+
+	/** Whether or not we need to copy in the quadrants from the given string or not. */
+	boolean custom;
+
 	/**
 	 * The width of the quadrant 'A' in the {@link FourPatch}.
 	 */
@@ -53,9 +57,16 @@ public class MapSetup {
 		quadrantAHeight = lines.length;
 	}
 
-	public MapSetup(String name, String mapData) {
+	public MapSetup(String name, String mapData, boolean custom) {
 		this(mapData);
 		this.name = name;
+		this.custom = custom;
+
+		// We reset the quadrant height/width as it'll be calculated by the Fourpatch.
+		if (custom) {
+			quadrantAWidth = -1;
+			quadrantAHeight = -1;
+		}
 	}
 
 	public MapSetup(String name, String mapData, int quadrantAWidth, int quadrantAHeight, Direction spawnDirection) {
