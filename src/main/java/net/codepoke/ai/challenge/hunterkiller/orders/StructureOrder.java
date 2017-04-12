@@ -46,4 +46,13 @@ public class StructureOrder
 
 	// endregion
 
+	// region Overridden methods
+
+	@Override
+	public String toString() {
+		return "Structure (" + objectID + ")" + " | " + orderType;
+	}
+
+	// endregion
+
 }
