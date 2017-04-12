@@ -290,7 +290,7 @@ public class Map
 		boolean unitPresent = mapContent[locationPosition][HunterKillerConstants.MAP_INTERNAL_UNIT_INDEX] != null;
 		if (unitPresent) {
 			if (failureReasons != null)
-				failureReasons.append(StringExtensions.format("Location not traversable, Unit present.%n"));
+				failureReasons.append(StringExtensions.format("Location %s not traversable, Unit present.%n", location));
 			return false;
 		}
 
@@ -298,7 +298,7 @@ public class Map
 		boolean featureWalkable = ((MapFeature) mapContent[locationPosition][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX]).isWalkable();
 		if (!featureWalkable) {
 			if (failureReasons != null)
-				failureReasons.append(StringExtensions.format("Location not traversable, MapFeature is not walkable.%n"));
+				failureReasons.append(StringExtensions.format("Location %s  not traversable, MapFeature is not walkable.%n", location));
 			return false;
 		}
 
