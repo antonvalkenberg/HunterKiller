@@ -39,7 +39,7 @@ public class MoveGenerator {
 		List<StructureOrder> orders = new ArrayList<StructureOrder>();
 
 		// Check if the structure can spawn anything
-		if (!structure.canSpawn(state)) {
+		if (!structure.canSpawnAUnit(state)) {
 			// If not, return now because nothing can be spawned
 			return orders;
 		}

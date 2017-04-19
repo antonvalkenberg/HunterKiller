@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerConstants;
 import net.codepoke.ai.challenge.hunterkiller.HunterKillerState;
-import net.codepoke.ai.challenge.hunterkiller.Map;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.Player;
 import net.codepoke.ai.challenge.hunterkiller.StringExtensions;
@@ -162,17 +161,30 @@ public class Structure
 	// region Public methods
 
 	/**
-	 * Whether or not this structure can spawn anything in the current game state. This method checks if this structure
-	 * allows the spawning of units, and if the spawn location is traversable.
+	 * Whether or not this structure's spawn location is traversable.
 	 * 
 	 * @param state
 	 *            The current game state.
 	 */
-	public boolean canSpawn(HunterKillerState state) {
-		// Get the current map
-		Map map = state.getMap();
+	public boolean isSpawnAreaFree(HunterKillerState state) {
 		// Check if the spawn location is traversable
-		return this.allowsSpawning && map.isTraversable(spawnLocation);
+		return state.getMap()
+					.isTraversable(spawnLocation);
+	}
+
+	/**
+	 * Whether or not this structure can spawn at least one type of unit in the current game state.
+	 * 
+	 * @param state
+	 *            The current game state.
+	 */
+	public boolean canSpawnAUnit(HunterKillerState state) {
+		for (UnitType type : UnitType.values) {
+			if (canSpawn(state, type)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -215,8 +227,7 @@ public class Structure
 		int playerResource = state.getPlayer(controllingPlayerID)
 									.getResource();
 		// Check if the resource amount is at least the cost to spawn the specified unit type
-		return this.allowsSpawning && state.getMap()
-											.isTraversable(spawnLocation) && playerResource >= Unit.getSpawnCost(unitType);
+		return this.allowsSpawning && isSpawnAreaFree(state) && playerResource >= Unit.getSpawnCost(unitType);
 	}
 
 	/**
