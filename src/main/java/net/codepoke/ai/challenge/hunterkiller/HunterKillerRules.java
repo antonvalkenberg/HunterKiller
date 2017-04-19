@@ -9,6 +9,7 @@ import net.codepoke.ai.challenge.hunterkiller.enums.Direction.Rotation;
 import net.codepoke.ai.challenge.hunterkiller.enums.StructureOrderType;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitOrderType;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitType;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.Controlled;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Structure;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Wall;
@@ -361,6 +362,15 @@ public class HunterKillerRules
 		if (orderObject == null) {
 			if (failureReasons != null)
 				failureReasons.append(StringExtensions.format("Order fail: Could not find object with ID %d.%n", order.getObjectID()));
+			return false;
+		}
+
+		// Check if the object is being controlled by the currently active player
+		if (orderObject instanceof Controlled && !((Controlled) orderObject).isControlledBy(state.getActivePlayer())) {
+			if (failureReasons != null)
+				failureReasons.append(StringExtensions.format(	"Order fail: Active player (%d) does not control object with ID %d.%n",
+																state.getCurrentPlayer(),
+																order.getObjectID()));
 			return false;
 		}
 
