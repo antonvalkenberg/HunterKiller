@@ -84,10 +84,6 @@ public class MoveGenerator {
 		// Create a list to write to
 		List<UnitOrder> orders = new ArrayList<UnitOrder>();
 
-		// Get all legal rotation orders
-		if (includeRotation)
-			orders.addAll(getAllLegalRotationOrders(state, unit));
-
 		// Get all legal movement orders
 		if (includeMovement)
 			orders.addAll(getAllLegalMoveOrders(state, unit));
@@ -95,6 +91,10 @@ public class MoveGenerator {
 		// Get all legal attack orders
 		if (includeAttack)
 			orders.addAll(getAllLegalAttackOrders(state, unit));
+
+		// Get all legal rotation orders
+		if (includeRotation)
+			orders.addAll(getAllLegalRotationOrders(state, unit));
 
 		// Return the list of legal orders
 		return orders;

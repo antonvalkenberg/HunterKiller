@@ -1,5 +1,6 @@
 package net.codepoke.ai.challenge.hunterkiller.orders;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +17,7 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
  */
 @Getter
 @Setter
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class StructureOrder
 		extends HunterKillerOrder {
