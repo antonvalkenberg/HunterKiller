@@ -1,7 +1,10 @@
 package net.codepoke.ai.challenge.hunterkiller;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 
@@ -35,6 +38,7 @@ public class LineOfSight {
 
 	// Temporary variable, NOT MULTITHREADABLE
 	private Vector2 tmpAngleCalc = new Vector2();
+	private static HashMap<CacheEntry, HashSet<MapLocation>> fovCache = new HashMap<LineOfSight.CacheEntry, HashSet<MapLocation>>();
 
 	/**
 	 * Construct a new instance of the LineOfSight class. This class contains a method to compute the
@@ -571,8 +575,27 @@ public class LineOfSight {
 		_setVisible.resetLocations();
 	}
 
-	public HashSet<MapLocation> getVisibleLocations() {
+	public HashSet<MapLocation> getVisibleLocations(CacheEntry entry) {
+		// Check if we have a cache entry already
+		if (!fovCache.containsKey(entry)) {
+			fovCache.put(entry, _setVisible.getVisibleLocations());
+		}
+
+		// Return the visible locations
 		return _setVisible.getVisibleLocations();
+	}
+
+	public boolean haveCached(CacheEntry entry) {
+		// Check if we have a cache entry already
+		return fovCache.containsKey(entry);
+	}
+
+	public HashSet<MapLocation> getFromCache(CacheEntry entry) {
+		// Check if we have a cache entry already
+		if (fovCache.containsKey(entry)) {
+			return fovCache.get(entry);
+		}
+		return null;
 	}
 
 	public GetDistanceFunction getDistanceType() {
@@ -623,6 +646,24 @@ public class LineOfSight {
 		public void resetLocations();
 
 		public HashSet<MapLocation> getVisibleLocations();
+	}
+
+	// endregion
+
+	// region CODEPOKE classes
+
+	@EqualsAndHashCode
+	@AllArgsConstructor
+	public class CacheEntry {
+
+		private MapLocation location;
+
+		private int range;
+
+		private Direction direction;
+
+		private float angleLimit;
+
 	}
 
 	// endregion

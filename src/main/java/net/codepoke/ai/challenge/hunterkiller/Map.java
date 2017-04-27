@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.codepoke.ai.challenge.hunterkiller.LineOfSight.BlocksLightFunction;
+import net.codepoke.ai.challenge.hunterkiller.LineOfSight.CacheEntry;
 import net.codepoke.ai.challenge.hunterkiller.LineOfSight.GetDistanceFunction;
 import net.codepoke.ai.challenge.hunterkiller.LineOfSight.SetVisibleFunction;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
@@ -635,12 +636,19 @@ public class Map
 		// Check if the unit's field-of-view is still valid, if so, return the unit's current field-of-view
 		if (unit.isFieldOfViewValid())
 			return unit.getFieldOfView();
+
+		// Check if the lineOfSight object has the field-of-view cached for this combination
+		CacheEntry entry = lineOfSight.new CacheEntry(unit.getLocation(), unit.getFieldOfViewRange(), unit.getOrientation(),
+														unit.getFieldOfViewAngle());
+		if (lineOfSight.haveCached(entry))
+			return lineOfSight.getFromCache(entry);
+
 		// Reset any previously computed locations
 		lineOfSight.resetVisibleLocations();
 		// Ask the line-of-sight implementation to compute the field-of-view
 		lineOfSight.compute(unit.getLocation(), unit.getFieldOfViewRange(), unit.getOrientation(), unit.getFieldOfViewAngle());
 		// Return the list of computed locations
-		return lineOfSight.getVisibleLocations();
+		return lineOfSight.getVisibleLocations(entry);
 	}
 
 	/**
