@@ -3,14 +3,20 @@ package net.codepoke.ai.challenge.hunterkiller;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
+
+import com.badlogic.gdx.utils.Array;
 
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.enums.StructureOrderType;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitOrderType;
 import net.codepoke.ai.challenge.hunterkiller.enums.UnitType;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.Controlled;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.MapFeature;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Structure;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Wall;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 import net.codepoke.ai.challenge.hunterkiller.orders.HunterKillerOrder;
@@ -24,6 +30,19 @@ import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
  *
  */
 public class MoveGenerator {
+	
+	/**
+	 * Simple Random to avoid alloc'ing
+	 */
+	public static Random RNG = new Random();
+	
+	/**
+	 * Temporary arrays used to ad-hoc shuffle to create RNG.
+	 * TODO: Move this to instance class because of MOOOEELLTTIEEE THREADING
+	 */
+	private static Array<UnitType> UNIT_TYPES = Array.with(UnitType.values);
+	private static Array<Direction> DIRECTIONS = Array.with(Direction.values);
+	private static Array<UnitOrderType> UNIT_ORDER_TYPES = Array.with(UnitOrderType.values);
 
 	/**
 	 * Returns a list containing all legal orders for a structure in the current state. For a list of all types of
@@ -52,6 +71,57 @@ public class MoveGenerator {
 
 		// Return the list of legal orders
 		return orders;
+	}
+	
+	/**
+	 * Returns a list containing all legal orders for a structure in the current state. For a list of all types of
+	 * orders available to a Structure, see {@link StructureOrderType}.
+	 * 
+	 * @param state
+	 *            The current {@link HunterKillerState} of the game.
+	 * @param structure
+	 *            The {@link Structure} to receive legal orders for.
+	 */
+	public static StructureOrder getRandomOrder(HunterKillerState state, Structure structure) {
+
+		UNIT_TYPES.shuffle();
+		
+		// Check for each unit type if the structure can spawn it
+		for (UnitType type : UNIT_TYPES) {
+			if (structure.canSpawn(state, type))
+				return structure.spawn(type);
+		}
+
+		// Return the list of legal orders
+		return null;
+	}
+	
+	/**
+	 * Returns a random order for the given unit.
+	 */
+	public static UnitOrder getRandomOrder(HunterKillerState state, Unit unit){
+						
+		UNIT_ORDER_TYPES.shuffle();
+		
+		for (UnitOrderType type : UNIT_ORDER_TYPES) {
+			
+			UnitOrder move = null;
+			
+			if(!type.hasLocation){				
+				// Rotate
+				return unit.rotate(type == UnitOrderType.ROTATE_CLOCKWISE);				
+			} else if(type != UnitOrderType.MOVE){				
+				// Attack
+				move = getRandomAttackOrder(state, unit, false, type == UnitOrderType.ATTACK_SPECIAL);
+			} else {
+				// Move
+				move = getRandomMoveOrder(state, unit);
+			}
+
+			if(move != null) return move;				
+		}
+		
+		return null;
 	}
 
 	/**
@@ -123,6 +193,28 @@ public class MoveGenerator {
 		}
 
 		return orders;
+	}
+
+
+	/**
+	 * Returns a random legal move order. See {@link UnitOrderType} for a list of possible orders. 
+	 */
+	public static UnitOrder getRandomMoveOrder(HunterKillerState state, Unit unit) {
+
+		// Get the map we are currently on & the unit's location
+		Map map = state.getMap();
+		MapLocation unitLocation = unit.getLocation();
+		
+		DIRECTIONS.shuffle();
+		
+		// Check what movement options we have
+		for (Direction direction : DIRECTIONS) {
+			MapLocation newLocaction = map.getAdjacentLocationInDirection(unitLocation, direction);
+			if (map.isMovePossible(unitLocation, newLocaction))
+				return unit.move(newLocaction, map);
+		}
+		
+		return null;
 	}
 
 	/**
@@ -221,8 +313,8 @@ public class MoveGenerator {
 	
 
 	/**
-	 * Returns a collection of {@link UnitOrder}s containing all legal orders, from the Unit's Field-of-View, in the
-	 * attack category. See {@link UnitOrderType} for a list of possible orders.
+	 * Returns a random legal attack order, from the Unit's Field-of-View. See {@link UnitOrderType} for a list of possible orders.
+	 * Friendly-fire moves are already removed.
 	 * 
 	 * @param state
 	 *            The current {@link HunterKillerState} of the game.
@@ -231,10 +323,11 @@ public class MoveGenerator {
 	 * @param usePlayersFoV
 	 *            Whether or not to use the Player's Field-of-View, instead of the Unit's.
 	 */
-	public static List<UnitOrder> getMinimalLegalAttackOrders(HunterKillerState state, Unit unit, boolean usePlayersFoV) {
-		// Create a list to write to
-		List<UnitOrder> orders = new ArrayList<UnitOrder>();
-
+	public static UnitOrder getRandomAttackOrder(HunterKillerState state, Unit unit, boolean usePlayersFoV, boolean useSpecial) {
+		
+		// If we want special, but we can't, stop
+		if(useSpecial && unit.getSpecialAttackCooldown() > 0) return null;
+		
 		// Get the map we are currently on
 		Map map = state.getMap();
 		// And the unit's location
@@ -252,47 +345,88 @@ public class MoveGenerator {
 		}
 
 		if (unit instanceof Infected) {
+			
+			DIRECTIONS.shuffle();
+			
 			// Since we know an infected can only do a melee attack (range = 1)
-			for (Direction direction : Direction.values) {
-				// Make an order for each adjacent location
+			for (Direction direction : DIRECTIONS) {
+				// Make an order for the first adjacent location that contains a unit.
 				MapLocation targetLocation = map.getAdjacentLocationInDirection(unitLocation, direction);
 				
-				Unit target = map.getUnitAtLocation(targetLocation);				
-				if(target == null) continue;
+				if(targetLocation == null) continue;
 				
-				orders.add(unit.attack(targetLocation, false));
+				Unit target = map.getUnitAtLocation(targetLocation);				
+				if(target != null){
+					
+					// No sense in killing allied infected.
+					if(target instanceof Infected && target.getControllingPlayerID() == unit.getControllingPlayerID()) continue;
+					
+					return unit.attack(targetLocation, false);
+				} else {					
+					MapFeature feature = map.getFeatureAtLocation(targetLocation);
+					if(!(feature instanceof Structure)) continue;
+					if(((Structure)feature).getControllingPlayerID() == unit.getControllingPlayerID()) continue;
+
+					return unit.attack(targetLocation, false);
+				}
 			}
-			// Also add the unit's own location as a possibility
-			orders.add(unit.attack(unitLocation, false));
+			
 		} else {
 			// Get the unit's attack range
 			int attackRange = Unit.getAttackRange(unit.getType());
+			boolean specialAvailable = unit.getSpecialAttackCooldown() <= 0;
+			
+			// TODO: Optimize
+			Array<MapLocation> locations = new Array<MapLocation>();
+
+			for (MapLocation location : fov) {
+				locations.add(location);
+			}
+			
+			locations.shuffle();
 
 			// Go through the field-of-view
-			for (MapLocation location : fov) {
+			for (MapLocation location : locations) {
+				
 				// Check if this location is within the unit's attack range
 				if (map.getDistance(unitLocation, location) > attackRange) continue;					
 
-				Unit target = map.getUnitAtLocation(location);
+				Controlled target = map.getUnitAtLocation(location);
+				MapFeature feature = null;
 				
-				if(target == null) continue;
-				
-				// Check if the special for this unit is available
-				if (unit.getSpecialAttackCooldown() <= 0) {
-					// A Soldier's special can't target Walls
-					if (unit instanceof Soldier && map.getFeatureAtLocation(location) instanceof Wall)
-						continue;
-					// Create a special attack order for this location
-					orders.add(unit.attack(location, true));
+				if(target == null){
+					feature = map.getFeatureAtLocation(location);
+					if(feature instanceof Controlled)
+						target = (Controlled) feature; 
 				}
-				// Create an attack order for this location
-				orders.add(unit.attack(location, false));
 				
+				// If we don't target anything, continue; If we target friendlies, continue.
+				if(target == null && feature == null) continue;				
+				
+				if(useSpecial){
+					
+					// Soldiers can't grenade walls
+					if (unit instanceof Soldier && feature instanceof Wall)
+						continue;
+					
+					// Do not target friendlies if we aren't a medic.
+					if(target != null 
+							&& !(unit instanceof Medic) 
+							&& target.getControllingPlayerID() == unit.getControllingPlayerID())
+						continue;
+										
+					return unit.attack(location, true);
+				} else {
+					
+					// Don't target friendlies
+					if(target != null && target.getControllingPlayerID() == unit.getControllingPlayerID()) continue;
+					
+					return unit.attack(location, false);					
+				}				
 			}
 		}
 
-		// Return the list of legal orders
-		return orders;
+		return null;
 	}
 
 }
