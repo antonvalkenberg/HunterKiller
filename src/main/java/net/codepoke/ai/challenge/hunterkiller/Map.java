@@ -286,9 +286,11 @@ public class Map
 																location.getY()));
 			return false;
 		}
+		
+		GameObject[] locationList = mapContent[locationPosition];
 
 		// There is a unit on a square if the content of the unit layer is not null
-		boolean unitPresent = mapContent[locationPosition][HunterKillerConstants.MAP_INTERNAL_UNIT_INDEX] != null;
+		boolean unitPresent = locationList[HunterKillerConstants.MAP_INTERNAL_UNIT_INDEX] != null;
 		if (unitPresent) {
 			if (failureReasons != null)
 				failureReasons.append(StringExtensions.format("Location %s not traversable, Unit present.%n", location));
@@ -296,7 +298,7 @@ public class Map
 		}
 
 		// A feature can be walked on/over if it is walkable, derp
-		boolean featureWalkable = ((MapFeature) mapContent[locationPosition][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX]).isWalkable();
+		boolean featureWalkable = ((MapFeature) locationList[HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX]).isWalkable();
 		if (!featureWalkable) {
 			if (failureReasons != null)
 				failureReasons.append(StringExtensions.format("Location %s  not traversable, MapFeature is not walkable.%n", location));
@@ -364,7 +366,18 @@ public class Map
 	 */
 	public boolean isMovePossible(MapLocation fromLocation, Direction direction) {
 		// Determine the target location
-		MapLocation targetLocation = getAdjacentLocationInDirection(fromLocation, direction);
+		return isMovePossible(fromLocation, getAdjacentLocationInDirection(fromLocation, direction));
+	}
+
+	/**
+	 * Returns whether or not a move in a {@link Direction} is possible on this map.
+	 * 
+	 * @param fromLocation
+	 *            The location the move is from.
+	 * @param targetLocation
+	 *            The adjacent location to move to.
+	 */
+	public boolean isMovePossible(MapLocation fromLocation, MapLocation targetLocation) {
 		// Start by checking if the target location exists on the map
 		if (targetLocation == null)
 			return false;
@@ -640,8 +653,11 @@ public class Map
 		// Check if the lineOfSight object has the field-of-view cached for this combination
 		CacheEntry entry = lineOfSight.new CacheEntry(unit.getLocation(), unit.getFieldOfViewRange(), unit.getOrientation(),
 														unit.getFieldOfViewAngle());
-		if (lineOfSight.haveCached(entry))
-			return lineOfSight.getFromCache(entry);
+		
+		HashSet<MapLocation> locations = lineOfSight.getFromCache(entry); 
+		
+		if (locations != null)
+			return locations;
 
 		// Reset any previously computed locations
 		lineOfSight.resetVisibleLocations();

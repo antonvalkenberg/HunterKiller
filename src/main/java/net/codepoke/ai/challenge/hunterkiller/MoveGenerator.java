@@ -117,8 +117,9 @@ public class MoveGenerator {
 
 		// Check what movement options we have
 		for (Direction direction : Direction.values) {
-			if (map.isMovePossible(unitLocation, direction))
-				orders.add(unit.move(direction, map));
+			MapLocation newLocaction = map.getAdjacentLocationInDirection(unitLocation, direction);
+			if (map.isMovePossible(unitLocation, newLocaction))
+				orders.add(unit.move(newLocaction, map));
 		}
 
 		return orders;
@@ -211,6 +212,82 @@ public class MoveGenerator {
 					// Create an attack order for this location
 					orders.add(unit.attack(location, false));
 				}
+			}
+		}
+
+		// Return the list of legal orders
+		return orders;
+	}
+	
+
+	/**
+	 * Returns a collection of {@link UnitOrder}s containing all legal orders, from the Unit's Field-of-View, in the
+	 * attack category. See {@link UnitOrderType} for a list of possible orders.
+	 * 
+	 * @param state
+	 *            The current {@link HunterKillerState} of the game.
+	 * @param unit
+	 *            The {@link Unit} to receive legal orders for.
+	 * @param usePlayersFoV
+	 *            Whether or not to use the Player's Field-of-View, instead of the Unit's.
+	 */
+	public static List<UnitOrder> getMinimalLegalAttackOrders(HunterKillerState state, Unit unit, boolean usePlayersFoV) {
+		// Create a list to write to
+		List<UnitOrder> orders = new ArrayList<UnitOrder>();
+
+		// Get the map we are currently on
+		Map map = state.getMap();
+		// And the unit's location
+		MapLocation unitLocation = unit.getLocation();
+
+		// Create a field-of-view set
+		HashSet<MapLocation> fov = null;
+
+		// Determine which field-of-view we'll be using
+		if (usePlayersFoV) {
+			fov = state.getPlayer(unit.getControllingPlayerID())
+						.getCombinedFieldOfView(map);
+		} else {
+			fov = unit.getFieldOfView();
+		}
+
+		if (unit instanceof Infected) {
+			// Since we know an infected can only do a melee attack (range = 1)
+			for (Direction direction : Direction.values) {
+				// Make an order for each adjacent location
+				MapLocation targetLocation = map.getAdjacentLocationInDirection(unitLocation, direction);
+				
+				Unit target = map.getUnitAtLocation(targetLocation);				
+				if(target == null) continue;
+				
+				orders.add(unit.attack(targetLocation, false));
+			}
+			// Also add the unit's own location as a possibility
+			orders.add(unit.attack(unitLocation, false));
+		} else {
+			// Get the unit's attack range
+			int attackRange = Unit.getAttackRange(unit.getType());
+
+			// Go through the field-of-view
+			for (MapLocation location : fov) {
+				// Check if this location is within the unit's attack range
+				if (map.getDistance(unitLocation, location) > attackRange) continue;					
+
+				Unit target = map.getUnitAtLocation(location);
+				
+				if(target == null) continue;
+				
+				// Check if the special for this unit is available
+				if (unit.getSpecialAttackCooldown() <= 0) {
+					// A Soldier's special can't target Walls
+					if (unit instanceof Soldier && map.getFeatureAtLocation(location) instanceof Wall)
+						continue;
+					// Create a special attack order for this location
+					orders.add(unit.attack(location, true));
+				}
+				// Create an attack order for this location
+				orders.add(unit.attack(location, false));
+				
 			}
 		}
 

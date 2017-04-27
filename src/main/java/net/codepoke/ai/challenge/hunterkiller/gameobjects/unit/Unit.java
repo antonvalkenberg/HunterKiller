@@ -218,10 +218,7 @@ public abstract class Unit
 	 *            The collection of {@link MapLocation}s that are currently in the unit's field-of-view
 	 */
 	public void updateFieldOfView(HashSet<MapLocation> fieldOfView) {
-		this.fieldOfView = new HashSet<MapLocation>(fieldOfView.size());
-		for (MapLocation location : fieldOfView) {
-			this.fieldOfView.add(new MapLocation(location.getX(), location.getY()));
-		}
+		this.fieldOfView = fieldOfView;
 		fieldOfViewValid = true;
 	}
 
@@ -327,6 +324,18 @@ public abstract class Unit
 
 		// Return the UnitOrder
 		return new UnitOrder(this, UnitOrderType.MOVE, targetLocation);
+	}
+
+	/**
+	 * Returns an order to move this unit to the given adjacent location.
+	 * 
+	 * @param adjacentLocation
+	 *            The adjacent {@link MapLocation} to move the unit to.
+	 * @param map
+	 *            The {@link Map} the unit is on.
+	 */
+	public UnitOrder move(MapLocation adjacentLocation, Map map) {
+		return new UnitOrder(this, UnitOrderType.MOVE, adjacentLocation);
 	}
 
 	/**

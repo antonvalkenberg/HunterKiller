@@ -70,7 +70,7 @@ public class UnitOrder
 	 */
 	public UnitOrder(Unit unit, UnitOrderType type, MapLocation target) {
 		this(unit, type);
-		this.targetLocation = new MapLocation(target.getX(), target.getY());
+		this.targetLocation = target;
 	}
 
 	// endregion
@@ -78,7 +78,7 @@ public class UnitOrder
 	// region Public methods
 
 	/**
-	 * Whether or not this order is targeting a location that contains either a Unit of Structure.
+	 * Whether or not this order is targeting a location that does not contain either a Unit of Structure.
 	 * 
 	 * @param unit
 	 *            The unit that this order is for.
@@ -88,9 +88,9 @@ public class UnitOrder
 	public boolean isAttackOrderWithoutTarget(Unit unit, Map map) {
 		if (!isAttackOrder())
 			return false;
-		Unit target = map.getUnitAtLocation(targetLocation);
-		MapFeature feature = map.getFeatureAtLocation(targetLocation);
-		return target == null && !(feature instanceof Structure);
+		
+		return map.getUnitAtLocation(targetLocation) == null
+				&& !(map.getFeatureAtLocation(targetLocation) instanceof Structure);
 	}
 
 	/**

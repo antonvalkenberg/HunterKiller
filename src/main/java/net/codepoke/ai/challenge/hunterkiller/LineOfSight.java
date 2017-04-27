@@ -591,11 +591,7 @@ public class LineOfSight {
 	}
 
 	public HashSet<MapLocation> getFromCache(CacheEntry entry) {
-		// Check if we have a cache entry already
-		if (fovCache.containsKey(entry)) {
-			return fovCache.get(entry);
-		}
-		return null;
+		return fovCache.get(entry);
 	}
 
 	public GetDistanceFunction getDistanceType() {
