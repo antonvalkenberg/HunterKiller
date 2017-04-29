@@ -286,7 +286,7 @@ public class Map
 																location.getY()));
 			return false;
 		}
-		
+
 		GameObject[] locationList = mapContent[locationPosition];
 
 		// There is a unit on a square if the content of the unit layer is not null
@@ -653,11 +653,11 @@ public class Map
 		// Check if the lineOfSight object has the field-of-view cached for this combination
 		CacheEntry entry = lineOfSight.new CacheEntry(unit.getLocation(), unit.getFieldOfViewRange(), unit.getOrientation(),
 														unit.getFieldOfViewAngle());
-		
-		HashSet<MapLocation> locations = lineOfSight.getFromCache(entry); 
-		
-		if (locations != null)
-			return locations;
+
+		// HashSet<MapLocation> locations = lineOfSight.getFromCache(entry);
+		//
+		// if (locations != null)
+		// return locations;
 
 		// Reset any previously computed locations
 		lineOfSight.resetVisibleLocations();
