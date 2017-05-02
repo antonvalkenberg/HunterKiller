@@ -33,7 +33,7 @@ public class Door
 	// region Constructor
 
 	/**
-	 * Constructs a new instance of a Door.
+	 * Constructs a new instance of a closed Door.
 	 * 
 	 * {@link Door#Door(MapLocation, int)}
 	 */
@@ -42,10 +42,11 @@ public class Door
 	}
 
 	/**
-	 * Constructs a new instance of a Door with a specified time before it closes.
+	 * Constructs a new instance of an open Door with a specified time before it closes. If that time is 0, the Door
+	 * will be created closed.
 	 * 
 	 * @param mapLocation
-	 *            The Door's location of the Map.
+	 *            The Door's location on the Map.
 	 * @param timeToClose
 	 *            Amount of rounds before the Door closes.
 	 */
@@ -64,33 +65,48 @@ public class Door
 	 * @return ^
 	 */
 	public boolean isOpen() {
-		return openTimer > 0;
+		return !isBlockingLOS;
 	}
 
 	/**
 	 * Open this Door. It will close after a predetermined amount of rounds.
-	 */
-	public void open() {
-		openTimer = HunterKillerConstants.DOOR_OPEN_ROUNDS;
-		isBlockingLOS = false;
-	}
-
-	/**
-	 * Close this Door. This method does nothing if there is a Unit at this Door's location.
 	 * 
 	 * @param map
 	 *            The {@link Map} this Door is on.
 	 */
-	public void close(Map map) {
-		if (map.getUnitAtLocation(getLocation()) == null) {
+	public void open(Map map) {
+		openTimer = HunterKillerConstants.DOOR_OPEN_ROUNDS;
+		isBlockingLOS = false;
+		// Invalidate field-of-view of nearby units
+		map.invalidateFieldOfViewFor(getLocation());
+	}
+
+	/**
+	 * Try to close this Door. This method does not close the door if there is a Unit at this Door's location. In that
+	 * case, the Door's open-timer will be set to 1.
+	 * 
+	 * @param map
+	 *            The {@link Map} this Door is on.
+	 * @return Whether or not this Door successfully closed.
+	 */
+	public boolean tryClose(Map map) {
+		// Get any Unit that might be at this Door's location
+		Unit unit = map.getUnitAtLocation(getLocation());
+		if (unit != null) {
+			// If there is a Unit, don't close
+			openTimer = 1;
+			isBlockingLOS = false;
+			return false;
+		} else {
 			openTimer = 0;
 			isBlockingLOS = true;
+			return true;
 		}
 	}
 
 	/**
-	 * Reduces the timer that keeps track of how long this door remains open. Will not reduce the timer below 1 if a
-	 * Unit is present at the Door's location.
+	 * Reduces the timer that keeps track of how long this door remains open. This method will try to close this Door if
+	 * its open-timer has run out.
 	 * 
 	 * @param map
 	 *            The {@link Map} this Door is on.
@@ -100,29 +116,19 @@ public class Door
 		if (openTimer > 0)
 			openTimer--;
 		// Check if the door should be closed now
-		if (openTimer == 0 && !isBlockingLOS) {
-			// Get any Unit that might be at this Door's location
-			Unit unit = map.getUnitAtLocation(getLocation());
-			if (unit != null) {
-				// If there is a Unit, don't close
-				openTimer = 1;
-				return;
-			} else
-				isBlockingLOS = true;
+		if (openTimer <= 0 && !isBlockingLOS) {
+			// Try to close it.
+			boolean success = tryClose(map);
+			if (success) {
+				// Invalidate field-of-view of nearby units
+				map.invalidateFieldOfViewFor(getLocation());
+			}
 		}
 	}
 
 	// endregion
 
 	// region Overridden methods
-
-	/**
-	 * Whether or not this Door is blocking Line of Sight.
-	 */
-	@Override
-	public boolean isBlockingLOS() {
-		return !isOpen();
-	}
 
 	@Override
 	public Door copy() {

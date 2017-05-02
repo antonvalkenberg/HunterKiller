@@ -418,7 +418,7 @@ public class Map
 		if (success && mapContent[targetPosition][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX] instanceof Door) {
 			Door door = (Door) mapContent[targetPosition][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX];
 			if (!door.isOpen())
-				door.open();
+				door.open(this);
 		}
 		return success;
 	}
@@ -654,8 +654,8 @@ public class Map
 		CacheEntry entry = lineOfSight.new CacheEntry(unit.getLocation(), unit.getFieldOfViewRange(), unit.getOrientation(),
 														unit.getFieldOfViewAngle());
 
+		// Note: Field-of-View caching for improved simulation performance. Cannot be used on maps with Doors.
 		// HashSet<MapLocation> locations = lineOfSight.getFromCache(entry);
-		//
 		// if (locations != null)
 		// return locations;
 
@@ -831,6 +831,29 @@ public class Map
 				HashSet<MapLocation> fieldOfView = getFieldOfView(unit);
 				// Tell the unit to update it's field-of-view
 				unit.updateFieldOfView(fieldOfView);
+			}
+		}
+	}
+
+	/**
+	 * Invalidate the Field-of-View for all units that have a specific location in their current Field-of-View.
+	 * 
+	 * @param location
+	 *            The location that triggered an invalidation of current Field-of-View.
+	 */
+	public void invalidateFieldOfViewFor(MapLocation location) {
+		// Check all units
+		for (GameObject object : objects) {
+			if (object != null && object instanceof Unit) {
+				Unit unit = (Unit) object;
+				// If the unit's field-of-view is already invalid, we do not have to invalidate
+				if (!unit.isFieldOfViewValid())
+					continue;
+				// Get the field-of-view collection for the unit
+				HashSet<MapLocation> fieldOfView = getFieldOfView(unit);
+				// Check if the collection contains the specified location
+				if (fieldOfView.contains(location))
+					unit.invalidateFieldOfView();
 			}
 		}
 	}
