@@ -9,6 +9,7 @@ import net.codepoke.ai.challenge.hunterkiller.Map;
 import net.codepoke.ai.challenge.hunterkiller.MapLocation;
 import net.codepoke.ai.challenge.hunterkiller.enums.Direction;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
+import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Door;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Floor;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Wall;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Infected;
@@ -515,6 +516,110 @@ public class LineOfSightTest
 		assertTrue(infectedFOV.contains(new MapLocation(3, 1)));
 		assertTrue(infectedFOV.contains(new MapLocation(2, 1)));
 		assertTrue(infectedFOV.contains(new MapLocation(1, 1)));
+	}
+
+	/**
+	 * Tests a line-of-sight setup where a Unit is inside a room facing a door:
+	 * 
+	 * <pre>
+	 *    - - - -
+	 *    - [ D [
+	 *    - [ - -
+	 *    - [ U -
+	 * </pre>
+	 * 
+	 * Note that in this diagram, 'U' stands for the Unit, '[' stands for a Wall tile, 'D' stands for a Door tile, and
+	 * '-' stands for a Floor tile. This setup is tested with the Unit facing NORTH while the Door starts closed, opens
+	 * and is then closed again.
+	 */
+	@Test
+	public void testDoorVision() {
+		// Fill map with Floors, except for positions #5, 7, 9, 13 (which are Walls), and 6 (which is a Door).
+		GameObject[][] mapContent = new GameObject[testMap.getMapWidth() * testMap.getMapHeight()][HunterKillerConstants.MAP_INTERNAL_LAYERS];
+		for (int i = 0; i < mapContent.length; i++) {
+			MapLocation location = testMap.toLocation(i);
+			if (i == 5 || i == 7 || i == 9 || i == 13) {
+				Wall wall = new Wall(location);
+				testMap.registerGameObject(wall);
+				mapContent[i][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX] = wall;
+			} else if (i == 6) {
+				Door door = new Door(location);
+				testMap.registerGameObject(door);
+				mapContent[i][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX] = door;
+			} else {
+				Floor floor = new Floor(location);
+				testMap.registerGameObject(floor);
+				mapContent[i][HunterKillerConstants.MAP_INTERNAL_FEATURE_INDEX] = floor;
+			}
+		}
+		testMap.setMapContent(mapContent);
+
+		// In the next sections, when visualising the FOV; '.' refers to visible tiles, and '#' refers to obscured
+		// tiles.
+
+		// Create a new soldier at [2,3] facing NORTH
+		MapLocation testLocation = new MapLocation(2, 3);
+		Soldier soldier = new Soldier(0, HunterKillerConstants.GAMEOBJECT_NOT_PLACED, Direction.NORTH);
+		testMap.registerGameObject(soldier);
+		testMap.place(testLocation, soldier);
+
+		// Get the field-of-view for the north-facing soldier
+		HashSet<MapLocation> northFOV = testMap.getFieldOfView(soldier);
+		// Check that the FOV looks like:
+		// # # # #
+		// # . . .
+		// # . . .
+		// # # U #
+		assertTrue(northFOV.size() == 7);
+		assertTrue(northFOV.contains(new MapLocation(1, 1)));
+		assertTrue(northFOV.contains(new MapLocation(2, 1)));
+		assertTrue(northFOV.contains(new MapLocation(3, 1)));
+		assertTrue(northFOV.contains(new MapLocation(1, 2)));
+		assertTrue(northFOV.contains(new MapLocation(2, 2)));
+		assertTrue(northFOV.contains(new MapLocation(3, 2)));
+		assertTrue(northFOV.contains(new MapLocation(2, 3)));
+
+		// Open the Door
+		Door door = (Door) testMap.getFeatureAtLocation(new MapLocation(2, 1));
+		door.open(testMap);
+
+		// Update the soldier's field-of-view
+		northFOV = testMap.getFieldOfView(soldier);
+		// Check that the FOV looks like:
+		// # # . #
+		// # . . .
+		// # . . .
+		// # # U #
+		assertTrue(northFOV.size() == 8);
+		assertTrue(northFOV.contains(new MapLocation(2, 0)));
+		assertTrue(northFOV.contains(new MapLocation(1, 1)));
+		assertTrue(northFOV.contains(new MapLocation(2, 1)));
+		assertTrue(northFOV.contains(new MapLocation(3, 1)));
+		assertTrue(northFOV.contains(new MapLocation(1, 2)));
+		assertTrue(northFOV.contains(new MapLocation(2, 2)));
+		assertTrue(northFOV.contains(new MapLocation(3, 2)));
+		assertTrue(northFOV.contains(new MapLocation(2, 3)));
+
+		// Close the Door
+		do {
+			door.reduceTimer(testMap);
+		} while (door.isOpen());
+
+		// Update the soldier's field-of-view
+		northFOV = testMap.getFieldOfView(soldier);
+		// Check that the FOV looks like:
+		// # # # #
+		// # . . .
+		// # . . .
+		// # # U #
+		assertTrue(northFOV.size() == 7);
+		assertTrue(northFOV.contains(new MapLocation(1, 1)));
+		assertTrue(northFOV.contains(new MapLocation(2, 1)));
+		assertTrue(northFOV.contains(new MapLocation(3, 1)));
+		assertTrue(northFOV.contains(new MapLocation(1, 2)));
+		assertTrue(northFOV.contains(new MapLocation(2, 2)));
+		assertTrue(northFOV.contains(new MapLocation(3, 2)));
+		assertTrue(northFOV.contains(new MapLocation(2, 3)));
 	}
 
 	// endregion
