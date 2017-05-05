@@ -35,4 +35,5 @@ public class StringExtensions {
 
 		return msg.toString();
 	}
+
 }

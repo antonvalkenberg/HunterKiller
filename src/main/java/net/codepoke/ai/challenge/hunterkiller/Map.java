@@ -655,9 +655,9 @@ public class Map
 														unit.getFieldOfViewAngle());
 
 		// Note: Field-of-View caching for improved simulation performance. Cannot be used on maps with Doors.
-		// HashSet<MapLocation> locations = lineOfSight.getFromCache(entry);
-		// if (locations != null)
-		// return locations;
+		HashSet<MapLocation> locations = lineOfSight.getFromCache(entry);
+		if (locations != null)
+			return locations;
 
 		// Reset any previously computed locations
 		lineOfSight.resetVisibleLocations();
@@ -1250,7 +1250,9 @@ public class Map
 	 * @param player
 	 *            The {@link Player} to assign objects to.
 	 */
-	protected void assignObjectsToPlayer(Player player) {
+	public void assignObjectsToPlayer(Player player) {
+		IntArray structureIDs = player.getStructureIDs();
+		IntArray unitIDs = player.getUnitIDs();
 		// Check for Structures and Units
 		for (GameObject object : objects) {
 			// Check if there is anything there
@@ -1259,14 +1261,16 @@ public class Map
 				if (object instanceof Structure) {
 					Structure structure = (Structure) object;
 					// Check if it's a base and is controlled by this player
-					if (structure.getType() == StructureType.Base && structure.getControllingPlayerID() == player.getID()) {
+					if (structure.getType() == StructureType.Base && structure.getControllingPlayerID() == player.getID()
+						&& !structureIDs.contains(structure.getID())) {
 						player.assignCommandCenter(structure);
 						player.addStructure(structure.getID());
 					}
 					// Other types are capturable and not controlled by any player at the start of the game
 				}
 				// Check if it's a unit and belongs to this player
-				else if (object instanceof Unit && ((Unit) object).getControllingPlayerID() == player.getID()) {
+				else if (object instanceof Unit && ((Unit) object).getControllingPlayerID() == player.getID()
+							&& !unitIDs.contains(object.getID())) {
 					player.addUnit(object.getID());
 				}
 			}
