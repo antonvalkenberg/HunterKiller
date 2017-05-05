@@ -655,9 +655,9 @@ public class Map
 														unit.getFieldOfViewAngle());
 
 		// Note: Field-of-View caching for improved simulation performance. Cannot be used on maps with Doors.
-		HashSet<MapLocation> locations = lineOfSight.getFromCache(entry);
-		if (locations != null)
-			return locations;
+		// HashSet<MapLocation> locations = lineOfSight.getFromCache(entry);
+		// if (locations != null)
+		// return locations;
 
 		// Reset any previously computed locations
 		lineOfSight.resetVisibleLocations();
