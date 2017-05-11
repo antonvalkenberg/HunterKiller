@@ -38,7 +38,12 @@ public class LineOfSight {
 
 	// Temporary variable, NOT MULTITHREADABLE
 	private Vector2 tmpAngleCalc = new Vector2();
-	private static HashMap<CacheEntry, HashSet<MapLocation>> fovCache = new HashMap<LineOfSight.CacheEntry, HashSet<MapLocation>>();
+	private static ThreadLocal<HashMap<CacheEntry, HashSet<MapLocation>>> fovCache = new ThreadLocal<HashMap<CacheEntry, HashSet<MapLocation>>>() {
+		@Override
+		protected HashMap<CacheEntry, HashSet<MapLocation>> initialValue() {
+			return new HashMap<LineOfSight.CacheEntry, HashSet<MapLocation>>();
+		}
+	};
 
 	/**
 	 * Construct a new instance of the LineOfSight class. This class contains a method to compute the
@@ -576,9 +581,11 @@ public class LineOfSight {
 	}
 
 	public HashSet<MapLocation> getVisibleLocations(CacheEntry entry) {
+		HashMap<CacheEntry, HashSet<MapLocation>> fov = fovCache.get();
+
 		// Check if we have a cache entry already
-		if (!fovCache.containsKey(entry)) {
-			fovCache.put(entry, _setVisible.getVisibleLocations());
+		if (!fov.containsKey(entry)) {
+			fov.put(entry, _setVisible.getVisibleLocations());
 		}
 
 		// Return the visible locations
@@ -587,11 +594,13 @@ public class LineOfSight {
 
 	public boolean haveCached(CacheEntry entry) {
 		// Check if we have a cache entry already
-		return fovCache.containsKey(entry);
+		return fovCache.get()
+						.containsKey(entry);
 	}
 
 	public HashSet<MapLocation> getFromCache(CacheEntry entry) {
-		return fovCache.get(entry);
+		return fovCache.get()
+						.get(entry);
 	}
 
 	public GetDistanceFunction getDistanceType() {
