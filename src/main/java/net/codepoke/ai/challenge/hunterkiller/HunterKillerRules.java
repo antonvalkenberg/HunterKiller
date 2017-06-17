@@ -18,6 +18,7 @@ import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Medic;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Soldier;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
 import net.codepoke.ai.challenge.hunterkiller.orders.HunterKillerOrder;
+import net.codepoke.ai.challenge.hunterkiller.orders.OrderStatistics;
 import net.codepoke.ai.challenge.hunterkiller.orders.StructureOrder;
 import net.codepoke.ai.challenge.hunterkiller.orders.UnitOrder;
 
@@ -100,6 +101,10 @@ public class HunterKillerRules
 		// Get the orders contained in the action
 		Array<HunterKillerOrder> orders = action.getOrders();
 
+		// STATS
+		state.getActivePlayer()
+				.getStats().issued += orders.size;
+
 		// Go through the collection of orders
 		for (HunterKillerOrder order : orders) {
 			StringBuilder orderFailures = IGNORE_FAILURES ? null : new StringBuilder();
@@ -126,8 +131,16 @@ public class HunterKillerRules
 					actionFailures.append(orderFailures.toString());
 			} else {
 				order.setAccepted(true);
+
+				// STATS
+				state.getActivePlayer()
+						.getStats().success++;
 			}
 		}
+
+		// STATS
+		state.getActivePlayer()
+				.getStats().failed += failCount;
 
 		if (LOG_TO_CONSOLE && actionFailures != null && failCount > 0) {
 			System.out.println(StringExtensions.format(	"P(%d)R(%d): %d orders ignored, Reasons:%n%s%n",
@@ -158,6 +171,7 @@ public class HunterKillerRules
 		// Most orders need to access these things
 		Map map = state.getMap();
 		Player activePlayer = state.getActivePlayer();
+		OrderStatistics stats = activePlayer.getStats();
 		GameObject orderObject = map.getObject(order.getObjectID());
 
 		// Check which type of order we are dealing with
@@ -176,16 +190,25 @@ public class HunterKillerRules
 			case SPAWN_INFECTED:
 				unit = new Infected(activePlayer.getID(), spawnLocation, spawnDirection);
 				spawnCosts = HunterKillerConstants.INFECTED_SPAWN_COST;
+
+				// STATS
+				stats.spawnInfected++;
 				break;
 
 			case SPAWN_MEDIC:
 				unit = new Medic(activePlayer.getID(), spawnLocation, spawnDirection);
 				spawnCosts = HunterKillerConstants.MEDIC_SPAWN_COST;
+
+				// STATS
+				stats.spawnMedic++;
 				break;
 
 			case SPAWN_SOLDIER:
 				unit = new Soldier(activePlayer.getID(), spawnLocation, spawnDirection);
 				spawnCosts = HunterKillerConstants.SOLDIER_SPAWN_COST;
+
+				// STATS
+				stats.spawnSoldier++;
 				break;
 
 			default:
@@ -221,23 +244,36 @@ public class HunterKillerRules
 				unit.setOrientation(Direction.rotate(unit.getOrientation(), Rotation.CLOCKWISE));
 				// Invalidate the unit's field-of-view
 				unit.invalidateFieldOfView();
+
+				// STATS
+				stats.rotateClockwise++;
 				break;
 
 			case ROTATE_COUNTER_CLOCKWISE:
 				unit.setOrientation(Direction.rotate(unit.getOrientation(), Rotation.COUNTER_CLOCKWISE));
 				// Invalidate the unit's field-of-view
 				unit.invalidateFieldOfView();
+
+				// STATS
+				stats.rotateCounter++;
 				break;
 
 			case MOVE:
 				map.move(targetLocation, unit, failureReasons);
 				// Invalidate the unit's field-of-view
 				unit.invalidateFieldOfView();
+
+				// STATS
+				stats.move++;
 				break;
 
 			case ATTACK:
 				// Tell the map that the target location is being attacked for X damage
 				boolean attackSuccess = map.attackLocation(targetLocation, unit.getAttackDamage());
+
+				// STATS
+				stats.attack++;
+
 				// Check if we need to trigger an Infected's special attack.
 				// Several conditions need to hold: (in order of most likely to break out of the statement)
 				// - An Infected was the source of the attack
@@ -278,6 +314,17 @@ public class HunterKillerRules
 					// Award points to the player
 					awardPointsForUnitDeath(activePlayer, targetUnit);
 				}
+
+				// STATS
+				if (targetUnit != null) {
+					stats.attackUnit++;
+					if (targetUnit.isControlledBy(activePlayer))
+						stats.attackAlly++;
+				}
+				if (map.getFeatureAtLocation(targetLocation) instanceof Structure) {
+					stats.attackStructure++;
+				}
+
 				break;
 
 			case ATTACK_SPECIAL:
@@ -293,6 +340,9 @@ public class HunterKillerRules
 					map.getUnitAtLocation(targetLocation)
 						.increaseHP(HunterKillerConstants.MEDIC_SPECIAL_HEAL);
 					unit.startCooldown();
+
+					// STATS
+					stats.heal++;
 					break;
 
 				case Soldier:
@@ -310,6 +360,9 @@ public class HunterKillerRules
 						}
 					}
 					unit.startCooldown();
+
+					// STATS
+					stats.grenade++;
 					break;
 
 				default:

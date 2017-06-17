@@ -11,6 +11,7 @@ import net.codepoke.ai.GameRules.Result.Ranking;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.GameObject;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.mapfeature.Structure;
 import net.codepoke.ai.challenge.hunterkiller.gameobjects.unit.Unit;
+import net.codepoke.ai.challenge.hunterkiller.orders.OrderStatistics;
 
 import com.badlogic.gdx.utils.IntArray;
 
@@ -71,6 +72,8 @@ public class Player
 	 */
 	private int score;
 
+	private OrderStatistics stats;
+
 	// endregion
 
 	// region Constructor
@@ -95,6 +98,8 @@ public class Player
 		// Create a new list to store the units into (unordered, educated guess on initial capacity)
 		unitIDs = new IntArray(false, 10);
 		structureIDs = new IntArray(false, 3);
+
+		stats = new OrderStatistics();
 	}
 
 	/**
