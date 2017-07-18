@@ -1,5 +1,6 @@
 package net.codepoke.ai.challenge.hunterkiller;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.codepoke.ai.Action;
@@ -27,6 +28,7 @@ import com.badlogic.gdx.utils.JsonValue;
  *
  */
 @Getter
+@EqualsAndHashCode
 @NoArgsConstructor
 public class HunterKillerAction
 		implements Action, Serializable {
