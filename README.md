@@ -34,6 +34,14 @@ Player competing in the game, holds the resource and score amounts.
 ##### Map
 - GameObject
   - MapFeature
+    - ![floor_3](https://user-images.githubusercontent.com/15450200/199753271-401d174e-11e4-4087-8d4a-4f751bb7d003.png)Floor: Indestructible, allows Line-of-Sight, allows movement.
+    - ![space_1](https://user-images.githubusercontent.com/15450200/199753322-5fe4edc1-1d9a-47a0-ab35-3e8e8ef851fd.png)Space: Indestructible, allows Line-of-Sight, blocks movement.
+    - ![wall_0](https://user-images.githubusercontent.com/15450200/199753359-5d854204-b845-4e8c-93f6-ce895f28a56a.png)Wall: Indestructible, blocks Line-of-Sight, blocks movement.
+    - Door: Will open when moved onto, and stays open for 5 rounds.
+      - ![door_closed](https://user-images.githubusercontent.com/15450200/199753016-c531f74f-ebb4-4591-9066-f9cdcee3fd8d.png)Closed Door:	
+        - Indestructible, blocks Line-of-Sight, blocks movement.
+      - ![door_open](https://user-images.githubusercontent.com/15450200/199753061-842cc426-dcaf-4718-a8b9-c2df8a573967.png)Open Door:
+        - Indestructible, allows Line-of-Sight, allows movement.
     - Structure (Controlled)
       - ![base_p1_0](https://user-images.githubusercontent.com/15450200/199744341-29a5d619-b429-4e6c-bf80-40edb58c35d8.png)Base
         - Maximum health 50.
@@ -58,14 +66,6 @@ Player competing in the game, holds the resource and score amounts.
         - Generates 50 score points.
         - Indestructible, blocks Line-of-Sight, allows movement, no spawning.
         - Can be captured.
-      - Door: Will open when moved onto, and stays open for 5 rounds.
-        - ![door_closed](https://user-images.githubusercontent.com/15450200/199753016-c531f74f-ebb4-4591-9066-f9cdcee3fd8d.png)Closed Door:	
-          - Indestructible, blocks Line-of-Sight, blocks movement.
-        - ![door_open](https://user-images.githubusercontent.com/15450200/199753061-842cc426-dcaf-4718-a8b9-c2df8a573967.png)Open Door:
-          - Indestructible, allows Line-of-Sight, allows movement.
-      - ![floor_3](https://user-images.githubusercontent.com/15450200/199753271-401d174e-11e4-4087-8d4a-4f751bb7d003.png)Floor: Indestructible, allows Line-of-Sight, allows movement.
-      - ![space_1](https://user-images.githubusercontent.com/15450200/199753322-5fe4edc1-1d9a-47a0-ab35-3e8e8ef851fd.png)Space: Indestructible, allows Line-of-Sight, blocks movement.
-      - ![wall_0](https://user-images.githubusercontent.com/15450200/199753359-5d854204-b845-4e8c-93f6-ce895f28a56a.png)Wall: Indestructible, blocks Line-of-Sight, blocks movement.
     - Unit (Controlled)
     Movement range = 1, three different types:
       - ![infected_p1_0](https://user-images.githubusercontent.com/15450200/199746252-575102b3-ff5c-4719-8a33-c4413aedc103.png)Infected:
